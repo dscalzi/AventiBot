@@ -14,7 +14,7 @@ public class AuthorCommand implements CommandExecutor {
 		
 		e.getChannel().sendMessage(author + " is my daddy :)");
 		
-		return false;
+		return true;
 	}
 
 }

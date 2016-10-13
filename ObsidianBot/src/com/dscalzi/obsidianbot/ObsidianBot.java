@@ -7,7 +7,6 @@ import com.dscalzi.obsidianbot.cmdutil.CommandRegistry;
 import com.dscalzi.obsidianbot.commands.AuthorCommand;
 import com.dscalzi.obsidianbot.commands.HelloWorldCommand;
 import com.dscalzi.obsidianbot.commands.HelpCommand;
-
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.JDABuilder;
 

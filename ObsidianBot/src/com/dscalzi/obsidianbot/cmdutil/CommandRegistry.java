@@ -26,6 +26,7 @@ public class CommandRegistry {
 		if(registry.containsKey(cmd)){
 			return Optional.of(registry.get(cmd));
 		}
+		
 		return Optional.empty();
 	}
 	
