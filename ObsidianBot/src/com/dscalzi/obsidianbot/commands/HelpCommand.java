@@ -5,16 +5,18 @@ import com.dscalzi.obsidianbot.cmdutil.CommandExecutor;
 
 import net.dv8tion.jda.events.message.MessageReceivedEvent;
 
-public class AuthorCmd implements CommandExecutor {
+public class HelpCommand implements CommandExecutor{
 
 	@Override
 	public boolean onCommand(MessageReceivedEvent e, String cmd, String[] args) {
 		
-		String author = ObsidianBot.getInstance().getJDA().getUserById("169197209630277642").getAsMention();
+		String sender = e.getAuthor().getId();
 		
-		e.getChannel().sendMessage(author + " is my daddy :)");
+		String msg = "Help message coming soon!";
 		
-		return false;
+		ObsidianBot.getInstance().getJDA().getUserById(sender).getPrivateChannel().sendMessage(msg);
+		
+		return true;
 	}
 
 }

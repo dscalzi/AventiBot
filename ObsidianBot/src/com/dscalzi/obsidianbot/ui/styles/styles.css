@@ -1,0 +1,17 @@
+#console-textarea {
+	-fx-background-color: #2d2835;
+	-fx-background-radius: 0em;
+	-fx-text-fill: white;
+}
+
+#console-textarea .content {
+	-fx-background-color: #2d2835;
+}
+
+#leftpane-vbox {
+	-fx-background-color: #262626;
+}
+
+#main-hbox {
+	-fx-background-color: black;
+}

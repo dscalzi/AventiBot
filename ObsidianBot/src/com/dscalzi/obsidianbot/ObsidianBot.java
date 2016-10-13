@@ -4,8 +4,10 @@ import javax.security.auth.login.LoginException;
 
 import com.dscalzi.obsidianbot.cmdutil.CommandListener;
 import com.dscalzi.obsidianbot.cmdutil.CommandRegistry;
-import com.dscalzi.obsidianbot.commands.AuthorCmd;
-import com.dscalzi.obsidianbot.commands.HelloWorldExecutor;
+import com.dscalzi.obsidianbot.commands.AuthorCommand;
+import com.dscalzi.obsidianbot.commands.HelloWorldCommand;
+import com.dscalzi.obsidianbot.commands.HelpCommand;
+
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.JDABuilder;
 
@@ -15,11 +17,7 @@ public class ObsidianBot {
 	private static final String token = "MjMxOTA2OTY2MzA0MTk0NTYx.CtjFKQ.Y5nPGpJwQy5kVSLfra-01dvD-_A";
 	
 	/* Temporary Globals */
-	public static final String commandPrefix = "~/";
-	
-	public static void main(String[] args){
-		ObsidianBot.launch();
-	}
+	public static final String commandPrefix = "--";
 	
 	private static ObsidianBot instance;
 	private static boolean launched;
@@ -37,8 +35,9 @@ public class ObsidianBot {
 	}
 	
 	private void registerCommands(){
-		this.registry.register("helloworld", new HelloWorldExecutor());
-		this.registry.register("author", new AuthorCmd());
+		this.registry.register("help", new HelpCommand());
+		this.registry.register("helloworld", new HelloWorldCommand());
+		this.registry.register("author", new AuthorCommand());
 	}
 	
 	private void registerListeners(){
