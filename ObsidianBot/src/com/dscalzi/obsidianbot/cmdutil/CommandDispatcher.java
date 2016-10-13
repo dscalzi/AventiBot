@@ -20,8 +20,8 @@ public class CommandDispatcher {
 		exec.ifPresent((cmdEx) -> {
 			cmdEx.onCommand(e, cmd, args);
 			
-			String fullArgs = "";
-			for(String s : args) fullArgs += s;
+			String fullArgs = " ";
+			for(String s : args) fullArgs += s + " ";
 			fullArgs = fullArgs.trim();
 			
 			SimpleLog.getLog("CommandDispatcher").info("User " + e.getAuthor().getUsername() + " (" + e.getAuthor().getId() + ") has just run the command '" + ObsidianBot.commandPrefix + cmd + fullArgs + "'");

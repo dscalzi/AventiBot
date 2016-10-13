@@ -33,6 +33,7 @@ public class MainGUI extends Application{
 		leftLayout.setId("leftpane-vbox");
 		leftLayout.setPadding(new Insets(10,10,10,10));
 		leftLayout.setAlignment(Pos.BOTTOM_CENTER);
+		leftLayout.setMinWidth(150);
 		
 		
 		
@@ -43,6 +44,7 @@ public class MainGUI extends Application{
 		Button terminateButton = new Button();
 		
 		startButton.setText("Launch ObsidianBot");
+		startButton.setId("button-start");
 		startButton.setOnAction(e -> {
 				startButton.setDisable(true);
 				ObsidianBot.launch();
@@ -53,6 +55,7 @@ public class MainGUI extends Application{
 			});
 		
 		terminateButton.setText("End Proccess");
+		terminateButton.setId("button-terminate");
 		terminateButton.setOnAction(e -> { 
 				ObsidianBot.getInstance().getJDA().shutdown(true);
 				terminateButton.setDisable(true);
@@ -64,7 +67,7 @@ public class MainGUI extends Application{
 		
 		TextArea ta = new TextArea();
 		ta.setId("console-textarea");
-		ta.setMinWidth(600);
+		ta.setMinWidth(300);
 		ta.setMinHeight(300);
 		ta.setWrapText(true);
 		ta.setEditable(false);;
@@ -82,7 +85,7 @@ public class MainGUI extends Application{
 		HBox.setHgrow(ta, Priority.ALWAYS);
 		
 		
-		Scene scene = new Scene(mainLayout);
+		Scene scene = new Scene(mainLayout, 750, 300);
 		scene.getStylesheets().add(getClass().getResource("styles/styles.css").toExternalForm());
 		
 		primaryStage.setOnCloseRequest(e -> {
@@ -90,6 +93,8 @@ public class MainGUI extends Application{
 				ObsidianBot.getInstance().getJDA().shutdown(true);
 		});
 		
+		
+		primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("styles/avatar.png")));
 		primaryStage.setTitle("ObsidianBot Launcher");
 		primaryStage.setScene(scene);
 		primaryStage.show();
