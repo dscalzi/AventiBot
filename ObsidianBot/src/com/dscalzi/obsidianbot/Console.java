@@ -3,11 +3,10 @@ package com.dscalzi.obsidianbot;
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.OnlineStatus;
 import net.dv8tion.jda.entities.Game;
-import net.dv8tion.jda.entities.PrivateChannel;
 import net.dv8tion.jda.entities.impl.JDAImpl;
 import net.dv8tion.jda.entities.impl.UserImpl;
 
-public class ConsoleUser extends UserImpl{
+public class Console extends UserImpl{
 
 	private static final String _id;
 	private static final String _username;
@@ -15,7 +14,6 @@ public class ConsoleUser extends UserImpl{
     private static final String _avatarId;
     private static final Game _game;
     private static final OnlineStatus _onlineStatus;
-    private static final PrivateChannel _privateChannel;
     private static final boolean _isBot;
 	
 	static {
@@ -25,19 +23,18 @@ public class ConsoleUser extends UserImpl{
 		_avatarId = null;
 		_game = null;
 		_onlineStatus = OnlineStatus.ONLINE;
-		_privateChannel = null;
 		_isBot = false;
 	}
 	
-	public ConsoleUser(JDA api) {
+	protected Console(JDA api) {
 		super(_id, (JDAImpl) api);
-		this.setUserName(ConsoleUser._username);
-		this.setDiscriminator(ConsoleUser._discriminator);
-		this.setAvatarId(ConsoleUser._avatarId);
-		this.setCurrentGame(ConsoleUser._game);
-		this.setOnlineStatus(ConsoleUser._onlineStatus);
-		this.setPrivateChannel(ConsoleUser._privateChannel);
-		this.setIsBot(ConsoleUser._isBot);
+		this.setUserName(Console._username);
+		this.setDiscriminator(Console._discriminator);
+		this.setAvatarId(Console._avatarId);
+		this.setCurrentGame(Console._game);
+		this.setOnlineStatus(Console._onlineStatus);
+		this.setPrivateChannel(new ConsolePrivateChannel(this, api));
+		this.setIsBot(Console._isBot);
 	}
 
 }

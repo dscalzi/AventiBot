@@ -98,7 +98,7 @@ public class MainGUI extends Application{
 		rightLayout.getChildren().addAll(ta, tf);
 		VBox.setVgrow(ta, Priority.ALWAYS);
 		
-		Console console = new Console(ta);
+		CommandLog console = new CommandLog(ta);
 		PrintStream ps = new PrintStream(console, true);
 		System.setOut(ps);
 		System.setErr(ps);

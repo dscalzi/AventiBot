@@ -32,12 +32,14 @@ public class ObsidianBot {
 	}
 	
 	private JDA jda;
+	private Console console;
 	private String id;
 	private CommandRegistry registry;
 	
 	private ObsidianBot(){
 		this.registry = new CommandRegistry();
 		if(!this.connect()) return;
+		this.console = new Console(jda);
 		this.registerCommands();
 		this.registerListeners();
 		this.id = jda.getSelfInfo().getId();
@@ -88,6 +90,10 @@ public class ObsidianBot {
 	
 	public CommandRegistry getCommandRegistry(){
 		return this.registry;
+	}
+	
+	public Console getConsole(){
+		return this.console;
 	}
 	
 	public JDA getJDA(){

@@ -6,11 +6,11 @@ import java.io.OutputStream;
 import javafx.application.Platform;
 import javafx.scene.control.TextArea;
 
-public class Console extends OutputStream {
+public class CommandLog extends OutputStream {
 
 	private TextArea node;
 	
-	public Console(TextArea textArea){
+	public CommandLog(TextArea textArea){
 		this.node = textArea;
 	}
 	

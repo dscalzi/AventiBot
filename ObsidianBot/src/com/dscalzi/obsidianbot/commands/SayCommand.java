@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import com.dscalzi.obsidianbot.ConsoleUser;
+import com.dscalzi.obsidianbot.Console;
 import com.dscalzi.obsidianbot.ObsidianBot;
 import com.dscalzi.obsidianbot.ObsidianRoles;
 import com.dscalzi.obsidianbot.cmdutil.CommandExecutor;
@@ -19,7 +19,7 @@ public class SayCommand implements CommandExecutor{
 		
 		List<Role> r;
 		
-		if(e.getAuthor() instanceof ConsoleUser)
+		if(e.getAuthor() instanceof Console)
 			r = new ArrayList<Role>(Arrays.asList(ObsidianRoles.DEVELOPER.getRole()));
 		else
 			r = e.getGuild().getRolesForUser(e.getAuthor());
