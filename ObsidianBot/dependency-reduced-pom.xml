@@ -1,9 +1,10 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>ObsidianBot</groupId>
   <artifactId>ObsidianBot</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
   <name>ObsidianBot</name>
+  <version>0.0.1-SNAPSHOT</version>
   <description>Discord bot for ObsidianCraft</description>
   <build>
     <sourceDirectory>src</sourceDirectory>
@@ -18,7 +19,6 @@
         </configuration>
       </plugin>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-shade-plugin</artifactId>
         <version>2.4.3</version>
         <executions>
@@ -28,18 +28,18 @@
               <goal>shade</goal>
             </goals>
             <configuration>
-	            <transformers>
-	                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-	                  <mainClass>com.dscalzi.obsidianbot.ui.MainGUI</mainClass>
-	                </transformer>
-	              </transformers>
+              <transformers>
+                <transformer>
+                  <mainClass>com.dscalzi.obsidianbot.ui.MainGUI</mainClass>
+                </transformer>
+              </transformers>
               <minimizeJar>true</minimizeJar>
               <filters>
-              <filter>
+                <filter>
                   <artifact>commons-logging:commons-logging</artifact>
                   <includes>
                     <include>org/apache/commons/logging/**</include>
-                  </includes> 
+                  </includes>
                 </filter>
               </filters>
               <relocations>
@@ -113,21 +113,5 @@
       <url>https://maven.oracle.com</url>
     </repository>
   </repositories>
-  <dependencies>
-    <dependency>
-      <groupId>net.dv8tion</groupId>
-      <artifactId>JDA</artifactId>
-      <version>2.2.1_375</version>
-      <exclusions>
-          <exclusion>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-          </exclusion>
-      </exclusions>
-    </dependency>
-  </dependencies>
 </project>
+

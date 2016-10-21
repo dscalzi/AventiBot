@@ -16,8 +16,8 @@ public class CommandListener extends ListenerAdapter {
 			if(senderId.equals(ObsidianBot.getInstance().getId())){
 				return;
 			}
-			String cmd = content.substring(ObsidianBot.commandPrefix.length(), (content.indexOf(" ") > -1 ? content.indexOf(" ") : content.length()));
-			CommandDispatcher.dispatchCommand(e, cmd);
+			
+			CommandDispatcher.dispatchCommand(e, CommandDispatcher.parseMessage(e));
 		}
 	}
 	

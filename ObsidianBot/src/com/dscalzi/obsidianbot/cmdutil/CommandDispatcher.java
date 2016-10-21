@@ -28,4 +28,16 @@ public class CommandDispatcher {
 		});
 	}
 	
+	public static String parseMessage(MessageReceivedEvent e){
+		String content = e.getMessage().getContent();
+		String cmd;
+		try{
+			cmd = content.substring(ObsidianBot.commandPrefix.length(), (content.indexOf(" ") > -1 ? content.indexOf(" ") : content.length()));
+		} catch (Exception ex){
+			return null;
+		}
+		
+		return cmd;
+	}
+	
 }
