@@ -8,7 +8,7 @@ import net.dv8tion.jda.events.message.MessageReceivedEvent;
 public class HelpCommand implements CommandExecutor{
 
 	@Override
-	public boolean onCommand(MessageReceivedEvent e, String cmd, String[] args) {
+	public boolean onCommand(MessageReceivedEvent e, String cmd, String[] args, String[] rawArgs) {
 		
 		String sender = e.getAuthor().getId();
 		

@@ -13,12 +13,15 @@ public class CommandDispatcher {
 		Optional<CommandExecutor> exec = ObsidianBot.getInstance().getCommandRegistry().getExecutor(cmd);
 		
 		String msg = e.getMessage().getContent();
+		String rawMsg = e.getMessage().getRawContent();
 		String argStr = msg.substring(msg.indexOf(cmd) + cmd.length()).trim();
+		String rawArgStr = rawMsg.substring(rawMsg.indexOf(cmd) + cmd.length()).trim();
 		
 		String[] args = argStr.split("\\s");
+		String[] rawArgs = rawArgStr.split("\\s");
 		
 		exec.ifPresent((cmdEx) -> {
-			cmdEx.onCommand(e, cmd, args);
+			cmdEx.onCommand(e, cmd, args, rawArgs);
 			
 			String fullArgs = " ";
 			for(String s : args) fullArgs += s + " ";

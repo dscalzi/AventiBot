@@ -1,4 +1,4 @@
-package com.dscalzi.obsidianbot;
+package com.dscalzi.obsidianbot.console;
 
 import java.io.File;
 import java.util.List;

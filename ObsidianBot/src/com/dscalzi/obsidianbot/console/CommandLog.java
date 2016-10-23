@@ -1,4 +1,4 @@
-package com.dscalzi.obsidianbot.ui;
+package com.dscalzi.obsidianbot.console;
 
 import java.io.IOException;
 import java.io.OutputStream;

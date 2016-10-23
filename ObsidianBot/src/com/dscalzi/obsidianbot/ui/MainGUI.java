@@ -4,6 +4,8 @@ import java.io.PrintStream;
 
 import com.dscalzi.obsidianbot.BotStatus;
 import com.dscalzi.obsidianbot.ObsidianBot;
+import com.dscalzi.obsidianbot.console.CommandLine;
+import com.dscalzi.obsidianbot.console.CommandLog;
 
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -118,9 +120,11 @@ public class MainGUI extends Application{
 			try {
 				if(ObsidianBot.getStatus() == BotStatus.CONNECTED)
 					ObsidianBot.getInstance().getJDA().shutdown(true);
-			} catch (NoClassDefFoundError ex){
-				//
+			} catch (Exception ex){
+				//Shutdown
+				Runtime.getRuntime().exit(0);
 			}
+			Runtime.getRuntime().exit(0);
 		});
 		
 		

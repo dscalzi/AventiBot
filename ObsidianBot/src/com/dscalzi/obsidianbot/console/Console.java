@@ -1,4 +1,4 @@
-package com.dscalzi.obsidianbot;
+package com.dscalzi.obsidianbot.console;
 
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.OnlineStatus;
@@ -26,7 +26,7 @@ public class Console extends UserImpl{
 		_isBot = false;
 	}
 	
-	protected Console(JDA api) {
+	public Console(JDA api) {
 		super(_id, (JDAImpl) api);
 		this.setUserName(Console._username);
 		this.setDiscriminator(Console._discriminator);
