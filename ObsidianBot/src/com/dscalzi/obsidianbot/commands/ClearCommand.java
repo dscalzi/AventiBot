@@ -23,6 +23,7 @@ import net.dv8tion.jda.exceptions.RateLimitedException;
 public class ClearCommand implements CommandExecutor{
 
 	private volatile boolean processing;
+	private volatile long lastRun;
 	
 	private final List<Role> allowedRoles;
 	
@@ -33,6 +34,8 @@ public class ClearCommand implements CommandExecutor{
 		allowedRoles.add(ObsidianRoles.ADMIN.getRole());
 		allowedRoles.add(ObsidianRoles.DEVELOPER.getRole());
 		allowedRoles.add(ObsidianRoles.SEMI_ADMIN.getRole());
+		allowedRoles.add(ObsidianRoles.MODERATOR.getRole());
+		allowedRoles.add(ObsidianRoles.STEWARD.getRole());
 	}
 	
 	@Override
@@ -49,6 +52,13 @@ public class ClearCommand implements CommandExecutor{
 		
 		if(processing){
 			e.getChannel().sendMessage("I'm currently clearing out a channel, try again later!");
+			return false;
+		}
+		
+		long timeLeft = System.currentTimeMillis() - lastRun;
+		if(timeLeft < 10000){
+			timeLeft =  10 - (timeLeft/1000L);
+			e.getChannel().sendMessage("This command is currently in cooldown, please try again in " + timeLeft + " seconds.");
 			return false;
 		}
 		
@@ -140,6 +150,7 @@ public class ClearCommand implements CommandExecutor{
 			}
 			
 			processing = false;
+			lastRun = System.currentTimeMillis();
 		}).start();
 	}
 	

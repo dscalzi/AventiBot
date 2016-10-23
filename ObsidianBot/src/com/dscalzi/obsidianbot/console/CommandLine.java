@@ -21,7 +21,7 @@ public class CommandLine {
 	public CommandLine(TextField node){
 		this.LOG = SimpleLog.getLog("Console");
 		this.node = node;
-		node.setOnKeyPressed((e) -> {
+		this.node.setOnKeyPressed((e) -> {
 			if(e.getCode().equals(KeyCode.ENTER)){
 				if(node.getText().equals(""))
 					return;
