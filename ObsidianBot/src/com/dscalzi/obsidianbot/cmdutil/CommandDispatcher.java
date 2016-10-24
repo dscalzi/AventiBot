@@ -17,8 +17,8 @@ public class CommandDispatcher {
 		String argStr = msg.substring(msg.indexOf(cmd) + cmd.length()).trim();
 		String rawArgStr = rawMsg.substring(rawMsg.indexOf(cmd) + cmd.length()).trim();
 		
-		String[] args = argStr.split("\\s");
-		String[] rawArgs = rawArgStr.split("\\s");
+		String[] args = (argStr.length() > 0) ? argStr.split("\\s") : new String[0];
+		String[] rawArgs = (rawArgStr.length() > 0) ?  rawArgStr.split("\\s") : new String[0];
 		
 		exec.ifPresent((cmdEx) -> {
 			cmdEx.onCommand(e, cmd, args, rawArgs);

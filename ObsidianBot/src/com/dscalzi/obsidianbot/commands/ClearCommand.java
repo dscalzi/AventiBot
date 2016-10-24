@@ -10,6 +10,7 @@ import com.dscalzi.obsidianbot.ObsidianBot;
 import com.dscalzi.obsidianbot.ObsidianRoles;
 import com.dscalzi.obsidianbot.cmdutil.CommandExecutor;
 import com.dscalzi.obsidianbot.console.Console;
+import com.dscalzi.obsidianbot.util.InputUtils;
 import com.dscalzi.obsidianbot.util.TimeUtils;
 
 import net.dv8tion.jda.entities.Message;
@@ -83,14 +84,14 @@ public class ClearCommand implements CommandExecutor{
 					if(limit > 1000) limit = 1000;
 					++i;
 				} else if(args[i].equalsIgnoreCase("-u")){
-					target = parseUser(e.getMessage(), rawArgs[i+1]);
+					target = InputUtils.parseUser(e.getMessage(), rawArgs[i+1]);
 					if(target == null){
 						e.getChannel().sendMessage("Sorry, but I couldn't find the user you specified.");
 						return false;
 					}
 					++i;
 				} else if(args[i].equalsIgnoreCase("-c")){
-					channel = parseChannel(e.getMessage(), args[i+1]);
+					channel = InputUtils.parseChannel(e.getMessage(), args[i+1]);
 					if(channel == null){
 						e.getChannel().sendMessage("Sorry, I could not find the channel you specified.");
 						return false;
@@ -178,32 +179,6 @@ public class ClearCommand implements CommandExecutor{
 			--i;
 		}
 		return deleted;
-	}
-	
-	public TextChannel parseChannel(Message m, String reference){
-		TextChannel chnl = ObsidianBot.getInstance().getJDA().getTextChannelById(reference);
-		if(chnl != null)
-			return chnl;
-		List<TextChannel> channels = m.getMentionedChannels();
-		for(TextChannel tc : channels){
-			if(tc.getName().equals(reference.replace("#", ""))){
-				return tc;
-			}
-		}
-		return null;
-	}
-	
-	public User parseUser(Message m, String reference){
-		User usr = ObsidianBot.getInstance().getJDA().getUserById(reference);
-		if(usr != null)
-			return usr;
-		List<User> users = m.getMentionedUsers();
-		for(User u : users){
-			if(u.getAsMention().equals(reference.replace("!", ""))){
-				return u;
-			}
-		}
-		return null;
 	}
 
 }

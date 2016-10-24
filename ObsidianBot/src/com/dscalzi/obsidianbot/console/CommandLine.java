@@ -15,7 +15,6 @@ import net.dv8tion.jda.utils.SimpleLog;
 public class CommandLine {
 
 	private final SimpleLog LOG;
-	@SuppressWarnings("unused")
 	private TextField node;
 	
 	public CommandLine(TextField node){
