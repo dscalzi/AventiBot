@@ -8,6 +8,7 @@
   <build>
     <sourceDirectory>src</sourceDirectory>
     <defaultGoal>package</defaultGoal>
+    <finalName>ObsidianBot</finalName>
     <plugins>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -35,7 +36,7 @@
 	              </transformers>
               <minimizeJar>true</minimizeJar>
               <filters>
-              <filter>
+                <filter>
                   <artifact>commons-logging:commons-logging</artifact>
                   <includes>
                     <include>org/apache/commons/logging/**</include>
@@ -113,7 +114,7 @@
     <dependency>
       <groupId>net.dv8tion</groupId>
       <artifactId>JDA</artifactId>
-      <version>2.2.1_375</version>
+      <version>3.0.BETA_75</version>
       <exclusions>
           <exclusion>
             <groupId>junit</groupId>

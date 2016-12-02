@@ -12,12 +12,15 @@ import com.dscalzi.obsidianbot.commands.HelpCommand;
 import com.dscalzi.obsidianbot.commands.IPCommand;
 import com.dscalzi.obsidianbot.commands.SayCommand;
 import com.dscalzi.obsidianbot.console.Console;
-
-import net.dv8tion.jda.JDA;
-import net.dv8tion.jda.JDABuilder;
-import net.dv8tion.jda.entities.Guild;
-import net.dv8tion.jda.entities.impl.JDAImpl;
-import net.dv8tion.jda.utils.SimpleLog;
+import net.dv8tion.jda.core.AccountType;
+import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.JDABuilder;
+import net.dv8tion.jda.core.entities.Game.GameType;
+import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.impl.GameImpl;
+import net.dv8tion.jda.core.entities.impl.JDAImpl;
+import net.dv8tion.jda.core.exceptions.RateLimitedException;
+import net.dv8tion.jda.core.utils.SimpleLog;
 
 public class ObsidianBot {
 	
@@ -44,10 +47,10 @@ public class ObsidianBot {
 	private ObsidianBot(){
 		this.registry = new CommandRegistry();
 		if(!this.connect()) return;
-		this.console = new Console(jda);
-		((JDAImpl)jda).getPmChannelMap().put("consolepm", console.getPrivateChannel());
 		this.guild = jda.getGuildById(guildId);
-		this.id = jda.getSelfInfo().getId();
+		this.console = new Console(jda);
+		((JDAImpl)jda).getPrivateChannelMap().put("consolepm", console.getUser().getPrivateChannel());
+		this.id = jda.getSelfUser().getId();
 	}
 	
 	private void registerCommands(){
@@ -87,10 +90,13 @@ public class ObsidianBot {
 	
 	public boolean connect(){
 		try {
-			jda = new JDABuilder().setBotToken(ObsidianBot.token).buildBlocking();
+			jda = new JDABuilder(AccountType.BOT)
+					.setToken(ObsidianBot.token)
+					.setGame(new GameImpl("on ObsidianCraft", "hub.obsidiancraft.com", GameType.DEFAULT))
+					.buildBlocking();
 			jda.setAutoReconnect(true);
 			status = BotStatus.CONNECTED;
-		} catch (LoginException | IllegalArgumentException | InterruptedException | HTTPException e) {
+		} catch (LoginException | IllegalArgumentException | InterruptedException | HTTPException | RateLimitedException e) {
 			SimpleLog.getLog("JDA").fatal("Failed to connect to Discord!");
 			e.printStackTrace();
 			return false;

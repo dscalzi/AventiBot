@@ -9,6 +9,7 @@
   <build>
     <sourceDirectory>src</sourceDirectory>
     <defaultGoal>package</defaultGoal>
+    <finalName>ObsidianBot</finalName>
     <plugins>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>

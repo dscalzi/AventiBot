@@ -4,8 +4,8 @@ import java.util.Optional;
 
 import com.dscalzi.obsidianbot.ObsidianBot;
 
-import net.dv8tion.jda.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.utils.SimpleLog;
+import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.utils.SimpleLog;
 
 public class CommandDispatcher {
 
@@ -27,7 +27,7 @@ public class CommandDispatcher {
 			for(String s : args) fullArgs += s + " ";
 			fullArgs = fullArgs.trim();
 			
-			SimpleLog.getLog("CommandDispatcher").info("User " + e.getAuthor().getUsername() + " (" + e.getAuthor().getId() + ") has just run the command '" + ObsidianBot.commandPrefix + cmd + (fullArgs.length() > 0 ? " " : "") + fullArgs + "'");
+			SimpleLog.getLog("CommandDispatcher").info("User " + e.getAuthor().getName() + " (" + e.getAuthor().getId() + ") has just run the command '" + ObsidianBot.commandPrefix + cmd + (fullArgs.length() > 0 ? " " : "") + fullArgs + "'");
 		});
 	}
 	

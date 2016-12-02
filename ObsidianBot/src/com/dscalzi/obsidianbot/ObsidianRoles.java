@@ -1,6 +1,6 @@
 package com.dscalzi.obsidianbot;
 
-import net.dv8tion.jda.entities.Role;
+import net.dv8tion.jda.core.entities.Role;
 
 public enum ObsidianRoles {
 

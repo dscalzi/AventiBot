@@ -6,11 +6,11 @@ import com.dscalzi.obsidianbot.cmdutil.CommandDispatcher;
 
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
-import net.dv8tion.jda.JDA;
-import net.dv8tion.jda.entities.impl.JDAImpl;
-import net.dv8tion.jda.entities.impl.MessageImpl;
-import net.dv8tion.jda.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.utils.SimpleLog;
+import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.entities.impl.JDAImpl;
+import net.dv8tion.jda.core.entities.impl.MessageImpl;
+import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.utils.SimpleLog;
 
 public class CommandLine {
 
@@ -33,11 +33,9 @@ public class CommandLine {
 					
 					LOG.info(node.getText());
 					
-					MessageImpl m = new MessageImpl("console", (JDAImpl) api);
+					MessageImpl m = new MessageImpl("console", ((JDAImpl)api).getPrivateChannelById("consolepm"), false);
 					m.setContent(node.getText());
-					m.setAuthor(console);
-					m.setChannelId("consolepm");
-					m.setIsPrivate(true);
+					m.setAuthor(console.getUser());
 					MessageReceivedEvent mre = new MessageReceivedEvent(api, -1, m);
 					CommandDispatcher.dispatchCommand(mre, CommandDispatcher.parseMessage(mre));
 				}

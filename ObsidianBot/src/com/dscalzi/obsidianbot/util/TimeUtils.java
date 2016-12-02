@@ -11,7 +11,26 @@ public class TimeUtils {
 	
 	// Copyright essentials, all credits to them for this.
 	/**
-	 * Convert time input to Unix time in milliseconds.
+	 * Convert time input to Unix time in seconds. The returned time is the instant
+	 * either in the past or future by adding/subtracting the time period given to
+	 * the current time.
+	 * The time variable is formatted in the following way:
+	 * <p>
+	 * <strong>{#}y</strong> - # Years
+	 * <br><strong>{#}mo</strong> - # Months
+	 * <br><strong>{#}w</strong> - # Weeks
+	 * <br><strong>{#}d</strong> - # Days
+	 * <br><strong>{#}h</strong> - # Hours
+	 * <br><strong>{#}m</strong> - # Minutes
+	 * <br><strong>{#}s</strong> - # Seconds
+	 * <p>
+	 * An example string would be <code>1mo7d5h3s</code><br>
+	 * This would be read as one month, seven days, five hours, three seconds.
+	 * 
+	 * @param time The time String
+	 * @param future If true, the Unix time will be the time in the future, if false it will be the past.
+	 * @return The Unix time in seconds of the instant x time in the past or future.
+	 * @throws Exception Thrown if illegal date, or if the time exceeds the limit set by the method.
 	 */
 	public static long parseDateDiff(String time, boolean future) throws Exception {
 		Matcher m = timePattern.matcher(time);

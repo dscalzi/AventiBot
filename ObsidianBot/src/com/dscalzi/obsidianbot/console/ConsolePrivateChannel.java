@@ -1,19 +1,22 @@
 package com.dscalzi.obsidianbot.console;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
-import java.util.function.Consumer;
-
-import net.dv8tion.jda.JDA;
-import net.dv8tion.jda.MessageHistory;
-import net.dv8tion.jda.entities.Message;
-import net.dv8tion.jda.entities.PrivateChannel;
-import net.dv8tion.jda.entities.User;
-import net.dv8tion.jda.utils.SimpleLog;
+import net.dv8tion.jda.client.entities.Call;
+import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.MessageBuilder;
+import net.dv8tion.jda.core.MessageHistory;
+import net.dv8tion.jda.core.entities.ChannelType;
+import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.core.entities.PrivateChannel;
+import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.core.requests.RestAction;
+import net.dv8tion.jda.core.utils.SimpleLog;
 
 public class ConsolePrivateChannel implements PrivateChannel{
 	
-	public static final String RATE_LIMIT_IDENTIFIER = "GLOBAL_PRIV_CHANNEL_RATELIMIT";
     private final String id;
     private final User user;
     private final JDA api;
@@ -24,84 +27,16 @@ public class ConsolePrivateChannel implements PrivateChannel{
         this.id = user.getId();
     }
 	
-	@Override
-	public Message sendMessage(String text) {
-		SimpleLog.getLog("??? -> Me").info(text);
-		return null;
+    @Override
+	public RestAction<Message> sendMessage(String text) {
+    	SimpleLog.getLog("??? -> Me").info(text);
+    	return new RestAction.EmptyRestAction<Message>(new MessageBuilder().appendString(text).build());
 	}
 
 	@Override
-	public Message sendMessage(Message msg) {
+	public RestAction<Message> sendMessage(Message msg) {
 		SimpleLog.getLog(msg.getAuthor().getDiscriminator() + " -> Me").info(msg.getRawContent());
-		return null;
-	}
-
-	@Override
-	public void sendMessageAsync(String msg, Consumer<Message> callback) {
-		// TODO Implement
-		
-	}
-
-	@Override
-	public void sendMessageAsync(Message msg, Consumer<Message> callback) {
-		// TODO Implement
-		
-	}
-
-	/**
-	 * Currently not possible for Console.
-	 */
-	@Override
-	public Message sendFile(File file, Message message) { return null; }
-
-	/**
-	 * Currently not possible for Console.
-	 */
-	@Override
-	public void sendFileAsync(File file, Message message, Consumer<Message> callback) {	}
-
-	/**
-	 * Not possible for Console.
-	 */
-	@Override
-	public Message getMessageById(String messageId) { return null; }
-
-	/**
-	 * Not possible for Console.
-	 */
-	@Override
-	public boolean deleteMessageById(String messageId) { return false; }
-
-	/**
-	 * Currently not possible for Console.
-	 */
-	@Override
-	public MessageHistory getHistory() { return null; }
-
-	/**
-	 * Not possible for Console.
-	 */
-	@Override
-	public void sendTyping() { }
-
-	/**
-	 * Not possible for Console.
-	 */
-	@Override
-	public boolean pinMessageById(String messageId) { return false; }
-
-	/**
-	 * Not possible for Console.
-	 */
-	@Override
-	public boolean unpinMessageById(String messageId) {	return false; }
-
-	/**
-	 * Not possible for Console.
-	 */
-	@Override
-	public List<Message> getPinnedMessages() {
-		return null;
+		return new RestAction.EmptyRestAction<Message>(msg);
 	}
 
 	@Override
@@ -119,10 +54,116 @@ public class ConsolePrivateChannel implements PrivateChannel{
 		return this.api;
 	}
 
-	/**
-	 * Not possible for Console.
-	 */
 	@Override
-	public void close() { }
+	public String getName() {
+		return getUser().getName();
+	}
+
+	@Override
+	public ChannelType getType() {
+		return ChannelType.PRIVATE;
+	}
+
+	@Override
+	public RestAction<Message> sendFile(File file, Message message) throws IOException {
+		// Not Supported
+		return null;
+	}
+
+	@Override
+	public RestAction<Message> sendFile(File file, String fileName, Message message) throws IOException {
+		// Not Supported
+		return null;
+	}
+
+	@Override
+	public RestAction<Message> sendFile(InputStream data, String fileName, Message message) {
+		// Not Supported
+		return null;
+	}
+
+	@Override
+	public RestAction<Message> sendFile(byte[] data, String fileName, Message message) {
+		// Not Supported
+		return null;
+	}
+
+	@Override
+	public RestAction<Message> getMessageById(String messageId) {
+		// Not Supported
+		return null;
+	}
+
+	@Override
+	public RestAction<Void> deleteMessageById(String messageId) {
+		// Not Supported
+		return null;
+	}
+
+	@Override
+	public MessageHistory getHistory() {
+		// Not Supported
+		return null;
+	}
+
+	@Override
+	public RestAction<MessageHistory> getHistoryAround(Message message, int limit) {
+		// Not Supported
+		return null;
+	}
+
+	@Override
+	public RestAction<MessageHistory> getHistoryAround(String messageId, int limit) {
+		// Not Supported
+		return null;
+	}
+
+	@Override
+	public RestAction<Void> sendTyping() {
+		// Not Supported
+		return null;
+	}
+
+	@Override
+	public RestAction<Void> pinMessageById(String messageId) {
+		// Not Supported
+		return null;
+	}
+
+	@Override
+	public RestAction<Void> unpinMessageById(String messageId) {
+		// Not Supported
+		return null;
+	}
+
+	@Override
+	public RestAction<List<Message>> getPinnedMessages() {
+		// Not Supported
+		return null;
+	}
+
+	@Override
+	public RestAction<Call> startCall() {
+		// Not Supported
+		return null;
+	}
+
+	@Override
+	public Call getCurrentCall() {
+		// Not Supported
+		return null;
+	}
+
+	@Override
+	public boolean isFake() {
+		// Not Supported
+		return false;
+	}
+
+	@Override
+	public RestAction<Void> close() {
+		// Not Supported
+		return null;
+	}
 
 }

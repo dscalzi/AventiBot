@@ -9,17 +9,18 @@ import java.util.List;
 import com.dscalzi.obsidianbot.ObsidianBot;
 import com.dscalzi.obsidianbot.ObsidianRoles;
 import com.dscalzi.obsidianbot.cmdutil.CommandExecutor;
-import com.dscalzi.obsidianbot.console.Console;
+import com.dscalzi.obsidianbot.console.Console.ConsoleUser;
 import com.dscalzi.obsidianbot.util.InputUtils;
 import com.dscalzi.obsidianbot.util.TimeUtils;
 
-import net.dv8tion.jda.entities.Message;
-import net.dv8tion.jda.entities.MessageChannel;
-import net.dv8tion.jda.entities.Role;
-import net.dv8tion.jda.entities.TextChannel;
-import net.dv8tion.jda.entities.User;
-import net.dv8tion.jda.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.exceptions.RateLimitedException;
+import net.dv8tion.jda.core.entities.ChannelType;
+import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.core.entities.MessageChannel;
+import net.dv8tion.jda.core.entities.Role;
+import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.exceptions.RateLimitedException;
 
 public class ClearCommand implements CommandExecutor{
 
@@ -42,32 +43,33 @@ public class ClearCommand implements CommandExecutor{
 	@Override
 	public boolean onCommand(MessageReceivedEvent e, String cmd, String[] args, String[] rawArgs) {
 		
-		/* Permission Check */
-		List<Role> userRoles;
-		if(!(e.getAuthor() instanceof Console)){
-			userRoles = ObsidianBot.getInstance().getGuild().getRolesForUser(e.getAuthor());
+		if(!(e.getAuthor() instanceof ConsoleUser)){
+			if(!ObsidianBot.getInstance().getGuild().isMember(e.getAuthor()))
+				return false;
+				
+			List<Role> userRoles = ObsidianBot.getInstance().getGuild().getMemberById(e.getAuthor().getId()).getRoles();;
 		
 			if(Collections.disjoint(userRoles, allowedRoles))
 				return false;
 		}
 		
 		if(processing){
-			e.getChannel().sendMessage("I'm currently clearing out a channel, try again later!");
+			e.getChannel().sendMessage("I'm currently clearing out a channel, try again later!").queue();
 			return false;
 		}
 		
 		long timeLeft = System.currentTimeMillis() - lastRun;
 		if(timeLeft < 10000){
 			timeLeft =  10 - (timeLeft/1000L);
-			e.getChannel().sendMessage("This command is currently in cooldown, please try again in " + timeLeft + " seconds.");
+			e.getChannel().sendMessage("This command is currently in cooldown, please try again in " + timeLeft + " seconds.").queue();
 			return false;
 		}
 		
 		//The default text channel is the one the command was sent from.
-		TextChannel channel = e.isPrivate() ? null : (TextChannel) e.getChannel();
+		TextChannel channel = e.isFromType(ChannelType.PRIVATE) ? null : (TextChannel) e.getChannel();
 		//Default target is everyone.
 		User target = null;
-		//Default limit for clearing a channel is 50 messages. Max is 1000
+		//Default limit for clearing a channel is 50 messages. Max is 100
 		int limit = 50;
 		//Default threshold is 1 hour.
 		long threshold = OffsetDateTime.now().toEpochSecond() - 3600;
@@ -78,22 +80,26 @@ public class ClearCommand implements CommandExecutor{
 					try{
 						limit = Integer.parseInt(args[i+1]);
 					} catch (NumberFormatException ex){
-						e.getChannel().sendMessage("Sorry, but you didn't give me an integer for the amount parameter (-a).");
+						e.getChannel().sendMessage("Sorry, but you didn't give me an integer for the amount parameter (-a).").queue();
 						return false;
 					}
-					if(limit > 1000) limit = 1000;
+					if(limit > 100) limit = 100;
+					if(limit < 1){
+						e.getChannel().sendMessage("I cannot delete less than one message, sorry.").queue();
+						return false;
+					}
 					++i;
 				} else if(args[i].equalsIgnoreCase("-u")){
 					target = InputUtils.parseUser(e.getMessage(), rawArgs[i+1]);
 					if(target == null){
-						e.getChannel().sendMessage("Sorry, but I couldn't find the user you specified.");
+						e.getChannel().sendMessage("Sorry, but I couldn't find the user you specified.").queue();
 						return false;
 					}
 					++i;
 				} else if(args[i].equalsIgnoreCase("-c")){
 					channel = InputUtils.parseChannel(e.getMessage(), args[i+1]);
 					if(channel == null){
-						e.getChannel().sendMessage("Sorry, I could not find the channel you specified.");
+						e.getChannel().sendMessage("Sorry, I could not find the channel you specified.").queue();
 						return false;
 					}
 					++i;
@@ -101,7 +107,7 @@ public class ClearCommand implements CommandExecutor{
 					try {
 						threshold = TimeUtils.parseDateDiff(args[i+1], false);
 					} catch (Exception e1) {
-						e.getChannel().sendMessage("Invalid date format.");
+						e.getChannel().sendMessage("Invalid date format.").queue();
 						return false;
 					}
 					++i;
@@ -110,7 +116,7 @@ public class ClearCommand implements CommandExecutor{
 		}
 		
 		if(channel == null){
-			e.getChannel().sendMessage("You must specify a channel.");
+			e.getChannel().sendMessage("You must specify a channel.").queue();
 			return false;
 		}
 		
@@ -123,13 +129,10 @@ public class ClearCommand implements CommandExecutor{
 	}
 	
 	private void clear(int limit, long threshold, TextChannel channel, User target, MessageChannel origin){
-		if(limit > 1000) return;
+		if(limit > 100 | limit < 1) return;
+		processing = true;
 		
-		new Thread(() -> {
-			processing = true;
-			
-			List<Message> history = channel.getHistory().retrieve(limit);
-			
+		channel.getHistory().retrievePast(limit).queue((history) -> {
 			int deleted = delete(history, threshold, target);	
 			
 			//TODO Make the timestamp more user-friendly. Rather than "sice x GMT", "in the past hour";
@@ -145,26 +148,29 @@ public class ClearCommand implements CommandExecutor{
 			
 			if(!origin.equals(channel)){
 				if(deleted > 0) channel.sendMessage(successPt1 + successPt2);
-				origin.sendMessage(successPt1 + " from "+ channel.getAsMention() + successPt2);
+				origin.sendMessage(successPt1 + " from "+ channel.getAsMention() + successPt2).queue();
 			} else {
-				channel.sendMessage(successPt1 + successPt2);
+				channel.sendMessage(successPt1 + successPt2).queue();
 			}
 			
 			processing = false;
 			lastRun = System.currentTimeMillis();
-		}).start();
+		}, (exception) -> {
+			processing = false;
+			lastRun = System.currentTimeMillis();
+		});
 	}
 	
 	private int delete(List<Message> history, long threshold, User target){
 		int deleted = 0;
 		for(int i=0; i<history.size(); ++i){
 			Message msg = history.get(i);
-			if(msg.getTime().toEpochSecond() < threshold)
+			if(msg.getCreationTime().toEpochSecond() < threshold)
 				break;
 			if(target != null && !msg.getAuthor().equals(target))
 				continue;
 			try{
-				msg.deleteMessage();
+				msg.deleteMessage().block();
 			} catch (RateLimitedException ex){
 				try {
 					Thread.sleep(1000);
@@ -172,7 +178,13 @@ public class ClearCommand implements CommandExecutor{
 					e.printStackTrace();
 					return deleted;
 				}
-				msg.deleteMessage();
+				//Try one last time
+				try {
+					msg.deleteMessage().block();
+				} catch (RateLimitedException e) {
+					e.printStackTrace();
+					return deleted;
+				}
 			}
 			++deleted;
 			history.remove(i);

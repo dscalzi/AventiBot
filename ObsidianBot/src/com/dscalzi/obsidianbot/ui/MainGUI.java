@@ -21,7 +21,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import net.dv8tion.jda.utils.SimpleLog;
+import net.dv8tion.jda.core.utils.SimpleLog;
 
 public class MainGUI extends Application{
 

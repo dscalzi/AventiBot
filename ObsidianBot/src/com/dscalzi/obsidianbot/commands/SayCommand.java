@@ -7,13 +7,14 @@ import java.util.List;
 import com.dscalzi.obsidianbot.ObsidianBot;
 import com.dscalzi.obsidianbot.ObsidianRoles;
 import com.dscalzi.obsidianbot.cmdutil.CommandExecutor;
-import com.dscalzi.obsidianbot.console.Console;
+import com.dscalzi.obsidianbot.console.Console.ConsoleUser;
 import com.dscalzi.obsidianbot.util.InputUtils;
 
-import net.dv8tion.jda.MessageBuilder;
-import net.dv8tion.jda.entities.MessageChannel;
-import net.dv8tion.jda.entities.Role;
-import net.dv8tion.jda.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.MessageBuilder;
+import net.dv8tion.jda.core.entities.ChannelType;
+import net.dv8tion.jda.core.entities.MessageChannel;
+import net.dv8tion.jda.core.entities.Role;
+import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 public class SayCommand implements CommandExecutor{
 
@@ -33,16 +34,20 @@ public class SayCommand implements CommandExecutor{
 	@Override
 	public boolean onCommand(MessageReceivedEvent e, String cmd, String[] args, String[] rawArgs) {
 		
-		List<Role> userRoles;
-		if(!(e.getAuthor() instanceof Console)){
-			userRoles = ObsidianBot.getInstance().getGuild().getRolesForUser(e.getAuthor());
-		
+		if(!(e.getAuthor() instanceof ConsoleUser)){
+			if(!ObsidianBot.getInstance().getGuild().isMember(e.getAuthor()))
+				return false;
+			
+			List<Role> userRoles = ObsidianBot.getInstance().getGuild().getMemberById(e.getAuthor().getId()).getRoles();
+			
 			if(Collections.disjoint(userRoles, allowedRoles))
 				return false;
 		}
 		
+		System.out.println("Got here");
+		
 		if(args.length == 0){
-			e.getChannel().sendMessage("Why are you trying to get me to say nothing.. lol");
+			e.getChannel().sendMessage("Why are you trying to get me to say nothing.. lol").queue();
 			return false;
 		}
 		
@@ -53,18 +58,18 @@ public class SayCommand implements CommandExecutor{
 		mb.appendString(message);
 		
 		if(ch == null) {
-			if(e.getAuthor() instanceof Console)
+			if(e.getAuthor() instanceof ConsoleUser)
 				ch = ObsidianBot.getInstance().getJDA().getTextChannelById("211524927831015424");
-			else if(e.isPrivate())
+			else if(e.isFromType(ChannelType.PRIVATE))
 				ch = e.getPrivateChannel();
 			else
 				ch = e.getTextChannel();
 		}
 		
-		if(!(e.getMessage().isPrivate()))
-			e.getMessage().deleteMessage();
+		if(!(e.getMessage().isFromType(ChannelType.PRIVATE)))
+			e.getMessage().deleteMessage().queue();
 		
-		ch.sendMessage(message);
+		ch.sendMessage(message).queue();
 		
 		return true;
 	}
