@@ -20,7 +20,6 @@ import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.core.exceptions.RateLimitedException;
 
 public class ClearCommand implements CommandExecutor{
 
@@ -139,8 +138,8 @@ public class ClearCommand implements CommandExecutor{
 			String successPt1 = "";
 			String successPt2 = "";
 			if(deleted > 0){
-				successPt1 = "I have just cleared " + deleted + " message" + (deleted == 1 ? "" : "s");
-				successPt2 = " that " + (deleted == 1 ? "was" : "were") + " sent " + ((target != null) ? "by " + target.getAsMention() + " " : "") + 
+				successPt1 = "I am clearing " + deleted + " message" + (deleted == 1 ? "" : "s");
+				successPt2 = " that " + (deleted == 1 ? "has" : "have") + " been sent " + ((target != null) ? "by " + target.getAsMention() + " " : "") + 
 						"since " +Instant.ofEpochSecond(threshold).toString() + " GMT.";
 			} else {
 				successPt1 = "No messages were deleted";
@@ -169,23 +168,7 @@ public class ClearCommand implements CommandExecutor{
 				break;
 			if(target != null && !msg.getAuthor().equals(target))
 				continue;
-			try{
-				msg.deleteMessage().block();
-			} catch (RateLimitedException ex){
-				try {
-					Thread.sleep(1000);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-					return deleted;
-				}
-				//Try one last time
-				try {
-					msg.deleteMessage().block();
-				} catch (RateLimitedException e) {
-					e.printStackTrace();
-					return deleted;
-				}
-			}
+			msg.deleteMessage().queue();
 			++deleted;
 			history.remove(i);
 			--i;
