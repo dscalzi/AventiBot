@@ -2,14 +2,24 @@
 	-fx-background-color: #2d2835;
 	-fx-background-radius: 0em;
 	-fx-text-fill: white;
+	-fx-min-width: 300px;
+	-fx-min-height: 300px;
 }
 
 #console-textarea .content {
 	-fx-background-color: #2d2835;
+	-fx-background-radius: 0em;
+}
+
+#textfield-commandline {
+	-fx-background-radius: 0em;
+	-fx-focus-color: #2d2835;
 }
 
 #leftpane-vbox {
 	-fx-background-color: #262626;
+	-fx-padding: 10 10 10 10;
+	-fx-min-width: 150px;
 }
 
 #main-hbox {

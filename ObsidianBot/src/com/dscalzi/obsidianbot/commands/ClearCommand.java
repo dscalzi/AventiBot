@@ -138,7 +138,7 @@ public class ClearCommand implements CommandExecutor{
 			String successPt1 = "";
 			String successPt2 = "";
 			if(deleted > 0){
-				successPt1 = "I am clearing " + deleted + " message" + (deleted == 1 ? "" : "s");
+				successPt1 = "Clearing " + deleted + " message" + (deleted == 1 ? "" : "s");
 				successPt2 = " that " + (deleted == 1 ? "has" : "have") + " been sent " + ((target != null) ? "by " + target.getAsMention() + " " : "") + 
 						"since " +Instant.ofEpochSecond(threshold).toString() + " GMT.";
 			} else {
