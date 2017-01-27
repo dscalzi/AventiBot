@@ -5,7 +5,7 @@ import com.dscalzi.obsidianbot.cmdutil.CommandExecutor;
 
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
-public class HelpCommand implements CommandExecutor{
+public class HelpCmd implements CommandExecutor{
 
 	@Override
 	public boolean onCommand(MessageReceivedEvent e, String cmd, String[] args, String[] rawArgs) {

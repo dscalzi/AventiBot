@@ -22,6 +22,11 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import net.dv8tion.jda.core.utils.SimpleLog;
 
+/**
+ * Use TerminalExecutor instead.
+ *
+ */
+@Deprecated
 public class MainGUI extends Application{
 
 	public static void main(String[] args){

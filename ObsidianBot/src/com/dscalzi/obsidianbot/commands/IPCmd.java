@@ -4,7 +4,7 @@ import com.dscalzi.obsidianbot.cmdutil.CommandExecutor;
 
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
-public class IPCommand implements CommandExecutor{
+public class IPCmd implements CommandExecutor{
 
 	@Override
 	public boolean onCommand(MessageReceivedEvent e, String cmd, String[] args, String[] rawArgs) {
@@ -23,6 +23,9 @@ public class IPCommand implements CommandExecutor{
 	private void sendServerIP(MessageReceivedEvent e){
 		
 		String msg = "Connect to the server using the IP ```hub.obsidiancraft.com```";
+		
+		if(!e.getAuthor().hasPrivateChannel())
+			e.getAuthor().openPrivateChannel();
 		
 		e.getAuthor().getPrivateChannel().sendMessage(msg).queue();
 	}

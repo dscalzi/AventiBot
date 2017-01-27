@@ -16,11 +16,11 @@ import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
-public class SayCommand implements CommandExecutor{
+public class SayCmd implements CommandExecutor{
 
 	private final List<Role> allowedRoles;
 	
-	public SayCommand(){
+	public SayCmd(){
 		allowedRoles = new ArrayList<Role>();
 		
 		/* Staff */
@@ -55,7 +55,7 @@ public class SayCommand implements CommandExecutor{
 		
 		String message = e.getMessage().getRawContent().substring((ch == null) ? (ObsidianBot.commandPrefix + cmd).length() : e.getMessage().getRawContent().indexOf(rawArgs[0]) + rawArgs[0].length());
 		MessageBuilder mb = new MessageBuilder();
-		mb.appendString(message);
+		mb.append(message);
 		
 		if(ch == null) {
 			if(e.getAuthor() instanceof ConsoleUser)

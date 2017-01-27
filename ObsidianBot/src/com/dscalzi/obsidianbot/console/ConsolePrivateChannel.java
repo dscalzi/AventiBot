@@ -32,7 +32,7 @@ public class ConsolePrivateChannel implements PrivateChannel{
     @Override
 	public RestAction<Message> sendMessage(String text) {
     	SimpleLog.getLog("??? -> Me").info(text);
-    	return new RestAction.EmptyRestAction<Message>(new MessageBuilder().appendString(text).build());
+    	return new RestAction.EmptyRestAction<Message>(new MessageBuilder().append(text).build());
 	}
 
 	@Override

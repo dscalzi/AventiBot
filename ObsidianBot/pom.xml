@@ -114,7 +114,7 @@
     <dependency>
       <groupId>net.dv8tion</groupId>
       <artifactId>JDA</artifactId>
-      <version>3.0.BETA_98</version>
+      <version>3.0.BETA2_108</version>
       <exclusions>
           <exclusion>
             <groupId>junit</groupId>
@@ -122,5 +122,10 @@
           </exclusion>
       </exclusions>
     </dependency>
+  	<dependency>
+   		<groupId>com.sedmelluq</groupId>
+   		<artifactId>lavaplayer</artifactId>
+    	<version>1.1.42</version>
+  	</dependency>
   </dependencies>
 </project>

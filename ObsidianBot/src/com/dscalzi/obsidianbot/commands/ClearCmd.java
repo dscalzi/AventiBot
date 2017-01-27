@@ -21,14 +21,14 @@ import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
-public class ClearCommand implements CommandExecutor{
+public class ClearCmd implements CommandExecutor{
 
 	private volatile boolean processing;
 	private volatile long lastRun;
 	
 	private final List<Role> allowedRoles;
 	
-	public ClearCommand(){
+	public ClearCmd(){
 		allowedRoles = new ArrayList<Role>();
 		
 		/* Staff */

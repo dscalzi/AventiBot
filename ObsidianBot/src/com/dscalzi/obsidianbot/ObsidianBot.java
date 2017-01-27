@@ -5,13 +5,16 @@ import javax.xml.ws.http.HTTPException;
 
 import com.dscalzi.obsidianbot.cmdutil.CommandListener;
 import com.dscalzi.obsidianbot.cmdutil.CommandRegistry;
-import com.dscalzi.obsidianbot.commands.AuthorCommand;
-import com.dscalzi.obsidianbot.commands.ClearCommand;
-import com.dscalzi.obsidianbot.commands.HelloWorldCommand;
-import com.dscalzi.obsidianbot.commands.HelpCommand;
-import com.dscalzi.obsidianbot.commands.IPCommand;
-import com.dscalzi.obsidianbot.commands.SayCommand;
+import com.dscalzi.obsidianbot.commands.AuthorCmd;
+import com.dscalzi.obsidianbot.commands.ClearCmd;
+import com.dscalzi.obsidianbot.commands.HelloWorldCmd;
+import com.dscalzi.obsidianbot.commands.HelpCmd;
+import com.dscalzi.obsidianbot.commands.IPCmd;
+import com.dscalzi.obsidianbot.commands.PlayCmd;
+import com.dscalzi.obsidianbot.commands.SayCmd;
 import com.dscalzi.obsidianbot.console.Console;
+import com.dscalzi.obsidianbot.music.LavaWrapper;
+
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
@@ -51,15 +54,17 @@ public class ObsidianBot {
 		this.console = new Console(jda);
 		((JDAImpl)jda).getPrivateChannelMap().put("consolepm", console.getUser().getPrivateChannel());
 		this.id = jda.getSelfUser().getId();
+		LavaWrapper.initialize();
 	}
 	
 	private void registerCommands(){
-		this.registry.register("say", new SayCommand());
-		this.registry.register("help", new HelpCommand());
-		this.registry.register("ip", new IPCommand());
-		this.registry.register("helloworld", new HelloWorldCommand());
-		this.registry.register("author", new AuthorCommand());
-		this.registry.register("clear", new ClearCommand());
+		this.registry.register("play", new PlayCmd());
+		this.registry.register("say", new SayCmd());
+		this.registry.register("help", new HelpCmd());
+		this.registry.register("ip", new IPCmd());
+		this.registry.register("helloworld", new HelloWorldCmd());
+		this.registry.register("author", new AuthorCmd());
+		this.registry.register("clear", new ClearCmd());
 	}
 	
 	private void registerListeners(){

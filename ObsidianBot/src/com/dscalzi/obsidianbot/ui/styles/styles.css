@@ -1,4 +1,4 @@
-#console-textarea {
+#console_log {
 	-fx-background-color: #2d2835;
 	-fx-background-radius: 0em;
 	-fx-text-fill: white;
@@ -6,23 +6,23 @@
 	-fx-min-height: 300px;
 }
 
-#console-textarea .content {
+#console_log .content {
 	-fx-background-color: #2d2835;
 	-fx-background-radius: 0em;
 }
 
-#textfield-commandline {
+#commandline {
 	-fx-background-radius: 0em;
 	-fx-focus-color: #2d2835;
 }
 
-#leftpane-vbox {
+#leftpane {
 	-fx-background-color: #262626;
 	-fx-padding: 10 10 10 10;
 	-fx-min-width: 150px;
 }
 
-#main-hbox {
+#body {
 	-fx-background-color: black;
 }
 
