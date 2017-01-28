@@ -87,4 +87,13 @@ public class TimeUtils {
 	    return c.getTimeInMillis() / 1000L;
 	}
 	
+	public static String formatTrackDuration(long d){
+		int hours = (int) Math.floorDiv(d, 3600000L);
+		d -= hours > 0 ? 3600000*hours : 0;
+		int minutes = (int)Math.floorDiv(d, 60000L);
+		d -= minutes > 0 ? 60000*minutes : 0;
+		int seconds = (int)Math.floorDiv(d, 1000L);
+		return (hours > 0 ? hours + ":" : "") + (minutes > 0 ? ((hours > 0 && minutes/10 == 0) ? "0" + minutes : minutes) + ":" : "0:") + (seconds/10 == 0 ? "0" + seconds : seconds);
+	}
+	
 }

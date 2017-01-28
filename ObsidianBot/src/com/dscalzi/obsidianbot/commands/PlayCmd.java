@@ -4,6 +4,7 @@ import com.dscalzi.obsidianbot.ObsidianBot;
 import com.dscalzi.obsidianbot.cmdutil.CommandExecutor;
 import com.dscalzi.obsidianbot.music.AudioPlayerSendHandler;
 import com.dscalzi.obsidianbot.music.LavaWrapper;
+import com.dscalzi.obsidianbot.music.TrackMeta;
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
@@ -50,25 +51,21 @@ public class PlayCmd implements CommandExecutor{
 			return false;
 		}
 		
-		e.getChannel().sendTyping().queue();
-		
 		LavaWrapper.getInstance().getAudioPlayerManager().loadItem(q, new AudioLoadResultHandler() {
 
 			@Override
 			public void trackLoaded(AudioTrack track) {
-				e.getChannel().sendMessage("Now playing " + track.getInfo().title).queue();
-				player.playTrack(track);
+				LavaWrapper.getInstance().getScheduler(player).queue(new TrackMeta(track, e.getAuthor(), e.getChannel()));
 				
 			}
 
 			@Override
 			public void playlistLoaded(AudioPlaylist playlist) {
 				if(playlist.isSearchResult()){
-					if(playlist.getTracks().size() > 0)
-					e.getChannel().sendMessage("Now playing " + playlist.getTracks().get(0).getInfo().title).queue();
-					player.playTrack(playlist.getTracks().get(0));
+					if(playlist.getTracks().size() > 0){
+						LavaWrapper.getInstance().getScheduler(player).queue(new TrackMeta(playlist.getTracks().get(0), e.getAuthor(), e.getChannel()));
+					}
 				}
-				
 			}
 
 			@Override

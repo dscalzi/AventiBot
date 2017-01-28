@@ -7,10 +7,12 @@ import com.dscalzi.obsidianbot.cmdutil.CommandListener;
 import com.dscalzi.obsidianbot.cmdutil.CommandRegistry;
 import com.dscalzi.obsidianbot.commands.AuthorCmd;
 import com.dscalzi.obsidianbot.commands.ClearCmd;
+import com.dscalzi.obsidianbot.commands.ForceSkipCmd;
 import com.dscalzi.obsidianbot.commands.HelloWorldCmd;
 import com.dscalzi.obsidianbot.commands.HelpCmd;
 import com.dscalzi.obsidianbot.commands.IPCmd;
 import com.dscalzi.obsidianbot.commands.PlayCmd;
+import com.dscalzi.obsidianbot.commands.PlaylistCmd;
 import com.dscalzi.obsidianbot.commands.SayCmd;
 import com.dscalzi.obsidianbot.console.Console;
 import com.dscalzi.obsidianbot.music.LavaWrapper;
@@ -59,6 +61,8 @@ public class ObsidianBot {
 	
 	private void registerCommands(){
 		this.registry.register("play", new PlayCmd());
+		this.registry.register("playlist", new PlaylistCmd());
+		this.registry.register("forceskip", new ForceSkipCmd());
 		this.registry.register("say", new SayCmd());
 		this.registry.register("help", new HelpCmd());
 		this.registry.register("ip", new IPCmd());

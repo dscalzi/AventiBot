@@ -2,13 +2,9 @@ package com.dscalzi.obsidianbot.music;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.Future;
-
-import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
-import com.sedmelluq.discord.lavaplayer.player.event.AudioEventListener;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
 import com.sedmelluq.discord.lavaplayer.source.bandcamp.BandcampAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.http.HttpAudioSourceManager;
@@ -17,9 +13,6 @@ import com.sedmelluq.discord.lavaplayer.source.soundcloud.SoundCloudAudioSourceM
 import com.sedmelluq.discord.lavaplayer.source.twitch.TwitchStreamAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.vimeo.VimeoAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager;
-import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
-import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
-import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 
 public class LavaWrapper {
 
@@ -28,12 +21,12 @@ public class LavaWrapper {
 	
 	private final AudioPlayerManager playerManager;
 	private final Map<String, AudioPlayer> cache;
-	private final Map<AudioPlayer, AudioEventListener> listenerCache;
+	private final Map<AudioPlayer, TrackScheduler> listenerCache;
 	
 	private LavaWrapper(){
 		playerManager = new DefaultAudioPlayerManager();
 		cache = new HashMap<String, AudioPlayer>();
-		listenerCache = new HashMap<AudioPlayer, AudioEventListener>();
+		listenerCache = new HashMap<AudioPlayer, TrackScheduler>();
 		playerManager.registerSourceManager(new YoutubeAudioSourceManager());
 		playerManager.registerSourceManager(new SoundCloudAudioSourceManager());
 		playerManager.registerSourceManager(new BandcampAudioSourceManager());
@@ -66,7 +59,8 @@ public class LavaWrapper {
 			return cache.get(id);
 		else {
 			AudioPlayer player = playerManager.createPlayer();
-			TrackScheduler trackScheduler = new TrackScheduler();
+			TrackScheduler trackScheduler = new TrackScheduler(player);
+			
 			player.addListener(trackScheduler);
 			
 			listenerCache.put(player, trackScheduler);
@@ -76,34 +70,8 @@ public class LavaWrapper {
 		}
 	}
 	
-	public Future<Void> loadItem(String identifier, AudioPlayer p){
-		return playerManager.loadItem(identifier, new AudioLoadResultHandler() {
-
-			@Override
-			public void trackLoaded(AudioTrack track) {
-				p.playTrack(track);
-				
-			}
-
-			@Override
-			public void playlistLoaded(AudioPlaylist playlist) {
-				// TODO Auto-generated method stub
-				
-			}
-
-			@Override
-			public void noMatches() {
-				// TODO Auto-generated method stub
-				
-			}
-
-			@Override
-			public void loadFailed(FriendlyException exception) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-		});
+	public TrackScheduler getScheduler(AudioPlayer player){
+		return listenerCache.get(player);
 	}
 	
 }

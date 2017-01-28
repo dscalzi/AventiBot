@@ -8,6 +8,7 @@ import com.dscalzi.obsidianbot.BotStatus;
 import com.dscalzi.obsidianbot.ObsidianBot;
 import com.dscalzi.obsidianbot.console.CommandLine;
 import com.dscalzi.obsidianbot.console.CommandLog;
+import com.dscalzi.obsidianbot.music.LavaWrapper;
 
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -55,6 +56,7 @@ public class TerminalController implements Initializable {
 	@FXML
 	private void handleTerminateButton(ActionEvent e){
 		ObsidianBot.getInstance().getJDA().shutdown(true);
+		LavaWrapper.getInstance().getAudioPlayerManager().shutdown();
 		terminate_button.setDisable(true);
 	}
 	

@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 
 import com.dscalzi.obsidianbot.BotStatus;
 import com.dscalzi.obsidianbot.ObsidianBot;
+import com.dscalzi.obsidianbot.music.LavaWrapper;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -38,8 +39,10 @@ public class TerminalExecutor extends Application{
 		
 		primaryStage.setOnCloseRequest(e -> {
 			try {
-				if(ObsidianBot.getStatus() == BotStatus.CONNECTED)
+				if(ObsidianBot.getStatus() == BotStatus.CONNECTED){
 					ObsidianBot.getInstance().getJDA().shutdown(true);
+					LavaWrapper.getInstance().getAudioPlayerManager().shutdown();
+				}
 			} catch (Exception ex){
 				//Shutdown
 				Runtime.getRuntime().exit(0);
