@@ -65,6 +65,13 @@ public class PlayCmd implements CommandExecutor{
 					if(playlist.getTracks().size() > 0){
 						LavaWrapper.getInstance().getScheduler(player).queue(new TrackMeta(playlist.getTracks().get(0), e.getAuthor(), e.getChannel()));
 					}
+				} else if(playlist.getSelectedTrack() != null){
+					e.getChannel().sendMessage("Processing playlist.. one moment please.").queue();
+					LavaWrapper.getInstance().getScheduler(player).queuePlaylist(playlist, e.getAuthor(), e.getChannel());
+					//LavaWrapper.getInstance().getScheduler(player).queue(new TrackMeta(playlist.getSelectedTrack(), e.getAuthor(), e.getChannel()));
+				} else {
+					e.getChannel().sendMessage("Processing playlist.. one moment please.").queue();
+					LavaWrapper.getInstance().getScheduler(player).queuePlaylist(playlist, e.getAuthor(), e.getChannel());
 				}
 			}
 

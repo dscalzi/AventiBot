@@ -1,5 +1,7 @@
 package com.dscalzi.obsidianbot.music;
 
+import java.util.ArrayList;
+import java.util.List;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 
 import net.dv8tion.jda.core.entities.MessageChannel;
@@ -11,12 +13,13 @@ public class TrackMeta {
 	private final User requester;
 	private final MessageChannel requestedIn;
 	
-	private int requestedSkips;
+	private final List<User> requestedSkips;
 	
 	public TrackMeta(AudioTrack track, User requester, MessageChannel requestedIn){
 		this.track = track;
 		this.requester = requester;
 		this.requestedIn = requestedIn;
+		this.requestedSkips = new ArrayList<User>();
 	}
 
 	public AudioTrack getTrack() {
@@ -31,12 +34,13 @@ public class TrackMeta {
 		return requestedIn;
 	}
 	
-	public void addSkip(){
-		++requestedSkips;
+	public boolean addSkip(User user){
+		if(requestedSkips.contains(user)) return false;
+		return requestedSkips.add(user);
 	}
 	
 	public int getSkips(){
-		return requestedSkips;
+		return requestedSkips.size();
 	}
 	
 }
