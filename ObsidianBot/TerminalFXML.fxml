@@ -12,7 +12,7 @@
 
 <Scene xmlns:fx="http://javafx.com/fxml/1" width="750" height="350" fx:controller="com.dscalzi.obsidianbot.ui.TerminalController">
 	<HBox id="body">
-		<VBox id="leftpane" alignment="top_center">
+		<VBox fx:id="leftpane" alignment="top_center">
 			<StackPane id="infoBox" alignment="top_center">
 				<Text id="nameText" text="ObsidianBot &#10; Created by Daniel Scalzi"  textAlignment="center"/>
 			</StackPane>

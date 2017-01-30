@@ -14,13 +14,14 @@ import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.managers.AudioManager;
 
 public class MusicControlCmd implements CommandExecutor{
-
+	
 	@Override
 	public boolean onCommand(MessageReceivedEvent e, String cmd, String[] args, String[] rawArgs) {
 		
-		AudioPlayer player = LavaWrapper.getInstance().getAudioPlayer(e.getGuild().getId());
+		AudioPlayer player = LavaWrapper.getInstance().getAudioPlayer(e.getGuild());
 		TrackScheduler scheduler = LavaWrapper.getInstance().getScheduler(player);
 		
 		switch(cmd.toLowerCase()){
@@ -35,6 +36,9 @@ public class MusicControlCmd implements CommandExecutor{
 			break;
 		case "skip":
 			this.skipCmd(e, player, scheduler);
+			break;
+		case "stop":
+			this.stopCmd(e, player, scheduler);
 			break;
 		}
 		
@@ -91,6 +95,18 @@ public class MusicControlCmd implements CommandExecutor{
 	
 	private void skipCmd(MessageReceivedEvent e, AudioPlayer player, TrackScheduler scheduler){
 		e.getChannel().sendMessage("Command coming soon, for now you can use forceskip.").queue();
+	}
+	
+	private void stopCmd(MessageReceivedEvent e, AudioPlayer player, TrackScheduler scheduler){
+		AudioManager am = ObsidianBot.getInstance().getGuild().getAudioManager();
+		if(!am.isConnected()){
+			e.getChannel().sendMessage("Already stopped.").queue();
+			return;
+		}
+		e.getChannel().sendTyping().queue();
+		scheduler.clearQueue();
+		am.closeAudioConnection();
+		e.getChannel().sendMessage("Stopped playing.").queue();
 	}
 
 }

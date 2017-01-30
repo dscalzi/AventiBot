@@ -17,6 +17,10 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import net.dv8tion.jda.core.events.Event;
+import net.dv8tion.jda.core.events.ShutdownEvent;
+import net.dv8tion.jda.core.hooks.EventListener;
+import net.dv8tion.jda.core.utils.SimpleLog;
 
 public class TerminalController implements Initializable {
 
@@ -46,6 +50,17 @@ public class TerminalController implements Initializable {
 				if(success){
 					launch_button.setVisible(false);
 					launch_button.setManaged(false);
+					ObsidianBot.getInstance().getJDA().addEventListener(new EventListener(){
+						@Override
+						public void onEvent(Event e){
+							if(e instanceof ShutdownEvent){
+								SimpleLog.getLog("Launcher").info("===================================");
+								SimpleLog.getLog("Launcher").info("ObsidianBot JDA has been shutdown..");
+								SimpleLog.getLog("Launcher").info("===================================");
+								terminate_button.setDisable(true);
+							}
+						}
+					});
 				}
 				else
 					launch_button.setDisable(false);
@@ -68,5 +83,5 @@ public class TerminalController implements Initializable {
 		System.setOut(ps);
 		System.setErr(ps);
 	}
-
+	
 }

@@ -39,7 +39,7 @@ public class PlayCmd implements CommandExecutor{
 		}
 		
 		
-		AudioPlayer player = LavaWrapper.getInstance().getAudioPlayer(targetChannel.getGuild().getId());
+		AudioPlayer player = LavaWrapper.getInstance().getAudioPlayer(targetChannel.getGuild());
 		if(currentChannel == null){
 			am.setSendingHandler(new AudioPlayerSendHandler(player));
 		}

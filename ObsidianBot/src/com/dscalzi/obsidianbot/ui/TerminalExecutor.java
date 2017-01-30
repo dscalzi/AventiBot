@@ -1,8 +1,6 @@
 package com.dscalzi.obsidianbot.ui;
 
-import java.io.File;
-import java.io.FileInputStream;
-
+import java.io.InputStream;
 import com.dscalzi.obsidianbot.BotStatus;
 import com.dscalzi.obsidianbot.ObsidianBot;
 import com.dscalzi.obsidianbot.music.LavaWrapper;
@@ -25,11 +23,10 @@ public class TerminalExecutor extends Application{
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		FXMLLoader loader = new FXMLLoader();
-		File f = new File(getClass().getResource("TerminalFXML.fxml").getPath());
 		
 		Scene root;
 		
-		try(FileInputStream fxmlStream = new FileInputStream(f)){
+		try(InputStream fxmlStream = getClass().getResourceAsStream("TerminalFXML.fxml")){
 			root = (Scene) loader.load(fxmlStream);
 		}
 		

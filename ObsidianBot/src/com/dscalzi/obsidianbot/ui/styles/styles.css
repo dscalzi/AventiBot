@@ -16,6 +16,10 @@
 	-fx-focus-color: #2d2835;
 }
 
+#nameText {
+	-fx-fill: white;
+}
+
 #leftpane {
 	-fx-background-color: #262626;
 	-fx-padding: 10 10 10 10;

@@ -15,8 +15,10 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.MessageBuilder;
+import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.core.managers.AudioManager;
 
 public class TrackScheduler extends AudioEventAdapter{
 
@@ -25,9 +27,12 @@ public class TrackScheduler extends AudioEventAdapter{
 	private final Queue<TrackMeta> queue;
 	private final AudioPlayer player;
 	
-	public TrackScheduler(AudioPlayer player){
+	private final Guild associatedGuild;
+	
+	public TrackScheduler(AudioPlayer player, Guild associatedGuild){
 		this.queue = new LinkedBlockingQueue<TrackMeta>();
 		this.player = player;
+		this.associatedGuild = associatedGuild;
 	}
 	
 	public boolean queue(TrackMeta meta){
@@ -112,7 +117,18 @@ public class TrackScheduler extends AudioEventAdapter{
 	public void onTrackEnd(AudioPlayer player, AudioTrack track, AudioTrackEndReason endReason) {
 		queue.poll();
 		
+		AudioManager am = associatedGuild.getAudioManager();
+		
+		if(am.isConnected() && am.getConnectedChannel().getMembers().size() == 1){
+			clearQueue();
+			am.closeAudioConnection();
+			return;
+		}
+		
 		if(!queue.isEmpty()) player.playTrack(queue.element().getTrack());
+		else {
+			am.closeAudioConnection();
+		}
 	}
 	
 	public Queue<TrackMeta> getQueue(){
@@ -146,6 +162,11 @@ public class TrackScheduler extends AudioEventAdapter{
 			d += meta.getTrack().getDuration();
 		}
 		return d;
+	}
+	
+	public void clearQueue(){
+		queue.clear();
+		player.stopTrack();
 	}
 	
 }

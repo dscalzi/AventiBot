@@ -24,7 +24,7 @@ public class PlaylistCmd implements CommandExecutor{
 	@Override
 	public boolean onCommand(MessageReceivedEvent e, String cmd, String[] args, String[] rawArgs) {
 		
-		AudioPlayer player = LavaWrapper.getInstance().getAudioPlayer(e.getGuild().getId());
+		AudioPlayer player = LavaWrapper.getInstance().getAudioPlayer(e.getGuild());
 		TrackScheduler scheduler = LavaWrapper.getInstance().getScheduler(player);
 		
 		Queue<TrackMeta> q = scheduler.getQueue();

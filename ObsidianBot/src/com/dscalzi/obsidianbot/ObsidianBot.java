@@ -14,6 +14,7 @@ import com.dscalzi.obsidianbot.commands.MusicControlCmd;
 import com.dscalzi.obsidianbot.commands.PlayCmd;
 import com.dscalzi.obsidianbot.commands.PlaylistCmd;
 import com.dscalzi.obsidianbot.commands.SayCmd;
+import com.dscalzi.obsidianbot.commands.ShutdownCommand;
 import com.dscalzi.obsidianbot.console.Console;
 import com.dscalzi.obsidianbot.music.LavaWrapper;
 
@@ -65,6 +66,7 @@ public class ObsidianBot {
 		this.registry.register("playlist", new PlaylistCmd());
 		this.registry.register("forceskip", mcc);
 		this.registry.register("pause", mcc);
+		this.registry.register("stop", mcc);
 		this.registry.register("resume", mcc);
 		this.registry.register("say", new SayCmd());
 		this.registry.register("help", new HelpCmd());
@@ -72,6 +74,7 @@ public class ObsidianBot {
 		this.registry.register("helloworld", new HelloWorldCmd());
 		this.registry.register("author", new AuthorCmd());
 		this.registry.register("clear", new ClearCmd());
+		this.registry.register("shutdown", new ShutdownCommand());
 	}
 	
 	private void registerListeners(){

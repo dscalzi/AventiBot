@@ -14,18 +14,20 @@ import com.sedmelluq.discord.lavaplayer.source.twitch.TwitchStreamAudioSourceMan
 import com.sedmelluq.discord.lavaplayer.source.vimeo.VimeoAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager;
 
+import net.dv8tion.jda.core.entities.Guild;
+
 public class LavaWrapper {
 
 	private static LavaWrapper instance;
 	private static boolean initialized;
 	
 	private final AudioPlayerManager playerManager;
-	private final Map<String, AudioPlayer> cache;
+	private final Map<Guild, AudioPlayer> cache;
 	private final Map<AudioPlayer, TrackScheduler> listenerCache;
 	
 	private LavaWrapper(){
 		playerManager = new DefaultAudioPlayerManager();
-		cache = new HashMap<String, AudioPlayer>();
+		cache = new HashMap<Guild, AudioPlayer>();
 		listenerCache = new HashMap<AudioPlayer, TrackScheduler>();
 		playerManager.registerSourceManager(new YoutubeAudioSourceManager());
 		playerManager.registerSourceManager(new SoundCloudAudioSourceManager());
@@ -54,12 +56,12 @@ public class LavaWrapper {
 		return playerManager;
 	}
 	
-	public AudioPlayer getAudioPlayer(String id){
+	public AudioPlayer getAudioPlayer(Guild id){
 		if(cache.containsKey(id))
 			return cache.get(id);
 		else {
 			AudioPlayer player = playerManager.createPlayer();
-			TrackScheduler trackScheduler = new TrackScheduler(player);
+			TrackScheduler trackScheduler = new TrackScheduler(player, id);
 			
 			player.addListener(trackScheduler);
 			

@@ -31,10 +31,9 @@
             <configuration>
               <transformers>
                 <transformer>
-                  <mainClass>com.dscalzi.obsidianbot.ui.MainGUI</mainClass>
+                  <mainClass>com.dscalzi.obsidianbot.ui.TerminalExecutor</mainClass>
                 </transformer>
               </transformers>
-              <minimizeJar>true</minimizeJar>
               <filters>
                 <filter>
                   <artifact>commons-logging:commons-logging</artifact>
@@ -43,60 +42,6 @@
                   </includes>
                 </filter>
               </filters>
-              <relocations>
-                <relocation>
-                  <pattern>net.dv8tion</pattern>
-                  <shadedPattern>lib.net.dv8tion</shadedPattern>
-                </relocation>
-                <relocation>
-                  <pattern>com.iwebpp</pattern>
-                  <shadedPattern>lib.com.iwebpp</shadedPattern>
-                </relocation>
-                <relocation>
-                  <pattern>com.mashape</pattern>
-                  <shadedPattern>lib.com.mashape</shadedPattern>
-                </relocation>
-                <relocation>
-                  <pattern>com.neovisionaries</pattern>
-                  <shadedPattern>lib.com.neovisionaries</shadedPattern>
-                </relocation>
-                <relocation>
-                  <pattern>com.sun</pattern>
-                  <shadedPattern>lib.com.sun</shadedPattern>
-                </relocation>
-                <relocation>
-                  <pattern>org.apache</pattern>
-                  <shadedPattern>lib.org.apache</shadedPattern>
-                </relocation>
-                <relocation>
-                  <pattern>org.json</pattern>
-                  <shadedPattern>lib.org.json</shadedPattern>
-                </relocation>
-                <relocation>
-                  <pattern>org.tritonus</pattern>
-                  <shadedPattern>lib.org.tritonus</shadedPattern>
-                </relocation>
-                <relocation>
-                  <pattern>natives</pattern>
-                  <shadedPattern>lib.tomp2p.natives</shadedPattern>
-                </relocation>
-                <relocation>
-                  <pattern>javax.sound.midi</pattern>
-                  <shadedPattern>lib.javax.sound.midi</shadedPattern>
-                </relocation>
-                <relocation>
-                  <pattern>javax.sound.sampled</pattern>
-                  <shadedPattern>lib.javax.sound.sampled</shadedPattern>
-                </relocation>
-                <relocation>
-                  <pattern>javazoom</pattern>
-                  <shadedPattern>lib.javazoom</shadedPattern>
-                </relocation>
-                <relocation>
-                  <pattern>tomp2p</pattern>
-                  <shadedPattern>lib.tomp2p</shadedPattern>
-                </relocation>
-              </relocations>
             </configuration>
           </execution>
         </executions>
