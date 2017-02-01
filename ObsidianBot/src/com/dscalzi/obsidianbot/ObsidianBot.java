@@ -1,5 +1,7 @@
 package com.dscalzi.obsidianbot;
 
+import java.io.File;
+
 import javax.security.auth.login.LoginException;
 import javax.xml.ws.http.HTTPException;
 
@@ -146,6 +148,11 @@ public class ObsidianBot {
 	
 	public String getId(){
 		return this.id;
+	}
+	
+	public static String getDataPath(){
+		String pth = ObsidianBot.class.getProtectionDomain().getCodeSource().getLocation().getPath().replace("/", File.separator);
+		return pth.substring(1, pth.lastIndexOf(File.separator));
 	}
 	
 }

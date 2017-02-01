@@ -24,12 +24,14 @@ import com.google.gson.stream.JsonWriter;
 
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.core.utils.SimpleLog;
 
 public final class PermissionUtil {
 	
 	private static final String ALLOWEDKEY = "allowedRoles";
 	private static final String BLACKLISTKEY = "blacklistedUsers";
 	private static final String GATEKEY = "requiresPermission";
+	private static final SimpleLog log = SimpleLog.getLog("PermissionUtil");
 	
 	private static final File permissionFile;
 
@@ -37,7 +39,7 @@ public final class PermissionUtil {
 	private static final Map<String, List<String>> blacklistMap;
 	
 	static {
-		permissionFile = new File(System.getProperty("user.dir"), "permissions.json");
+		permissionFile = new File(ObsidianBot.getDataPath(), "permissions.json");
 		permissionMap = new HashMap<String, List<String>>();
 		blacklistMap = new HashMap<String, List<String>>();
 	}
@@ -76,6 +78,7 @@ public final class PermissionUtil {
 	
 	public static void loadJson() throws FileNotFoundException, IOException {
 		if(!verifyFile()) return;
+		log.info("Using permission file located at " + permissionFile.getAbsolutePath());
 		JsonParser p = new JsonParser();
 		try(JsonReader file = new JsonReader(new FileReader(permissionFile))){
 			JsonObject result = null;
