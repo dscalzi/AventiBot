@@ -1,6 +1,9 @@
 package com.dscalzi.obsidianbot.commands;
 
 import java.awt.Color;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import com.dscalzi.obsidianbot.ObsidianBot;
@@ -16,7 +19,7 @@ import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.managers.AudioManager;
 
-public class MusicControlCmd implements CommandExecutor{
+public class CmdMusicControl implements CommandExecutor{
 	
 	@Override
 	public boolean onCommand(MessageReceivedEvent e, String cmd, String[] args, String[] rawArgs) {
@@ -107,6 +110,12 @@ public class MusicControlCmd implements CommandExecutor{
 		scheduler.clearQueue();
 		am.closeAudioConnection();
 		e.getChannel().sendMessage("Stopped playing.").queue();
+	}
+
+	@Override
+	public List<String> getNodes() {
+		return new ArrayList<String>(Arrays.asList("pause.command", "resume.command", "forceskip.command", 
+				"skip.command", "stop.command"));
 	}
 
 }

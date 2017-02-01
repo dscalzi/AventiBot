@@ -1,48 +1,26 @@
 package com.dscalzi.obsidianbot.commands;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 
 import com.dscalzi.obsidianbot.ObsidianBot;
-import com.dscalzi.obsidianbot.ObsidianRoles;
 import com.dscalzi.obsidianbot.cmdutil.CommandExecutor;
+import com.dscalzi.obsidianbot.cmdutil.PermissionUtil;
 import com.dscalzi.obsidianbot.console.Console.ConsoleUser;
 import com.dscalzi.obsidianbot.util.InputUtils;
 
 import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.MessageChannel;
-import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
-public class SayCmd implements CommandExecutor{
-
-	private final List<Role> allowedRoles;
-	
-	public SayCmd(){
-		allowedRoles = new ArrayList<Role>();
-		
-		/* Staff */
-		allowedRoles.add(ObsidianRoles.ADMIN.getRole());
-		allowedRoles.add(ObsidianRoles.DEVELOPER.getRole());
-		allowedRoles.add(ObsidianRoles.SEMI_ADMIN.getRole());
-		allowedRoles.add(ObsidianRoles.MODERATOR.getRole());
-		allowedRoles.add(ObsidianRoles.STEWARD.getRole());
-	}
+public class CmdSay implements CommandExecutor{
 	
 	@Override
 	public boolean onCommand(MessageReceivedEvent e, String cmd, String[] args, String[] rawArgs) {
 		
-		if(!(e.getAuthor() instanceof ConsoleUser)){
-			if(!ObsidianBot.getInstance().getGuild().isMember(e.getAuthor()))
-				return false;
-			
-			List<Role> userRoles = ObsidianBot.getInstance().getGuild().getMemberById(e.getAuthor().getId()).getRoles();
-			
-			if(Collections.disjoint(userRoles, allowedRoles))
-				return false;
-		}
+		if(!PermissionUtil.hasPermission(e.getAuthor(), "say.command")) return false;
 		
 		System.out.println("Got here");
 		
@@ -72,6 +50,11 @@ public class SayCmd implements CommandExecutor{
 		ch.sendMessage(message).queue();
 		
 		return true;
+	}
+
+	@Override
+	public List<String> getNodes() {
+		return new ArrayList<String>(Arrays.asList("say.command"));
 	}
 
 }

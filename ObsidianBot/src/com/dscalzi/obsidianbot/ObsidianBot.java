@@ -5,16 +5,17 @@ import javax.xml.ws.http.HTTPException;
 
 import com.dscalzi.obsidianbot.cmdutil.CommandListener;
 import com.dscalzi.obsidianbot.cmdutil.CommandRegistry;
-import com.dscalzi.obsidianbot.commands.AuthorCmd;
-import com.dscalzi.obsidianbot.commands.ClearCmd;
-import com.dscalzi.obsidianbot.commands.HelloWorldCmd;
-import com.dscalzi.obsidianbot.commands.HelpCmd;
-import com.dscalzi.obsidianbot.commands.IPCmd;
-import com.dscalzi.obsidianbot.commands.MusicControlCmd;
-import com.dscalzi.obsidianbot.commands.PlayCmd;
-import com.dscalzi.obsidianbot.commands.PlaylistCmd;
-import com.dscalzi.obsidianbot.commands.SayCmd;
-import com.dscalzi.obsidianbot.commands.ShutdownCommand;
+import com.dscalzi.obsidianbot.cmdutil.PermissionUtil;
+import com.dscalzi.obsidianbot.commands.CmdAuthor;
+import com.dscalzi.obsidianbot.commands.CmdClear;
+import com.dscalzi.obsidianbot.commands.CmdHelloWorld;
+import com.dscalzi.obsidianbot.commands.CmdHelp;
+import com.dscalzi.obsidianbot.commands.CmdIP;
+import com.dscalzi.obsidianbot.commands.CmdMusicControl;
+import com.dscalzi.obsidianbot.commands.CmdPlay;
+import com.dscalzi.obsidianbot.commands.CmdPlaylist;
+import com.dscalzi.obsidianbot.commands.CmdSay;
+import com.dscalzi.obsidianbot.commands.CmdShutdown;
 import com.dscalzi.obsidianbot.console.Console;
 import com.dscalzi.obsidianbot.music.LavaWrapper;
 
@@ -61,20 +62,20 @@ public class ObsidianBot {
 	}
 	
 	private void registerCommands(){
-		MusicControlCmd mcc = new MusicControlCmd();
-		this.registry.register("play", new PlayCmd());
-		this.registry.register("playlist", new PlaylistCmd());
+		CmdMusicControl mcc = new CmdMusicControl();
+		this.registry.register("play", new CmdPlay());
+		this.registry.register("playlist", new CmdPlaylist());
 		this.registry.register("forceskip", mcc);
 		this.registry.register("pause", mcc);
 		this.registry.register("stop", mcc);
 		this.registry.register("resume", mcc);
-		this.registry.register("say", new SayCmd());
-		this.registry.register("help", new HelpCmd());
-		this.registry.register("ip", new IPCmd());
-		this.registry.register("helloworld", new HelloWorldCmd());
-		this.registry.register("author", new AuthorCmd());
-		this.registry.register("clear", new ClearCmd());
-		this.registry.register("shutdown", new ShutdownCommand());
+		this.registry.register("say", new CmdSay());
+		this.registry.register("help", new CmdHelp());
+		this.registry.register("ip", new CmdIP());
+		this.registry.register("helloworld", new CmdHelloWorld());
+		this.registry.register("author", new CmdAuthor());
+		this.registry.register("clear", new CmdClear());
+		this.registry.register("shutdown", new CmdShutdown());
 	}
 	
 	private void registerListeners(){
@@ -89,6 +90,14 @@ public class ObsidianBot {
 			if(status == BotStatus.CONNECTED){
 				instance.registerCommands();
 				instance.registerListeners();
+				try{
+					PermissionUtil.loadJson();
+				} catch(Throwable t){
+					SimpleLog.getLog("ObsidianBot").fatal("Error occured loading permissions.. shutting down!");
+					t.printStackTrace();
+					ObsidianBot.getInstance().getJDA().shutdown(true);
+					LavaWrapper.getInstance().getAudioPlayerManager().shutdown();
+				}
 			}
 			return true;
 		}

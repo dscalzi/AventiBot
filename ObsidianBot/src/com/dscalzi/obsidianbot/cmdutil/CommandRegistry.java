@@ -30,6 +30,15 @@ public class CommandRegistry {
 		return Optional.empty();
 	}
 	
+	public List<String> getAllRegisteredNodes(){
+		List<String> a = new ArrayList<String>();
+		for(CommandExecutor e : registry.values()){
+			for(String s : e.getNodes())
+				a.add(s);
+		}
+		return a;
+	}
+	
 	public boolean isCommandRegistered(String cmd){
 		return registry.containsKey(cmd);
 	}

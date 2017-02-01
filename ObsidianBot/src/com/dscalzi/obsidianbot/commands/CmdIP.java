@@ -1,10 +1,14 @@
 package com.dscalzi.obsidianbot.commands;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import com.dscalzi.obsidianbot.cmdutil.CommandExecutor;
 
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
-public class IPCmd implements CommandExecutor{
+public class CmdIP implements CommandExecutor{
 
 	@Override
 	public boolean onCommand(MessageReceivedEvent e, String cmd, String[] args, String[] rawArgs) {
@@ -28,6 +32,11 @@ public class IPCmd implements CommandExecutor{
 			e.getAuthor().openPrivateChannel();
 		
 		e.getAuthor().getPrivateChannel().sendMessage(msg).queue();
+	}
+
+	@Override
+	public List<String> getNodes() {
+		return new ArrayList<String>(Arrays.asList("ip.command"));
 	}
 
 }

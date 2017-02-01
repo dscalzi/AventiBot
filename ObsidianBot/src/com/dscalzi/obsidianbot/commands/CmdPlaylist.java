@@ -19,7 +19,7 @@ import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.entities.MessageEmbed.Field;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
-public class PlaylistCmd implements CommandExecutor{
+public class CmdPlaylist implements CommandExecutor{
 
 	@Override
 	public boolean onCommand(MessageReceivedEvent e, String cmd, String[] args, String[] rawArgs) {
@@ -67,5 +67,12 @@ public class PlaylistCmd implements CommandExecutor{
 		
 		return true;
 	}
+
+	@Override
+	public List<String> getNodes() {
+		return new ArrayList<String>(Arrays.asList("playlist.command"));
+	}
+	
+	
 
 }

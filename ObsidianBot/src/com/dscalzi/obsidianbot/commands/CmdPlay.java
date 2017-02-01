@@ -1,5 +1,9 @@
 package com.dscalzi.obsidianbot.commands;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import com.dscalzi.obsidianbot.ObsidianBot;
 import com.dscalzi.obsidianbot.cmdutil.CommandExecutor;
 import com.dscalzi.obsidianbot.music.AudioPlayerSendHandler;
@@ -18,11 +22,11 @@ import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.managers.AudioManager;
 
-public class PlayCmd implements CommandExecutor{
+public class CmdPlay implements CommandExecutor{
 
 	private AudioManager am;
 	
-	public PlayCmd(){
+	public CmdPlay(){
 		this.am = ObsidianBot.getInstance().getGuild().getAudioManager();
 	}
 	
@@ -107,6 +111,11 @@ public class PlayCmd implements CommandExecutor{
 		}
 		
 		return null;
+	}
+
+	@Override
+	public List<String> getNodes() {
+		return new ArrayList<String>(Arrays.asList("play.command"));
 	}
 
 }
