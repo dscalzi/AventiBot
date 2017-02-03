@@ -31,10 +31,15 @@ public class CommandRegistry {
 	}
 	
 	public List<String> getAllRegisteredNodes(){
+		//Guard against multiple commands registered to a executor.
+		List<Class<? extends CommandExecutor>> clzz = new ArrayList<Class<? extends CommandExecutor>>();
 		List<String> a = new ArrayList<String>();
 		for(CommandExecutor e : registry.values()){
-			for(String s : e.getNodes())
-				a.add(s);
+			if(!clzz.contains(e.getClass())){
+				clzz.add(e.getClass());
+				for(String s : e.getNodes())
+					a.add(s);
+			}
 		}
 		return a;
 	}

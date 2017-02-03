@@ -33,6 +33,13 @@ public class CmdPlay implements CommandExecutor{
 	@Override
 	public boolean onCommand(MessageReceivedEvent e, String cmd, String[] args, String[] rawArgs) {
 		
+		String q = String.join(" ", args).trim();
+		
+		if(q.length() == 0) {
+			e.getChannel().sendMessage("Play what..? Don't waste my time.").queue();
+			return false;
+		}
+		
 		VoiceChannel currentChannel = am.isConnected() ? am.getConnectedChannel() : null;
 		
 		VoiceChannel targetChannel = voiceConnect(e.getAuthor());
@@ -46,13 +53,6 @@ public class CmdPlay implements CommandExecutor{
 		AudioPlayer player = LavaWrapper.getInstance().getAudioPlayer(targetChannel.getGuild());
 		if(currentChannel == null){
 			am.setSendingHandler(new AudioPlayerSendHandler(player));
-		}
-		
-		String q = String.join(" ", args).trim();
-		
-		if(q.length() == 0) {
-			e.getChannel().sendMessage("Play what..? Don't waste my time.").queue();
-			return false;
 		}
 		
 		LavaWrapper.getInstance().getAudioPlayerManager().loadItem(q, new AudioLoadResultHandler() {
