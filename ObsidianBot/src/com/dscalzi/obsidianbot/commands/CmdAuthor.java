@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.dscalzi.obsidianbot.ObsidianBot;
 import com.dscalzi.obsidianbot.cmdutil.CommandExecutor;
+import com.dscalzi.obsidianbot.cmdutil.PermissionUtil;
 
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
@@ -14,6 +15,8 @@ public class CmdAuthor implements CommandExecutor {
 
 	@Override
 	public boolean onCommand(MessageReceivedEvent e, String cmd, String[] args, String[] rawArgs) {
+		
+		if(!PermissionUtil.hasPermission(e.getAuthor(), "author.command")) return false;
 		
 		String author = ObsidianBot.getInstance().getJDA().getUserById("169197209630277642").getAsMention();
 		

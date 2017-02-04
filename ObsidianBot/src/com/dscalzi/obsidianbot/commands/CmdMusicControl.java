@@ -8,6 +8,7 @@ import java.util.Optional;
 
 import com.dscalzi.obsidianbot.ObsidianBot;
 import com.dscalzi.obsidianbot.cmdutil.CommandExecutor;
+import com.dscalzi.obsidianbot.cmdutil.PermissionUtil;
 import com.dscalzi.obsidianbot.music.LavaWrapper;
 import com.dscalzi.obsidianbot.music.TrackMeta;
 import com.dscalzi.obsidianbot.music.TrackScheduler;
@@ -49,6 +50,9 @@ public class CmdMusicControl implements CommandExecutor{
 	}
 	
 	private void pauseCmd(MessageReceivedEvent e, AudioPlayer player, TrackScheduler scheduler){
+		
+		if(!PermissionUtil.hasPermission(e.getAuthor(), "pause.command")) return;
+		
 		Optional<TrackMeta> otm = scheduler.getCurrent();
 		if(otm.isPresent()){
 			TrackMeta tm = otm.get();
@@ -67,6 +71,9 @@ public class CmdMusicControl implements CommandExecutor{
 	}
 	
 	private void resumeCmd(MessageReceivedEvent e, AudioPlayer player, TrackScheduler scheduler){
+		
+		if(!PermissionUtil.hasPermission(e.getAuthor(), "resume.command")) return;
+		
 		if(!player.isPaused()){
 			e.getChannel().sendMessage("The player is not paused.").queue();
 			return;
@@ -87,6 +94,9 @@ public class CmdMusicControl implements CommandExecutor{
 	}
 	
 	private void forceSkipCmd(MessageReceivedEvent e, AudioPlayer player, TrackScheduler scheduler){
+		
+		if(!PermissionUtil.hasPermission(e.getAuthor(), "forceskip.command")) return;
+		
 		Optional<TrackMeta> otm = scheduler.getCurrent();
 		if(otm.isPresent()){
 			TrackMeta tm = otm.get();
@@ -101,6 +111,9 @@ public class CmdMusicControl implements CommandExecutor{
 	}
 	
 	private void stopCmd(MessageReceivedEvent e, AudioPlayer player, TrackScheduler scheduler){
+		
+		if(!PermissionUtil.hasPermission(e.getAuthor(), "stop.command")) return;
+		
 		AudioManager am = ObsidianBot.getInstance().getGuild().getAudioManager();
 		if(!am.isConnected()){
 			e.getChannel().sendMessage("Already stopped.").queue();

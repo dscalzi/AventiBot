@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Queue;
 
 import com.dscalzi.obsidianbot.cmdutil.CommandExecutor;
+import com.dscalzi.obsidianbot.cmdutil.PermissionUtil;
 import com.dscalzi.obsidianbot.music.LavaWrapper;
 import com.dscalzi.obsidianbot.music.TrackMeta;
 import com.dscalzi.obsidianbot.music.TrackScheduler;
@@ -23,6 +24,8 @@ public class CmdPlaylist implements CommandExecutor{
 
 	@Override
 	public boolean onCommand(MessageReceivedEvent e, String cmd, String[] args, String[] rawArgs) {
+		
+		if(!PermissionUtil.hasPermission(e.getAuthor(), "playlist.command")) return false;
 		
 		AudioPlayer player = LavaWrapper.getInstance().getAudioPlayer(e.getGuild());
 		TrackScheduler scheduler = LavaWrapper.getInstance().getScheduler(player);

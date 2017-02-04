@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.dscalzi.obsidianbot.cmdutil.CommandExecutor;
+import com.dscalzi.obsidianbot.cmdutil.PermissionUtil;
 
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
@@ -12,7 +13,9 @@ public class CmdBlacklist implements CommandExecutor{
 	
 	@Override
 	public boolean onCommand(MessageReceivedEvent e, String cmd, String[] args, String[] rawArgs) {
-		// TODO Auto-generated method stub
+		
+		if(!PermissionUtil.hasPermission(e.getAuthor(), "blacklist.command")) return false;
+		
 		return false;
 	}
 	

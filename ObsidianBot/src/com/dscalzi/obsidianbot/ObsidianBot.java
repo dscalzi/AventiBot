@@ -16,6 +16,7 @@ import com.dscalzi.obsidianbot.commands.CmdIP;
 import com.dscalzi.obsidianbot.commands.CmdMusicControl;
 import com.dscalzi.obsidianbot.commands.CmdPlay;
 import com.dscalzi.obsidianbot.commands.CmdPlaylist;
+import com.dscalzi.obsidianbot.commands.CmdRoleId;
 import com.dscalzi.obsidianbot.commands.CmdSay;
 import com.dscalzi.obsidianbot.commands.CmdShutdown;
 import com.dscalzi.obsidianbot.console.Console;
@@ -78,6 +79,7 @@ public class ObsidianBot {
 		this.registry.register("author", new CmdAuthor());
 		this.registry.register("clear", new CmdClear());
 		this.registry.register("shutdown", new CmdShutdown());
+		this.registry.register("roleid", new CmdRoleId());
 	}
 	
 	private void registerListeners(){

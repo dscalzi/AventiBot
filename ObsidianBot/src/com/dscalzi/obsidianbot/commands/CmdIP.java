@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.dscalzi.obsidianbot.cmdutil.CommandExecutor;
+import com.dscalzi.obsidianbot.cmdutil.PermissionUtil;
 
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
@@ -12,6 +13,8 @@ public class CmdIP implements CommandExecutor{
 
 	@Override
 	public boolean onCommand(MessageReceivedEvent e, String cmd, String[] args, String[] rawArgs) {
+		
+		if(!PermissionUtil.hasPermission(e.getAuthor(), "ip.command")) return false;
 		
 		if(args.length > 0){
 			if(args[0].matches("^(?iu)(server|minecraft)")){

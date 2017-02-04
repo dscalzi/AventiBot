@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.dscalzi.obsidianbot.ObsidianBot;
 import com.dscalzi.obsidianbot.cmdutil.CommandExecutor;
+import com.dscalzi.obsidianbot.cmdutil.PermissionUtil;
 import com.dscalzi.obsidianbot.music.AudioPlayerSendHandler;
 import com.dscalzi.obsidianbot.music.LavaWrapper;
 import com.dscalzi.obsidianbot.music.TrackMeta;
@@ -32,6 +33,8 @@ public class CmdPlay implements CommandExecutor{
 	
 	@Override
 	public boolean onCommand(MessageReceivedEvent e, String cmd, String[] args, String[] rawArgs) {
+		
+		if(!PermissionUtil.hasPermission(e.getAuthor(), "play.command")) return false;
 		
 		String q = String.join(" ", args).trim();
 		
