@@ -68,6 +68,8 @@ public class LavaWrapper {
 			listenerCache.put(player, trackScheduler);
 			cache.put(id, player);
 			
+			id.getAudioManager().setSendingHandler(new AudioPlayerSendHandler(player));
+			
 			return player;
 		}
 	}

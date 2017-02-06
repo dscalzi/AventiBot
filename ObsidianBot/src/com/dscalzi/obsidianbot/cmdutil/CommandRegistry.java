@@ -1,11 +1,13 @@
 package com.dscalzi.obsidianbot.cmdutil;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.Set;
 
 public class CommandRegistry {
 
@@ -23,16 +25,11 @@ public class CommandRegistry {
 	}
 	
 	public Optional<CommandExecutor> getExecutor(String cmd){
-		if(registry.containsKey(cmd)){
-			return Optional.of(registry.get(cmd));
-		}
-		
-		return Optional.empty();
+		return registry.containsKey(cmd) ? Optional.of(registry.get(cmd)) : Optional.empty();
 	}
 	
 	public List<String> getAllRegisteredNodes(){
-		//Guard against multiple commands registered to a executor.
-		List<Class<? extends CommandExecutor>> clzz = new ArrayList<Class<? extends CommandExecutor>>();
+		Set<Class<? extends CommandExecutor>> clzz = new HashSet<Class<? extends CommandExecutor>>();
 		List<String> a = new ArrayList<String>();
 		for(CommandExecutor e : registry.values()){
 			if(!clzz.contains(e.getClass())){
@@ -48,11 +45,7 @@ public class CommandRegistry {
 		return registry.containsKey(cmd);
 	}
 	
-	public List<String> getRegisteredCommands(){
-		List<String> cmds = new ArrayList<String>();
-		for(Entry<String, CommandExecutor> entry : registry.entrySet()){
-			cmds.add(entry.getKey());
-		}
-		return cmds;
+	public Set<String> getRegisteredCommands(){
+		return Collections.unmodifiableSet(registry.keySet());
 	}
 }

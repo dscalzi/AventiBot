@@ -14,8 +14,6 @@ import com.dscalzi.obsidianbot.commands.CmdHelloWorld;
 import com.dscalzi.obsidianbot.commands.CmdHelp;
 import com.dscalzi.obsidianbot.commands.CmdIP;
 import com.dscalzi.obsidianbot.commands.CmdMusicControl;
-import com.dscalzi.obsidianbot.commands.CmdPlay;
-import com.dscalzi.obsidianbot.commands.CmdPlaylist;
 import com.dscalzi.obsidianbot.commands.CmdRoleId;
 import com.dscalzi.obsidianbot.commands.CmdSay;
 import com.dscalzi.obsidianbot.commands.CmdShutdown;
@@ -49,25 +47,41 @@ public class ObsidianBot {
 	}
 	
 	private JDA jda;
-	private Guild guild;
 	private Console console;
-	private String id;
 	private CommandRegistry registry;
 	
 	private ObsidianBot(){
 		this.registry = new CommandRegistry();
 		if(!this.connect()) return;
-		this.guild = jda.getGuildById(guildId);
 		this.console = new Console(jda);
 		((JDAImpl)jda).getPrivateChannelMap().put("consolepm", console.getUser().getPrivateChannel());
-		this.id = jda.getSelfUser().getId();
-		LavaWrapper.initialize();
+	}
+	
+	public static boolean launch(){
+		if(status == BotStatus.NULL) {
+			status = BotStatus.LAUNCHED;
+			instance = new ObsidianBot();
+			LavaWrapper.initialize();
+			if(status == BotStatus.CONNECTED){
+				instance.registerCommands();
+				instance.registerListeners();
+				try{
+					PermissionUtil.loadJson();
+				} catch(Throwable t){
+					SimpleLog.getLog("ObsidianBot").fatal("Error occured loading permissions.. shutting down!");
+					t.printStackTrace();
+					ObsidianBot.getInstance().shutdown();
+				}
+			}
+			return true;
+		}
+		return false;
 	}
 	
 	private void registerCommands(){
 		CmdMusicControl mcc = new CmdMusicControl();
-		this.registry.register("play", new CmdPlay());
-		this.registry.register("playlist", new CmdPlaylist());
+		this.registry.register("play", mcc);
+		this.registry.register("playlist", mcc);
 		this.registry.register("forceskip", mcc);
 		this.registry.register("pause", mcc);
 		this.registry.register("stop", mcc);
@@ -87,41 +101,6 @@ public class ObsidianBot {
 		jda.addEventListener(new CommandListener());
 	}
 	
-	public static boolean launch(){
-		if(status == BotStatus.NULL) {
-			status = BotStatus.LAUNCHED;
-			instance = new ObsidianBot();
-			if(status == BotStatus.CONNECTED){
-				instance.registerCommands();
-				instance.registerListeners();
-				try{
-					PermissionUtil.loadJson();
-				} catch(Throwable t){
-					SimpleLog.getLog("ObsidianBot").fatal("Error occured loading permissions.. shutting down!");
-					t.printStackTrace();
-					ObsidianBot.getInstance().getJDA().shutdown(true);
-					LavaWrapper.getInstance().getAudioPlayerManager().shutdown();
-				}
-			}
-			return true;
-		}
-		return false;
-	}
-	
-	public static ObsidianBot getInstance(){
-		return ObsidianBot.instance;
-	}
-	
-	public static BotStatus getStatus(){
-		return ObsidianBot.status;
-	}
-	
-	public void shutdown(){
-		ObsidianBot.status = BotStatus.SHUTDOWN;
-		jda.shutdown(true);
-		LavaWrapper.getInstance().getAudioPlayerManager().shutdown();
-	}
-	
 	public boolean connect(){
 		try {
 			jda = new JDABuilder(AccountType.BOT)
@@ -138,6 +117,21 @@ public class ObsidianBot {
 		return true;
 	}
 	
+	public void shutdown(){
+		ObsidianBot.status = BotStatus.SHUTDOWN;
+		jda.shutdown(true);
+		LavaWrapper.getInstance().getAudioPlayerManager().shutdown();
+	}
+	
+	public static ObsidianBot getInstance(){
+		return ObsidianBot.instance;
+	}
+	
+	public static BotStatus getStatus(){
+		return ObsidianBot.status;
+	}
+	
+	
 	public CommandRegistry getCommandRegistry(){
 		return this.registry;
 	}
@@ -151,11 +145,11 @@ public class ObsidianBot {
 	}
 	
 	public Guild getGuild(){
-		return this.guild;
+		return this.jda.getGuildById(guildId);
 	}
 	
 	public String getId(){
-		return this.id;
+		return this.jda.getSelfUser().getId();
 	}
 	
 	public static String getDataPath(){

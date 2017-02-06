@@ -26,7 +26,7 @@ public class CommandLine {
 					return;
 				
 				if(ObsidianBot.getStatus() == BotStatus.SHUTDOWN){
-					LOG.info("ObsidianBot has been shutdown, no further commands will be recieved.");
+					LOG.info("ObsidianBot has been shutdown, no further commands will be received.");
 				} else if(ObsidianBot.getStatus() != BotStatus.CONNECTED){
 					LOG.info("Please launch ObsidianBot to use the command line!");
 				} else {
