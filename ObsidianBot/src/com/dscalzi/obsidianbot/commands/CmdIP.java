@@ -31,10 +31,8 @@ public class CmdIP implements CommandExecutor{
 		
 		String msg = "Connect to the server using the IP ```hub.obsidiancraft.com```";
 		
-		if(!e.getAuthor().hasPrivateChannel())
-			e.getAuthor().openPrivateChannel();
 		
-		e.getAuthor().getPrivateChannel().sendMessage(msg).queue();
+		e.getAuthor().openPrivateChannel().queue(pc -> pc.sendMessage(msg).queue());
 	}
 
 	@Override

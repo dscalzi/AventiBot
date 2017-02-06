@@ -116,6 +116,12 @@ public class ObsidianBot {
 		return ObsidianBot.status;
 	}
 	
+	public void shutdown(){
+		ObsidianBot.status = BotStatus.SHUTDOWN;
+		jda.shutdown(true);
+		LavaWrapper.getInstance().getAudioPlayerManager().shutdown();
+	}
+	
 	public boolean connect(){
 		try {
 			jda = new JDABuilder(AccountType.BOT)

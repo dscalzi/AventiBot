@@ -8,8 +8,6 @@ import com.dscalzi.obsidianbot.BotStatus;
 import com.dscalzi.obsidianbot.ObsidianBot;
 import com.dscalzi.obsidianbot.cmdutil.CommandExecutor;
 import com.dscalzi.obsidianbot.cmdutil.PermissionUtil;
-import com.dscalzi.obsidianbot.music.LavaWrapper;
-
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 public class CmdShutdown implements CommandExecutor{
@@ -23,8 +21,7 @@ public class CmdShutdown implements CommandExecutor{
 		
 		try {
 			if(ObsidianBot.getStatus() == BotStatus.CONNECTED){
-				ObsidianBot.getInstance().getJDA().shutdown(true);
-				LavaWrapper.getInstance().getAudioPlayerManager().shutdown();
+				ObsidianBot.getInstance().shutdown();
 			}
 		} catch (Exception ex){
 			//Shutdown

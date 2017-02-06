@@ -11,6 +11,10 @@ public enum BotStatus {
 	 */
 	LAUNCHED(),
 	/**
+	 * Bot is shutdown (was signaled to shutdown JDA and release bindings).
+	 */
+	SHUTDOWN(),
+	/**
 	 * Bot has not yet been launched.
 	 */
 	NULL();

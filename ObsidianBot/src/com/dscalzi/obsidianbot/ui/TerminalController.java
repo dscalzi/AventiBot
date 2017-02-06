@@ -1,5 +1,6 @@
 package com.dscalzi.obsidianbot.ui;
 
+import java.io.IOException;
 import java.io.PrintStream;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -8,8 +9,6 @@ import com.dscalzi.obsidianbot.BotStatus;
 import com.dscalzi.obsidianbot.ObsidianBot;
 import com.dscalzi.obsidianbot.console.CommandLine;
 import com.dscalzi.obsidianbot.console.CommandLog;
-import com.dscalzi.obsidianbot.music.LavaWrapper;
-
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -29,6 +28,8 @@ public class TerminalController implements Initializable {
 	
 	@FXML private TextArea console_log;
 	@FXML private TextField commandline;
+	
+	private CommandLog console;
 	
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
@@ -54,10 +55,18 @@ public class TerminalController implements Initializable {
 						@Override
 						public void onEvent(Event e){
 							if(e instanceof ShutdownEvent){
+								SimpleLog log = SimpleLog.getLog("Launcher");
 								SimpleLog.getLog("Launcher").info("===================================");
 								SimpleLog.getLog("Launcher").info("ObsidianBot JDA has been shutdown..");
 								SimpleLog.getLog("Launcher").info("===================================");
 								terminate_button.setDisable(true);
+								log.info("Releasing log file - no more output will be logged.");
+								try {
+									console.closeLogger();
+								} catch (IOException e1) {
+									log.fatal("Error while releasing log file:");
+									e1.printStackTrace();
+								}
 							}
 						}
 					});
@@ -70,15 +79,14 @@ public class TerminalController implements Initializable {
 	
 	@FXML
 	private void handleTerminateButton(ActionEvent e){
-		ObsidianBot.getInstance().getJDA().shutdown(true);
-		LavaWrapper.getInstance().getAudioPlayerManager().shutdown();
+		ObsidianBot.getInstance().shutdown();
 		terminate_button.setDisable(true);
 	}
 	
 	private void setupTerminal(){
 		@SuppressWarnings("unused")
 		CommandLine cl = new CommandLine(commandline);
-		CommandLog console = new CommandLog(console_log);
+		console = new CommandLog(console_log);
 		PrintStream ps = new PrintStream(console, true);
 		System.setOut(ps);
 		System.setErr(ps);

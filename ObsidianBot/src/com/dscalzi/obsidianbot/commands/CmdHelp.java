@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import com.dscalzi.obsidianbot.ObsidianBot;
 import com.dscalzi.obsidianbot.cmdutil.CommandExecutor;
 import com.dscalzi.obsidianbot.cmdutil.PermissionUtil;
 
@@ -17,11 +16,9 @@ public class CmdHelp implements CommandExecutor{
 		
 		if(!PermissionUtil.hasPermission(e.getAuthor(), "help.command")) return false;
 		
-		String sender = e.getAuthor().getId();
-		
 		String msg = "Help message coming soon!";
 		
-		ObsidianBot.getInstance().getJDA().getUserById(sender).getPrivateChannel().sendMessage(msg).queue();
+		e.getAuthor().openPrivateChannel().queue((pc) -> pc.sendMessage(msg).queue());
 		
 		return true;
 	}

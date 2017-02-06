@@ -76,6 +76,34 @@ public final class PermissionUtil {
 		return blacklistMap.get(node);
 	}
 	
+	//Untested - will be implemented as command in future commit.
+	public static boolean blacklistUser(User u, String node) throws FileNotFoundException, IOException{
+		List<String> blacklisted = blacklistMap.get(node);
+		if(blacklisted.contains(u.getId())) return false;
+		blacklisted.add(u.getId());
+		blacklistMap.put(node, blacklisted);
+		
+		JsonParser p = new JsonParser();
+		try(JsonReader file = new JsonReader(new FileReader(permissionFile))){
+			JsonObject result = null;
+			JsonElement parsed = p.parse(file);
+			if(parsed.isJsonObject()){
+				result = parsed.getAsJsonObject();
+				JsonObject section = result.get(node).getAsJsonObject();
+				JsonArray arr = section.get(PermissionUtil.BLACKLISTKEY).getAsJsonArray();
+				arr.add(u.getId());
+			}
+			
+			Gson g = new GsonBuilder().setPrettyPrinting().create();
+			try(JsonWriter writer = g.newJsonWriter(new FileWriter(permissionFile))){
+				g.toJson(result, writer);
+			}
+			
+		}
+		
+		return true;
+	}
+	
 	public static void loadJson() throws FileNotFoundException, IOException {
 		if(!verifyFile()) return;
 		log.info("Using permission file located at " + permissionFile.getAbsolutePath());

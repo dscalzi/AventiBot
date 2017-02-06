@@ -22,10 +22,12 @@ public class CommandLine {
 		this.node = node;
 		this.node.setOnKeyPressed((e) -> {
 			if(e.getCode().equals(KeyCode.ENTER)){
-				if(node.getText().equals(""))
+				if(node.getText() == null || node.getText().isEmpty())
 					return;
 				
-				if(ObsidianBot.getStatus() != BotStatus.CONNECTED){
+				if(ObsidianBot.getStatus() == BotStatus.SHUTDOWN){
+					LOG.info("ObsidianBot has been shutdown, no further commands will be recieved.");
+				} else if(ObsidianBot.getStatus() != BotStatus.CONNECTED){
 					LOG.info("Please launch ObsidianBot to use the command line!");
 				} else {
 					JDA api = ObsidianBot.getInstance().getJDA();

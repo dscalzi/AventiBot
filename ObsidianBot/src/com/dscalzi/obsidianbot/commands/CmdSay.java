@@ -22,8 +22,6 @@ public class CmdSay implements CommandExecutor{
 		
 		if(!PermissionUtil.hasPermission(e.getAuthor(), "say.command")) return false;
 		
-		System.out.println("Got here");
-		
 		if(args.length == 0){
 			e.getChannel().sendMessage("Why are you trying to get me to say nothing.. lol").queue();
 			return false;

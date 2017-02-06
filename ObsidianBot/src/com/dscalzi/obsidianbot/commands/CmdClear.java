@@ -2,9 +2,12 @@ package com.dscalzi.obsidianbot.commands;
 
 import java.time.Instant;
 import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 import com.dscalzi.obsidianbot.cmdutil.CommandExecutor;
 import com.dscalzi.obsidianbot.cmdutil.PermissionUtil;
@@ -114,9 +117,10 @@ public class CmdClear implements CommandExecutor{
 			String successPt1 = "";
 			String successPt2 = "";
 			if(deleted > 0){
+				DateTimeFormatter format = DateTimeFormatter.RFC_1123_DATE_TIME.withLocale(Locale.US).withZone(ZoneOffset.UTC);
 				successPt1 = "Clearing " + deleted + " message" + (deleted == 1 ? "" : "s");
 				successPt2 = " that " + (deleted == 1 ? "has" : "have") + " been sent " + ((target != null) ? "by " + target.getAsMention() + " " : "") + 
-						"since " +Instant.ofEpochSecond(threshold).toString() + " GMT.";
+						"since " + format.format(Instant.ofEpochSecond(threshold)) + ".";
 			} else {
 				successPt1 = "No messages were deleted";
 			}
