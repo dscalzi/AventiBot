@@ -76,13 +76,22 @@ public final class PermissionUtil {
 		return blacklistMap.get(node);
 	}
 	
+	public static boolean blacklistUser(User u, String node){
+		return false;
+	}
+	
+	public static boolean unBlacklistUser(User u, String node){
+		return false;
+	}
+	
 	//Untested - will be implemented as command in future commit.
-	public static boolean blacklistUser(User u, String node) throws FileNotFoundException, IOException{
+	public static boolean writeBlacklistChange(User u, String node, boolean add) throws FileNotFoundException, IOException{
 		List<String> blacklisted = blacklistMap.get(node);
 		if(blacklisted.contains(u.getId())) return false;
 		blacklisted.add(u.getId());
 		blacklistMap.put(node, blacklisted);
 		
+		boolean totalResult = false;
 		JsonParser p = new JsonParser();
 		try(JsonReader file = new JsonReader(new FileReader(permissionFile))){
 			JsonObject result = null;
@@ -101,7 +110,7 @@ public final class PermissionUtil {
 			
 		}
 		
-		return true;
+		return totalResult;
 	}
 	
 	public static void loadJson() throws FileNotFoundException, IOException {

@@ -16,7 +16,7 @@ public class MessageListener extends ListenerAdapter{
 				new Timer().schedule(new TimerTask() {
 					public void run(){
 						if(m != null){
-							m.deleteMessage().queue();
+							m.delete().queue();
 						}
 					}
 				}, 3000);

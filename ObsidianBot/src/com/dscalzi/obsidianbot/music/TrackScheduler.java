@@ -54,7 +54,7 @@ public class TrackScheduler extends AudioEventAdapter{
 				waitTime += t.getDuration();
 			}
 			
-			EmbedBuilder eb = new EmbedBuilder().setTitle("Added " + meta.getTrack().getInfo().title + " to the Queue.");
+			EmbedBuilder eb = new EmbedBuilder().setTitle("Added " + meta.getTrack().getInfo().title + " to the Queue.", null);
 			eb.setColor(Color.decode("#df4efc"));
 			eb.setDescription("Runtime: " + TimeUtils.formatTrackDuration(meta.getTrack().getDuration()));
 			eb.setFooter("Estimated Wait Time: " + TimeUtils.formatTrackDuration(waitTime), "http://i.imgur.com/Y3rbhFt.png");
@@ -86,7 +86,7 @@ public class TrackScheduler extends AudioEventAdapter{
 			queue.add(m);
 		}
 		
-		EmbedBuilder eb = new EmbedBuilder().setTitle("Added Playlist " + playlist.getName() + " to the Queue.");
+		EmbedBuilder eb = new EmbedBuilder().setTitle("Added Playlist " + playlist.getName() + " to the Queue.", null);
 		eb.setColor(Color.decode("#df4efc"));
 		eb.setDescription("Collective length: " + TimeUtils.formatTrackDuration(playlistLength));
 		if(waitTime > 0) eb.setFooter("Estimated Wait Time: " + TimeUtils.formatTrackDuration(waitTime), "http://i.imgur.com/Y3rbhFt.png");
@@ -103,7 +103,7 @@ public class TrackScheduler extends AudioEventAdapter{
 		current.getRequestedIn().sendTyping().queue();
 		EmbedBuilder eb = new EmbedBuilder();
 		eb.setColor(Color.decode("#df4efc"));
-		eb.setTitle("Now playing " + current.getTrack().getInfo().title);
+		eb.setTitle("Now playing " + current.getTrack().getInfo().title, null);
 		Iterator<TrackMeta> it = queue.iterator();
 		it.next();
 		if(it.hasNext())

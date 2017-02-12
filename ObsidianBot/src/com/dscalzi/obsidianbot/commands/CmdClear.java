@@ -99,7 +99,7 @@ public class CmdClear implements CommandExecutor{
 		}
 		
 		if(e.getChannel().equals(channel))
-			e.getMessage().deleteMessage();
+			e.getMessage().delete();
 		
 		this.clear(limit, threshold, channel, target, e.getChannel());
 		
@@ -148,7 +148,7 @@ public class CmdClear implements CommandExecutor{
 				break;
 			if(target != null && !msg.getAuthor().equals(target))
 				continue;
-			msg.deleteMessage().queue();
+			msg.delete().queue();
 			++deleted;
 			history.remove(i);
 			--i;

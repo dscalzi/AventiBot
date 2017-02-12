@@ -50,9 +50,9 @@ public class CmdMusicControl implements CommandExecutor{
 					new Timer().schedule(new TimerTask() {
 						public void run(){
 							if(m != null)
-								m.deleteMessage().queue();
+								m.delete().queue();
 							if(e.getMessage() != null)
-								e.getMessage().deleteMessage().queue();
+								e.getMessage().delete().queue();
 						}
 					}, 5000);
 				});
@@ -159,7 +159,7 @@ public class CmdMusicControl implements CommandExecutor{
 		PageList<TrackMeta> tracks = new PageList<TrackMeta>(queued);
 		int page;
 		try{
-			page= args.length == 0 ? 0 : Integer.parseInt(args[0])-1;
+			page = args.length == 0 ? 0 : Integer.parseInt(args[0])-1;
 		} catch (NumberFormatException ex){
 			page = 0;
 		}
@@ -196,7 +196,7 @@ public class CmdMusicControl implements CommandExecutor{
 				return;
 			}
 			e.getChannel().sendTyping().queue();
-			EmbedBuilder eb = new EmbedBuilder().setTitle("Paused " + tm.getTrack().getInfo().title).setColor(Color.decode("#df4efc"));
+			EmbedBuilder eb = new EmbedBuilder().setTitle("Paused " + tm.getTrack().getInfo().title, null).setColor(Color.decode("#df4efc"));
 			eb.setDescription("Song Duration: (" + TimeUtils.formatTrackDuration(tm.getTrack().getPosition()) + "/" + TimeUtils.formatTrackDuration(tm.getTrack().getDuration()) + ")");
 			eb.setFooter("Use " + ObsidianBot.commandPrefix + "resume to unpause.", "http://i.imgur.com/ccX8Pvi.png");
 			e.getChannel().sendMessage(new MessageBuilder().setEmbed(eb.build()).build()).queue();
@@ -217,7 +217,7 @@ public class CmdMusicControl implements CommandExecutor{
 		if(otm.isPresent()){
 			TrackMeta tm = otm.get();
 			e.getChannel().sendTyping().queue();
-			EmbedBuilder eb = new EmbedBuilder().setTitle("Resumed " + tm.getTrack().getInfo().title).setColor(Color.decode("#df4efc"));
+			EmbedBuilder eb = new EmbedBuilder().setTitle("Resumed " + tm.getTrack().getInfo().title, null).setColor(Color.decode("#df4efc"));
 			eb.setDescription("Song Duration: (" + TimeUtils.formatTrackDuration(tm.getTrack().getPosition()) + "/" + TimeUtils.formatTrackDuration(tm.getTrack().getDuration()) + ")");
 			eb.setFooter("Use " + ObsidianBot.commandPrefix + "pause to pause.", "http://i.imgur.com/ccX8Pvi.png");
 			e.getChannel().sendMessage(new MessageBuilder().setEmbed(eb.build()).build()).queue();

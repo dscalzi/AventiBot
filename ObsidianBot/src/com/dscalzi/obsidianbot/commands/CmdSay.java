@@ -43,7 +43,7 @@ public class CmdSay implements CommandExecutor{
 		}
 		
 		if(!(e.getMessage().isFromType(ChannelType.PRIVATE)))
-			e.getMessage().deleteMessage().queue();
+			e.getMessage().delete().queue();
 		
 		ch.sendMessage(message).queue();
 		
