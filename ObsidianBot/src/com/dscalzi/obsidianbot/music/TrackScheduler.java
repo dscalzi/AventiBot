@@ -41,24 +41,25 @@ public class TrackScheduler extends AudioEventAdapter{
 		queue.add(meta);
 		if(player.getPlayingTrack() == null) player.playTrack(meta.getTrack());
 		else {
-			meta.getRequestedIn().sendTyping().queue();
-			long waitTime = 0;
-			Iterator<TrackMeta> it = queue.iterator();
-			while(it.hasNext()){
-				AudioTrack t = it.next().getTrack();
-				if(t.equals(player.getPlayingTrack())){
-					waitTime += t.getDuration() - t.getPosition();
-					continue;
+			meta.getRequestedIn().sendTyping().queue((v) -> {
+				long waitTime = 0;
+				Iterator<TrackMeta> it = queue.iterator();
+				while(it.hasNext()){
+					AudioTrack t = it.next().getTrack();
+					if(t.equals(player.getPlayingTrack())){
+						waitTime += t.getDuration() - t.getPosition();
+						continue;
+					}
+					if(meta.getTrack().equals(t)) break;
+					waitTime += t.getDuration();
 				}
-				if(meta.getTrack().equals(t)) break;
-				waitTime += t.getDuration();
-			}
-			
-			EmbedBuilder eb = new EmbedBuilder().setTitle("Added " + meta.getTrack().getInfo().title + " to the Queue.", null);
-			eb.setColor(Color.decode("#df4efc"));
-			eb.setDescription("Runtime: " + TimeUtils.formatTrackDuration(meta.getTrack().getDuration()));
-			eb.setFooter("Estimated Wait Time: " + TimeUtils.formatTrackDuration(waitTime), "http://i.imgur.com/Y3rbhFt.png");
-			meta.getRequestedIn().sendMessage(new MessageBuilder().setEmbed(eb.build()).build()).queue();
+				
+				EmbedBuilder eb = new EmbedBuilder().setTitle("Added " + meta.getTrack().getInfo().title + " to the Queue.", null);
+				eb.setColor(Color.decode("#df4efc"));
+				eb.setDescription("Runtime: " + TimeUtils.formatTrackDuration(meta.getTrack().getDuration()));
+				eb.setFooter("Estimated Wait Time: " + TimeUtils.formatTrackDuration(waitTime), "http://i.imgur.com/Y3rbhFt.png");
+				meta.getRequestedIn().sendMessage(new MessageBuilder().setEmbed(eb.build()).build()).queue();
+			});
 		}
 		return true;
 	}
@@ -66,33 +67,35 @@ public class TrackScheduler extends AudioEventAdapter{
 	public boolean queuePlaylist(AudioPlaylist playlist, User user, MessageChannel requestedIn){
 		if(playlist == null || playlist.getTracks() == null || playlist.getTracks().size() < 1) return false;
 		
-		long waitTime = 0;
-		long playlistLength = 0;
-		
-		Iterator<TrackMeta> it = queue.iterator();
-		while(it.hasNext()){
-			AudioTrack t = it.next().getTrack();
-			if(t.equals(player.getPlayingTrack())){
-				waitTime += t.getDuration() - t.getPosition();
-				continue;
+		requestedIn.sendTyping().queue((v) -> {
+			
+			long waitTime = 0;
+			long playlistLength = 0;
+			
+			Iterator<TrackMeta> it = queue.iterator();
+			while(it.hasNext()){
+				AudioTrack t = it.next().getTrack();
+				if(t.equals(player.getPlayingTrack())){
+					waitTime += t.getDuration() - t.getPosition();
+					continue;
+				}
 			}
-		}
-		
-		requestedIn.sendTyping().queue();
-		
-		for(int i=0; i<Math.min(PLAYLIST_LIMIT, playlist.getTracks().size()); ++i){
-			TrackMeta m = new TrackMeta(playlist.getTracks().get(i), user, requestedIn);
-			playlistLength += playlist.getTracks().get(i).getDuration();
-			queue.add(m);
-		}
-		
-		EmbedBuilder eb = new EmbedBuilder().setTitle("Added Playlist " + playlist.getName() + " to the Queue.", null);
-		eb.setColor(Color.decode("#df4efc"));
-		eb.setDescription("Collective length: " + TimeUtils.formatTrackDuration(playlistLength));
-		if(waitTime > 0) eb.setFooter("Estimated Wait Time: " + TimeUtils.formatTrackDuration(waitTime), "http://i.imgur.com/Y3rbhFt.png");
-		requestedIn.sendMessage(new MessageBuilder().setEmbed(eb.build()).build()).queue();
-		
-		if(player.getPlayingTrack() == null) player.playTrack(queue.element().getTrack());
+			
+			for(int i=0; i<Math.min(PLAYLIST_LIMIT, playlist.getTracks().size()); ++i){
+				TrackMeta m = new TrackMeta(playlist.getTracks().get(i), user, requestedIn);
+				playlistLength += playlist.getTracks().get(i).getDuration();
+				queue.add(m);
+			}
+			
+			EmbedBuilder eb = new EmbedBuilder().setTitle("Added Playlist " + playlist.getName() + " to the Queue.", null);
+			eb.setColor(Color.decode("#df4efc"));
+			eb.setDescription("Collective length: " + TimeUtils.formatTrackDuration(playlistLength));
+			if(waitTime > 0) eb.setFooter("Estimated Wait Time: " + TimeUtils.formatTrackDuration(waitTime), "http://i.imgur.com/Y3rbhFt.png");
+			requestedIn.sendMessage(new MessageBuilder().setEmbed(eb.build()).build()).queue();
+			
+			if(player.getPlayingTrack() == null) player.playTrack(queue.element().getTrack());
+			
+		});
 		
 		return true;
 	}
@@ -100,16 +103,18 @@ public class TrackScheduler extends AudioEventAdapter{
 	@Override
 	public void onTrackStart(AudioPlayer player, AudioTrack track) {
 		TrackMeta current = queue.element();
-		current.getRequestedIn().sendTyping().queue();
-		EmbedBuilder eb = new EmbedBuilder();
-		eb.setColor(Color.decode("#df4efc"));
-		eb.setTitle("Now playing " + current.getTrack().getInfo().title, null);
-		Iterator<TrackMeta> it = queue.iterator();
-		it.next();
-		if(it.hasNext())
-			eb.setFooter("Up next: " + it.next().getTrack().getInfo().title, "http://i.imgur.com/nEw5Gsk.png");
-		eb.setDescription("Runtime " + TimeUtils.formatTrackDuration(current.getTrack().getDuration()));
-		current.getRequestedIn().sendMessage(new MessageBuilder().setEmbed(eb.build()).build()).queue();
+		current.getRequestedIn().sendTyping().queue((v) -> {
+			EmbedBuilder eb = new EmbedBuilder();
+			eb.setColor(Color.decode("#df4efc"));
+			eb.setTitle("Now playing " + current.getTrack().getInfo().title, null);
+			Iterator<TrackMeta> it = queue.iterator();
+			it.next();
+			if(it.hasNext())
+				eb.setFooter("Up next: " + it.next().getTrack().getInfo().title, "http://i.imgur.com/nEw5Gsk.png");
+			eb.setDescription("Requested by " + current.getRequester().getAsMention() + "\n" +
+				"| Runtime " + TimeUtils.formatTrackDuration(current.getTrack().getDuration()));
+			current.getRequestedIn().sendMessage(new MessageBuilder().setEmbed(eb.build()).build()).queue();
+		});
 		
 	}
 	

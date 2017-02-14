@@ -1,6 +1,7 @@
 package com.dscalzi.obsidianbot.commands;
 
 import java.awt.Color;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -104,10 +105,15 @@ public class CmdMusicControl implements CommandExecutor{
 		}
 		
 		if(args.length > 0 && !args[0].equals("ytsearch:")){
-			String[] temp = new String[args.length+1];
-			System.arraycopy(args, 0, temp, 1, args.length);
-			temp[0] = "ytsearch:";
-			args = temp;
+			try{
+				URI test = URI.create(args[0]);
+				test.toURL();
+			} catch (Throwable t){
+				String[] temp = new String[args.length+1];
+				System.arraycopy(args, 0, temp, 1, args.length);
+				temp[0] = "ytsearch:";
+				args = temp;
+			}
 		}
 		
 		LavaWrapper.getInstance().getAudioPlayerManager().loadItem(String.join(" ", args).trim(), 
@@ -125,11 +131,9 @@ public class CmdMusicControl implements CommandExecutor{
 						scheduler.queue(new TrackMeta(playlist.getTracks().get(0), e.getAuthor(), e.getChannel()));
 					}
 				} else if(playlist.getSelectedTrack() != null){
-					e.getChannel().sendMessage("Processing playlist.. one moment please.").queue();
 					scheduler.queuePlaylist(playlist, e.getAuthor(), e.getChannel());
 					scheduler.queue(new TrackMeta(playlist.getSelectedTrack(), e.getAuthor(), e.getChannel()));
 				} else {
-					e.getChannel().sendMessage("Processing playlist.. one moment please.").queue();
 					scheduler.queuePlaylist(playlist, e.getAuthor(), e.getChannel());
 				}
 			}
@@ -159,36 +163,39 @@ public class CmdMusicControl implements CommandExecutor{
 			return;
 		}
 		
-		e.getChannel().sendTyping().queue();
-		List<TrackMeta> queued = new ArrayList<TrackMeta>(Arrays.asList(q.toArray(new TrackMeta[0])));
-		TrackMeta current = queued.get(0);
-		queued.remove(0);
-		PageList<TrackMeta> tracks = new PageList<TrackMeta>(queued);
-		int page;
-		try{
-			page = args.length == 0 ? 0 : Integer.parseInt(args[0])-1;
-		} catch (NumberFormatException ex){
-			page = 0;
-		}
-		if(page > tracks.size()-1 || page < 0){
-			e.getChannel().sendMessage("Page not found, sorry.").queue();
-			return;
-		}
+		e.getChannel().sendTyping().queue((v) -> {
+			List<TrackMeta> queued = new ArrayList<TrackMeta>(Arrays.asList(q.toArray(new TrackMeta[0])));
+			TrackMeta current = queued.get(0);
+			queued.remove(0);
+			PageList<TrackMeta> tracks = new PageList<TrackMeta>(queued);
+			int page;
+			try{
+				page = args.length == 0 ? 0 : Integer.parseInt(args[0])-1;
+			} catch (NumberFormatException ex){
+				page = 0;
+			}
+			if((page > tracks.size()-1 && tracks.size() != 0) || page < 0){
+				e.getChannel().sendMessage("Page not found, sorry.").queue();
+				return;
+			}
+			
+			EmbedBuilder eb = new EmbedBuilder().setColor(Color.decode("#df4efc"));
+			eb.addField(new Field("Currently Playing:", current.getTrack().getInfo().title + " (" + TimeUtils.formatTrackDuration(current.getTrack().getPosition()) + "/" + TimeUtils.formatTrackDuration(current.getTrack().getDuration()) + ")", false));
+			String desc = "";
+			
+			if(tracks.size() != 0)
+				for(int i=0; i<tracks.getPage(page).size(); ++i){
+					TrackMeta t = tracks.getPage(page).get(i);
+					desc += "\n" + (i+1+5*page) + ") " + t.getTrack().getInfo().title + " (" + TimeUtils.formatTrackDuration(t.getTrack().getDuration()) + ")";
+				}
+			
+			if(desc.length() > 0) eb.addField(new Field("Up Next:", desc, false));
+			eb.setFooter("Playlist Length " + TimeUtils.formatTrackDuration(scheduler.getPlaylistDuration()) + (tracks.size() > 0 ? " | Page " + (page+1) + " of " + tracks.size(): ""), "http://i.imgur.com/Y3rbhFt.png");
+			
+			
+			e.getChannel().sendMessage(new MessageBuilder().setEmbed(eb.build()).build()).queue();
+		});
 		
-		EmbedBuilder eb = new EmbedBuilder().setColor(Color.decode("#df4efc"));
-		eb.addField(new Field("Currently Playing:", current.getTrack().getInfo().title + " (" + TimeUtils.formatTrackDuration(current.getTrack().getPosition()) + "/" + TimeUtils.formatTrackDuration(current.getTrack().getDuration()) + ")", false));
-		String desc = "";
-		
-		for(int i=0; i<tracks.getPage(page).size(); ++i){
-			TrackMeta t = tracks.getPage(page).get(i);
-			desc += "\n" + (i+1+5*page) + ") " + t.getTrack().getInfo().title + " (" + TimeUtils.formatTrackDuration(t.getTrack().getDuration()) + ")";
-		}
-		
-		if(desc.length() > 0) eb.addField(new Field("Up Next:", desc, false));
-		eb.setFooter("Playlist Length " + TimeUtils.formatTrackDuration(scheduler.getPlaylistDuration()) + (tracks.size() > 0 ? " | Page " + (page+1) + " of " + tracks.size(): ""), "http://i.imgur.com/Y3rbhFt.png");
-		
-		
-		e.getChannel().sendMessage(new MessageBuilder().setEmbed(eb.build()).build()).queue();;
 	}
 	
 	private void cmdPause(MessageReceivedEvent e, AudioPlayer player, TrackScheduler scheduler){
@@ -202,12 +209,13 @@ public class CmdMusicControl implements CommandExecutor{
 				e.getChannel().sendMessage("The player is already paused.").queue();
 				return;
 			}
-			e.getChannel().sendTyping().queue();
-			EmbedBuilder eb = new EmbedBuilder().setTitle("Paused " + tm.getTrack().getInfo().title, null).setColor(Color.decode("#df4efc"));
-			eb.setDescription("Song Duration: (" + TimeUtils.formatTrackDuration(tm.getTrack().getPosition()) + "/" + TimeUtils.formatTrackDuration(tm.getTrack().getDuration()) + ")");
-			eb.setFooter("Use " + ObsidianBot.commandPrefix + "resume to unpause.", "http://i.imgur.com/ccX8Pvi.png");
-			e.getChannel().sendMessage(new MessageBuilder().setEmbed(eb.build()).build()).queue();
-			player.setPaused(true);
+			e.getChannel().sendTyping().queue((v) -> {
+				EmbedBuilder eb = new EmbedBuilder().setTitle("Paused " + tm.getTrack().getInfo().title, null).setColor(Color.decode("#df4efc"));
+				eb.setDescription("Song Duration: (" + TimeUtils.formatTrackDuration(tm.getTrack().getPosition()) + "/" + TimeUtils.formatTrackDuration(tm.getTrack().getDuration()) + ")");
+				eb.setFooter("Use " + ObsidianBot.commandPrefix + "resume to unpause.", "http://i.imgur.com/ccX8Pvi.png");
+				e.getChannel().sendMessage(new MessageBuilder().setEmbed(eb.build()).build()).queue();
+				player.setPaused(true);
+			});
 		} else
 			e.getChannel().sendMessage("Nothing is currently playing.").queue();
 	}
@@ -223,12 +231,13 @@ public class CmdMusicControl implements CommandExecutor{
 		Optional<TrackMeta> otm = scheduler.getCurrent();
 		if(otm.isPresent()){
 			TrackMeta tm = otm.get();
-			e.getChannel().sendTyping().queue();
-			EmbedBuilder eb = new EmbedBuilder().setTitle("Resumed " + tm.getTrack().getInfo().title, null).setColor(Color.decode("#df4efc"));
-			eb.setDescription("Song Duration: (" + TimeUtils.formatTrackDuration(tm.getTrack().getPosition()) + "/" + TimeUtils.formatTrackDuration(tm.getTrack().getDuration()) + ")");
-			eb.setFooter("Use " + ObsidianBot.commandPrefix + "pause to pause.", "http://i.imgur.com/ccX8Pvi.png");
-			e.getChannel().sendMessage(new MessageBuilder().setEmbed(eb.build()).build()).queue();
-			player.setPaused(false);
+			e.getChannel().sendTyping().queue((v) -> {
+				EmbedBuilder eb = new EmbedBuilder().setTitle("Resumed " + tm.getTrack().getInfo().title, null).setColor(Color.decode("#df4efc"));
+				eb.setDescription("Song Duration: (" + TimeUtils.formatTrackDuration(tm.getTrack().getPosition()) + "/" + TimeUtils.formatTrackDuration(tm.getTrack().getDuration()) + ")");
+				eb.setFooter("Use " + ObsidianBot.commandPrefix + "pause to pause.", "http://i.imgur.com/ccX8Pvi.png");
+				e.getChannel().sendMessage(new MessageBuilder().setEmbed(eb.build()).build()).queue();
+				player.setPaused(false);
+			});
 		} else {
 			e.getChannel().sendMessage("Player resumed.").queue();
 			player.setPaused(false);
@@ -261,10 +270,11 @@ public class CmdMusicControl implements CommandExecutor{
 			e.getChannel().sendMessage("Already stopped.").queue();
 			return;
 		}
-		e.getChannel().sendTyping().queue();
-		scheduler.clearQueue();
-		am.closeAudioConnection();
-		e.getChannel().sendMessage("Stopped playing.").queue();
+		e.getChannel().sendTyping().queue((v) -> {
+			scheduler.clearQueue();
+			am.closeAudioConnection();
+			e.getChannel().sendMessage("Stopped playing.").queue();
+		});
 	}
 	
 	private VoiceChannel connectWithUser(Member member, Guild g){
