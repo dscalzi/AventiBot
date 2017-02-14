@@ -103,6 +103,13 @@ public class CmdMusicControl implements CommandExecutor{
 			return;
 		}
 		
+		if(args.length > 0 && !args[0].equals("ytsearch:")){
+			String[] temp = new String[args.length+1];
+			System.arraycopy(args, 0, temp, 1, args.length);
+			temp[0] = "ytsearch:";
+			args = temp;
+		}
+		
 		LavaWrapper.getInstance().getAudioPlayerManager().loadItem(String.join(" ", args).trim(), 
 				new AudioLoadResultHandler() {
 
