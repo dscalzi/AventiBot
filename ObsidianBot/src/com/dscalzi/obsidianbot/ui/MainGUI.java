@@ -147,7 +147,7 @@ public class MainGUI extends Application{
 		
 		
 		primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("styles/avatar.png")));
-		primaryStage.setTitle("ObsidianBot Launcher");
+		primaryStage.setTitle("ImperialBot Launcher");
 		primaryStage.setScene(scene);
 		primaryStage.show();
 		

@@ -29,7 +29,7 @@ public class CmdClear implements CommandExecutor{
 	@Override
 	public boolean onCommand(MessageReceivedEvent e, String cmd, String[] args, String[] rawArgs) {
 		
-		if(!PermissionUtil.hasPermission(e.getAuthor(), "clear.command")) return false;
+		if(!PermissionUtil.hasPermission(e.getAuthor(), e.getGuild(), "clear.command")) return false;
 		
 		if(processing){
 			e.getChannel().sendMessage("I'm currently clearing out a channel, try again later!").queue();

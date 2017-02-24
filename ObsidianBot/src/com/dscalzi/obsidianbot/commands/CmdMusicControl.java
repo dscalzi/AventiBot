@@ -44,7 +44,7 @@ public class CmdMusicControl implements CommandExecutor{
 			return false;
 		}
 		
-		if(e.getGuild() != null && e.getGuild().equals(ObsidianBot.getInstance().getGuild())){
+		if(e.getGuild() != null){
 			String cname = e.getChannel().getName().toLowerCase();
 			if(!e.getChannel().getId().equals("229380785646469127") && !cname.contains("music") && !cname.contains("debug")){
 				e.getChannel().sendMessage("Don't be an asshole, use this command in " + e.getGuild().getTextChannelById("229380785646469127").getAsMention() + ".").queue((m) -> {
@@ -92,7 +92,7 @@ public class CmdMusicControl implements CommandExecutor{
 	}
 	
 	private void cmdPlay(MessageReceivedEvent e, AudioPlayer player, TrackScheduler scheduler, String[] args){
-		if(!PermissionUtil.hasPermission(e.getAuthor(), "play.command")) return;
+		if(!PermissionUtil.hasPermission(e.getAuthor(), e.getGuild(), "play.command")) return;
 		
 		if(args.length == 0) {
 			e.getChannel().sendMessage("Play what..? Don't waste my time.").queue();
@@ -155,7 +155,7 @@ public class CmdMusicControl implements CommandExecutor{
 	}
 	
 	private void cmdPlaylist(MessageReceivedEvent e, AudioPlayer player, TrackScheduler scheduler, String[] args){
-		if(!PermissionUtil.hasPermission(e.getAuthor(), "playlist.command")) return;
+		if(!PermissionUtil.hasPermission(e.getAuthor(), e.getGuild(), "playlist.command")) return;
 		
 		Queue<TrackMeta> q = scheduler.getQueue();
 		if(q.isEmpty()){
@@ -200,7 +200,7 @@ public class CmdMusicControl implements CommandExecutor{
 	
 	private void cmdPause(MessageReceivedEvent e, AudioPlayer player, TrackScheduler scheduler){
 		
-		if(!PermissionUtil.hasPermission(e.getAuthor(), "pause.command")) return;
+		if(!PermissionUtil.hasPermission(e.getAuthor(), e.getGuild(), "pause.command")) return;
 		
 		Optional<TrackMeta> otm = scheduler.getCurrent();
 		if(otm.isPresent()){
@@ -222,7 +222,7 @@ public class CmdMusicControl implements CommandExecutor{
 	
 	private void cmdResume(MessageReceivedEvent e, AudioPlayer player, TrackScheduler scheduler){
 		
-		if(!PermissionUtil.hasPermission(e.getAuthor(), "resume.command")) return;
+		if(!PermissionUtil.hasPermission(e.getAuthor(), e.getGuild(), "resume.command")) return;
 		
 		if(!player.isPaused()){
 			e.getChannel().sendMessage("The player is not paused.").queue();
@@ -246,7 +246,7 @@ public class CmdMusicControl implements CommandExecutor{
 	
 	private void cmdForceSkip(MessageReceivedEvent e, AudioPlayer player, TrackScheduler scheduler){
 		
-		if(!PermissionUtil.hasPermission(e.getAuthor(), "forceskip.command")) return;
+		if(!PermissionUtil.hasPermission(e.getAuthor(), e.getGuild(), "forceskip.command")) return;
 		
 		Optional<TrackMeta> otm = scheduler.getCurrent();
 		if(otm.isPresent()){
@@ -263,9 +263,9 @@ public class CmdMusicControl implements CommandExecutor{
 	
 	private void cmdStop(MessageReceivedEvent e, AudioPlayer player, TrackScheduler scheduler){
 		
-		if(!PermissionUtil.hasPermission(e.getAuthor(), "stop.command")) return;
+		if(!PermissionUtil.hasPermission(e.getAuthor(), e.getGuild(), "stop.command")) return;
 		
-		AudioManager am = ObsidianBot.getInstance().getGuild().getAudioManager();
+		AudioManager am = e.getGuild().getAudioManager();
 		if(!am.isConnected()){
 			e.getChannel().sendMessage("Already stopped.").queue();
 			return;

@@ -7,7 +7,8 @@
 }
 
 #console_log .content {
-	-fx-background-color: #2d2835;
+	/* #2d2835 */
+	-fx-background-color: #340f0f;
 	-fx-background-radius: 0em;
 }
 

@@ -7,10 +7,9 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.dscalzi.obsidianbot.ObsidianBot;
 import com.dscalzi.obsidianbot.cmdutil.CommandExecutor;
 import com.dscalzi.obsidianbot.cmdutil.PermissionUtil;
-import com.dscalzi.obsidianbot.console.Console.ConsoleUser;
+import com.dscalzi.obsidianbot.console.ConsoleUser;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.Guild;
@@ -23,9 +22,14 @@ public class CmdRoleId implements CommandExecutor{
 	@Override
 	public boolean onCommand(MessageReceivedEvent e, String cmd, String[] args, String[] rawArgs) {
 		
-		if(!PermissionUtil.hasPermission(e.getAuthor(), "roleid.command")) return false;
+		if(!PermissionUtil.hasPermission(e.getAuthor(), e.getGuild(), "roleid.command")) return false;
 		
-		Guild tg = e.getChannelType().equals(ChannelType.PRIVATE) ? ObsidianBot.getInstance().getGuild() : e.getGuild();
+		if(e.getChannelType().equals(ChannelType.PRIVATE)){
+			e.getPrivateChannel().sendMessage("You must use this command in a guild.");
+			return false;
+		}
+			
+		Guild tg = e.getGuild();
 		
 		if(args.length == 0){
 			e.getChannel().sendMessage("Please give me one or more ranks to look up.").queue();

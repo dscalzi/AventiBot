@@ -16,7 +16,7 @@ public class CmdAuthor implements CommandExecutor {
 	@Override
 	public boolean onCommand(MessageReceivedEvent e, String cmd, String[] args, String[] rawArgs) {
 		
-		if(!PermissionUtil.hasPermission(e.getAuthor(), "author.command")) return false;
+		if(!PermissionUtil.hasPermission(e.getAuthor(), e.getGuild(), "author.command", true)) return false;
 		
 		String author = ObsidianBot.getInstance().getJDA().getUserById("169197209630277642").getAsMention();
 		

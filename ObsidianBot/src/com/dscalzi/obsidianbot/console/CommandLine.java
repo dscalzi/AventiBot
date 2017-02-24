@@ -31,13 +31,13 @@ public class CommandLine {
 					LOG.info("Please launch ObsidianBot to use the command line!");
 				} else {
 					JDA api = ObsidianBot.getInstance().getJDA();
-					Console console = ObsidianBot.getInstance().getConsole();
+					ConsoleUser console = ObsidianBot.getInstance().getConsole();
 					
 					LOG.info(node.getText());
 					
 					MessageImpl m = new MessageImpl("console", ((JDAImpl)api).getPrivateChannelById("consolepm"), false);
 					m.setContent(node.getText());
-					m.setAuthor(console.getUser());
+					m.setAuthor(console);
 					MessageReceivedEvent mre = new MessageReceivedEvent(api, -1, m);
 					CommandDispatcher.dispatchCommand(mre, CommandDispatcher.parseMessage(mre));
 				}

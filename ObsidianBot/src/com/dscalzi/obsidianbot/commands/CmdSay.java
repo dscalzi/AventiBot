@@ -7,7 +7,7 @@ import java.util.List;
 import com.dscalzi.obsidianbot.ObsidianBot;
 import com.dscalzi.obsidianbot.cmdutil.CommandExecutor;
 import com.dscalzi.obsidianbot.cmdutil.PermissionUtil;
-import com.dscalzi.obsidianbot.console.Console.ConsoleUser;
+import com.dscalzi.obsidianbot.console.ConsoleUser;
 import com.dscalzi.obsidianbot.util.InputUtils;
 
 import net.dv8tion.jda.core.MessageBuilder;
@@ -20,7 +20,7 @@ public class CmdSay implements CommandExecutor{
 	@Override
 	public boolean onCommand(MessageReceivedEvent e, String cmd, String[] args, String[] rawArgs) {
 		
-		if(!PermissionUtil.hasPermission(e.getAuthor(), "say.command")) return false;
+		if(!PermissionUtil.hasPermission(e.getAuthor(), e.getGuild(), "say.command")) return false;
 		
 		if(args.length == 0){
 			e.getChannel().sendMessage("Why are you trying to get me to say nothing.. lol").queue();
@@ -35,7 +35,7 @@ public class CmdSay implements CommandExecutor{
 		
 		if(ch == null) {
 			if(e.getAuthor() instanceof ConsoleUser)
-				ch = ObsidianBot.getInstance().getJDA().getTextChannelById("211524927831015424");
+				ch = e.getGuild().getPublicChannel();
 			else if(e.isFromType(ChannelType.PRIVATE))
 				ch = e.getPrivateChannel();
 			else

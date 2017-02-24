@@ -14,11 +14,11 @@
 	<HBox id="body">
 		<VBox id="leftpane" alignment="top_center">
 			<StackPane id="infoBox" alignment="top_center">
-				<Text id="nameText" text="ObsidianBot &#10; Created by Daniel Scalzi"  textAlignment="center"/>
+				<Text id="nameText" text="ImperialBot &#10; Created by Daniel Scalzi"  textAlignment="center"/>
 			</StackPane>
 			<StackPane id="spacer" VBox.vgrow="ALWAYS"/>
 			<VBox id="leftpaneButtom" alignment="bottom_center">
-				<Button fx:id="launch_button" text="Launch ObsidianBot" onAction="#handleLaunchButton"/>
+				<Button fx:id="launch_button" text="Launch ImperialBot" onAction="#handleLaunchButton"/>
 				<Button fx:id="terminate_button" text="End Process" onAction="#handleTerminateButton" visible="${!launch_button.visible}" managed="${!launch_button.managed}"/>
 			</VBox>
 		</VBox>

@@ -46,7 +46,7 @@ public class TerminalExecutor extends Application{
 		
 		
 		primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("styles/avatar.png")));
-		primaryStage.setTitle("ObsidianBot Launcher");
+		primaryStage.setTitle("ImperialBot Launcher");
 		primaryStage.setScene(root);
 		primaryStage.show();
 		

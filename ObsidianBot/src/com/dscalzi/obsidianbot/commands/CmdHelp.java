@@ -14,7 +14,7 @@ public class CmdHelp implements CommandExecutor{
 	@Override
 	public boolean onCommand(MessageReceivedEvent e, String cmd, String[] args, String[] rawArgs) {
 		
-		if(!PermissionUtil.hasPermission(e.getAuthor(), "help.command")) return false;
+		if(!PermissionUtil.hasPermission(e.getAuthor(), e.getGuild(), "help.command", true)) return false;
 		
 		String msg = "Help message coming soon!";
 		

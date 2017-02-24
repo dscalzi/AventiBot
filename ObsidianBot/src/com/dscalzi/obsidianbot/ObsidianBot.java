@@ -9,22 +9,21 @@ import com.dscalzi.obsidianbot.cmdutil.CommandListener;
 import com.dscalzi.obsidianbot.cmdutil.CommandRegistry;
 import com.dscalzi.obsidianbot.cmdutil.PermissionUtil;
 import com.dscalzi.obsidianbot.commands.CmdAuthor;
+import com.dscalzi.obsidianbot.commands.CmdBlacklist;
 import com.dscalzi.obsidianbot.commands.CmdClear;
 import com.dscalzi.obsidianbot.commands.CmdHelloWorld;
 import com.dscalzi.obsidianbot.commands.CmdHelp;
-import com.dscalzi.obsidianbot.commands.CmdIP;
 import com.dscalzi.obsidianbot.commands.CmdMusicControl;
 import com.dscalzi.obsidianbot.commands.CmdRoleId;
 import com.dscalzi.obsidianbot.commands.CmdSay;
 import com.dscalzi.obsidianbot.commands.CmdShutdown;
-import com.dscalzi.obsidianbot.console.Console;
+import com.dscalzi.obsidianbot.console.ConsoleUser;
 import com.dscalzi.obsidianbot.music.LavaWrapper;
 
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
 import net.dv8tion.jda.core.entities.Game.GameType;
-import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.impl.GameImpl;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
@@ -34,27 +33,26 @@ public class ObsidianBot {
 	
 	private static final String token;
 	public static final String commandPrefix;
-	public static final String guildId;
 	
 	private static BotStatus status;
 	private static ObsidianBot instance;
 	
 	static {
 		commandPrefix = "--";
-		token = "MjMxOTA2OTY2MzA0MTk0NTYx.CtjFKQ.Y5nPGpJwQy5kVSLfra-01dvD-_A";
-		guildId = "211524927831015424";
+		//token = "MjMxOTA2OTY2MzA0MTk0NTYx.CtjFKQ.Y5nPGpJwQy5kVSLfra-01dvD-_A";
+		token = "MjMxOTA2OTY2MzA0MTk0NTYx.C5FcMQ.AnCpNadk33r9eGczmOV6SX5QfOw";
 		status = BotStatus.NULL;
 	}
 	
 	private JDA jda;
-	private Console console;
+	private ConsoleUser console;
 	private CommandRegistry registry;
 	
 	private ObsidianBot(){
 		this.registry = new CommandRegistry();
 		if(!this.connect()) return;
-		this.console = new Console(jda);
-		((JDAImpl)jda).getPrivateChannelMap().put("consolepm", console.getUser().getPrivateChannel());
+		this.console = ConsoleUser.build(jda);
+		((JDAImpl)jda).getPrivateChannelMap().put("consolepm", console.getPrivateChannel());
 	}
 	
 	public static boolean launch(){
@@ -88,16 +86,16 @@ public class ObsidianBot {
 		this.registry.register("resume", mcc);
 		this.registry.register("say", new CmdSay());
 		this.registry.register("help", new CmdHelp());
-		this.registry.register("ip", new CmdIP());
 		this.registry.register("helloworld", new CmdHelloWorld());
 		this.registry.register("author", new CmdAuthor());
 		this.registry.register("clear", new CmdClear());
 		this.registry.register("shutdown", new CmdShutdown());
 		this.registry.register("roleid", new CmdRoleId());
+		this.registry.register("blacklist", new CmdBlacklist());
+		this.registry.register("unblacklist", new CmdBlacklist());
 	}
 	
 	private void registerListeners(){
-		//jda.addEventListener(new MessageListener());
 		jda.addEventListener(new CommandListener());
 	}
 	
@@ -136,16 +134,12 @@ public class ObsidianBot {
 		return this.registry;
 	}
 	
-	public Console getConsole(){
+	public ConsoleUser getConsole(){
 		return this.console;
 	}
 	
 	public JDA getJDA(){
 		return this.jda;
-	}
-	
-	public Guild getGuild(){
-		return this.jda.getGuildById(guildId);
 	}
 	
 	public String getId(){
