@@ -1,10 +1,8 @@
 package com.dscalzi.obsidianbot.cmdutil;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -28,14 +26,14 @@ public class CommandRegistry {
 		return registry.containsKey(cmd) ? Optional.of(registry.get(cmd)) : Optional.empty();
 	}
 	
-	public List<String> getAllRegisteredNodes(){
+	public Set<PermissionNode> getAllRegisteredNodes(){
 		Set<Class<? extends CommandExecutor>> clzz = new HashSet<Class<? extends CommandExecutor>>();
-		List<String> a = new ArrayList<String>();
+		Set<PermissionNode> a = new HashSet<PermissionNode>();
 		for(CommandExecutor e : registry.values()){
 			if(!clzz.contains(e.getClass())){
 				clzz.add(e.getClass());
-				for(String s : e.getNodes())
-					a.add(s);
+				for(PermissionNode pn : e.getNodes())
+					a.add(pn);
 			}
 		}
 		return a;

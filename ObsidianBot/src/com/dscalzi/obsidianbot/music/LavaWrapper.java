@@ -23,12 +23,12 @@ public class LavaWrapper {
 	
 	private final AudioPlayerManager playerManager;
 	private final Map<Guild, AudioPlayer> cache;
-	private final Map<AudioPlayer, TrackScheduler> listenerCache;
+	private final Map<Guild, TrackScheduler> listenerCache;
 	
 	private LavaWrapper(){
 		playerManager = new DefaultAudioPlayerManager();
 		cache = new HashMap<Guild, AudioPlayer>();
-		listenerCache = new HashMap<AudioPlayer, TrackScheduler>();
+		listenerCache = new HashMap<Guild, TrackScheduler>();
 		playerManager.registerSourceManager(new YoutubeAudioSourceManager());
 		playerManager.registerSourceManager(new SoundCloudAudioSourceManager());
 		playerManager.registerSourceManager(new BandcampAudioSourceManager());
@@ -65,7 +65,7 @@ public class LavaWrapper {
 			
 			player.addListener(trackScheduler);
 			
-			listenerCache.put(player, trackScheduler);
+			listenerCache.put(id, trackScheduler);
 			cache.put(id, player);
 			
 			id.getAudioManager().setSendingHandler(new AudioPlayerSendHandler(player));
@@ -74,8 +74,8 @@ public class LavaWrapper {
 		}
 	}
 	
-	public TrackScheduler getScheduler(AudioPlayer player){
-		return listenerCache.get(player);
+	public TrackScheduler getScheduler(Guild id){
+		return listenerCache.get(id);
 	}
 	
 }

@@ -1,12 +1,14 @@
 package com.dscalzi.obsidianbot.commands;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import com.dscalzi.obsidianbot.ObsidianBot;
 import com.dscalzi.obsidianbot.cmdutil.CommandExecutor;
+import com.dscalzi.obsidianbot.cmdutil.PermissionNode;
 import com.dscalzi.obsidianbot.cmdutil.PermissionUtil;
+import com.dscalzi.obsidianbot.cmdutil.PermissionNode.NodeType;
 import com.dscalzi.obsidianbot.console.ConsoleUser;
 import com.dscalzi.obsidianbot.util.InputUtils;
 
@@ -17,10 +19,20 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 public class CmdSay implements CommandExecutor{
 	
+	private final PermissionNode permSay = PermissionNode.get(NodeType.COMMAND, "say");
+	
+	public final Set<PermissionNode> nodes;
+	
+	public CmdSay(){
+		nodes = new HashSet<PermissionNode>(Arrays.asList(
+					permSay
+				));
+	}
+	
 	@Override
 	public boolean onCommand(MessageReceivedEvent e, String cmd, String[] args, String[] rawArgs) {
 		
-		if(!PermissionUtil.hasPermission(e.getAuthor(), e.getGuild(), "say.command")) return false;
+		if(!PermissionUtil.hasPermission(e.getAuthor(), permSay, e.getGuild())) return false;
 		
 		if(args.length == 0){
 			e.getChannel().sendMessage("Why are you trying to get me to say nothing.. lol").queue();
@@ -28,6 +40,13 @@ public class CmdSay implements CommandExecutor{
 		}
 		
 		MessageChannel ch = (args.length > 0) ? InputUtils.parseChannel(e.getMessage(), args[0]) : null;
+		
+		if(ch != null){
+			if(!e.getGuild().getTextChannels().contains(ch)){
+				e.getChannel().sendMessage("I cannot message other guilds for you, sorry!").queue();
+				return false;
+			}
+		}
 		
 		String message = e.getMessage().getRawContent().substring((ch == null) ? (ObsidianBot.commandPrefix + cmd).length() : e.getMessage().getRawContent().indexOf(rawArgs[0]) + rawArgs[0].length());
 		MessageBuilder mb = new MessageBuilder();
@@ -51,8 +70,8 @@ public class CmdSay implements CommandExecutor{
 	}
 
 	@Override
-	public List<String> getNodes() {
-		return new ArrayList<String>(Arrays.asList("say.command"));
+	public Set<PermissionNode> getNodes() {
+		return nodes;
 	}
 
 }

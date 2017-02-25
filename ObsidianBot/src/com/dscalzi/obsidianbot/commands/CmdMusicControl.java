@@ -4,15 +4,19 @@ import java.awt.Color;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Queue;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import com.dscalzi.obsidianbot.ObsidianBot;
 import com.dscalzi.obsidianbot.cmdutil.CommandExecutor;
+import com.dscalzi.obsidianbot.cmdutil.PermissionNode;
 import com.dscalzi.obsidianbot.cmdutil.PermissionUtil;
+import com.dscalzi.obsidianbot.cmdutil.PermissionNode.NodeType;
 import com.dscalzi.obsidianbot.music.LavaWrapper;
 import com.dscalzi.obsidianbot.music.TrackMeta;
 import com.dscalzi.obsidianbot.music.TrackScheduler;
@@ -35,6 +39,20 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.managers.AudioManager;
 
 public class CmdMusicControl implements CommandExecutor{
+	
+	public final Set<PermissionNode> nodes;
+	
+	public CmdMusicControl(){
+		nodes = new HashSet<PermissionNode>(Arrays.asList(
+					permForceSkip,
+					permPause,
+					permPlay,
+					permPlaylist,
+					permResume,
+					permSkip,
+					permStop
+				));
+	}
 	
 	@Override
 	public boolean onCommand(MessageReceivedEvent e, String cmd, String[] args, String[] rawArgs) {
@@ -62,7 +80,7 @@ public class CmdMusicControl implements CommandExecutor{
 		}
 		
 		AudioPlayer player = LavaWrapper.getInstance().getAudioPlayer(e.getGuild());
-		TrackScheduler scheduler = LavaWrapper.getInstance().getScheduler(player);
+		TrackScheduler scheduler = LavaWrapper.getInstance().getScheduler(e.getGuild());
 		
 		switch(cmd.toLowerCase()){
 		case "play":
@@ -91,8 +109,9 @@ public class CmdMusicControl implements CommandExecutor{
 		return false;
 	}
 	
+	private final PermissionNode permPlay = PermissionNode.get(NodeType.COMMAND, "play");
 	private void cmdPlay(MessageReceivedEvent e, AudioPlayer player, TrackScheduler scheduler, String[] args){
-		if(!PermissionUtil.hasPermission(e.getAuthor(), e.getGuild(), "play.command")) return;
+		if(!PermissionUtil.hasPermission(e.getAuthor(), permPlay, e.getGuild())) return;
 		
 		if(args.length == 0) {
 			e.getChannel().sendMessage("Play what..? Don't waste my time.").queue();
@@ -154,8 +173,9 @@ public class CmdMusicControl implements CommandExecutor{
 		});
 	}
 	
+	private final PermissionNode permPlaylist = PermissionNode.get(NodeType.COMMAND, "playlist");
 	private void cmdPlaylist(MessageReceivedEvent e, AudioPlayer player, TrackScheduler scheduler, String[] args){
-		if(!PermissionUtil.hasPermission(e.getAuthor(), e.getGuild(), "playlist.command")) return;
+		if(!PermissionUtil.hasPermission(e.getAuthor(), permPlaylist, e.getGuild())) return;
 		
 		Queue<TrackMeta> q = scheduler.getQueue();
 		if(q.isEmpty()){
@@ -198,9 +218,10 @@ public class CmdMusicControl implements CommandExecutor{
 		
 	}
 	
+	private final PermissionNode permPause = PermissionNode.get(NodeType.COMMAND, "pause");
 	private void cmdPause(MessageReceivedEvent e, AudioPlayer player, TrackScheduler scheduler){
 		
-		if(!PermissionUtil.hasPermission(e.getAuthor(), e.getGuild(), "pause.command")) return;
+		if(!PermissionUtil.hasPermission(e.getAuthor(), permPause, e.getGuild())) return;
 		
 		Optional<TrackMeta> otm = scheduler.getCurrent();
 		if(otm.isPresent()){
@@ -220,9 +241,10 @@ public class CmdMusicControl implements CommandExecutor{
 			e.getChannel().sendMessage("Nothing is currently playing.").queue();
 	}
 	
+	private final PermissionNode permResume = PermissionNode.get(NodeType.COMMAND, "resume");
 	private void cmdResume(MessageReceivedEvent e, AudioPlayer player, TrackScheduler scheduler){
 		
-		if(!PermissionUtil.hasPermission(e.getAuthor(), e.getGuild(), "resume.command")) return;
+		if(!PermissionUtil.hasPermission(e.getAuthor(), permResume, e.getGuild())) return;
 		
 		if(!player.isPaused()){
 			e.getChannel().sendMessage("The player is not paused.").queue();
@@ -244,9 +266,10 @@ public class CmdMusicControl implements CommandExecutor{
 		}
 	}
 	
+	private final PermissionNode permForceSkip = PermissionNode.get(NodeType.COMMAND, "forceskip");
 	private void cmdForceSkip(MessageReceivedEvent e, AudioPlayer player, TrackScheduler scheduler){
 		
-		if(!PermissionUtil.hasPermission(e.getAuthor(), e.getGuild(), "forceskip.command")) return;
+		if(!PermissionUtil.hasPermission(e.getAuthor(), permForceSkip, e.getGuild())) return;
 		
 		Optional<TrackMeta> otm = scheduler.getCurrent();
 		if(otm.isPresent()){
@@ -257,13 +280,15 @@ public class CmdMusicControl implements CommandExecutor{
 			e.getChannel().sendMessage("Nothing to skip.").queue();
 	}
 	
+	private final PermissionNode permSkip = PermissionNode.get(NodeType.COMMAND, "skip");
 	private void cmdSkip(MessageReceivedEvent e, AudioPlayer player, TrackScheduler scheduler){
 		e.getChannel().sendMessage("Command coming soon, for now you can use forceskip.").queue();
 	}
 	
+	private final PermissionNode permStop = PermissionNode.get(NodeType.COMMAND, "stop");
 	private void cmdStop(MessageReceivedEvent e, AudioPlayer player, TrackScheduler scheduler){
 		
-		if(!PermissionUtil.hasPermission(e.getAuthor(), e.getGuild(), "stop.command")) return;
+		if(!PermissionUtil.hasPermission(e.getAuthor(), permStop, e.getGuild())) return;
 		
 		AudioManager am = e.getGuild().getAudioManager();
 		if(!am.isConnected()){
@@ -289,9 +314,8 @@ public class CmdMusicControl implements CommandExecutor{
 	}
 
 	@Override
-	public List<String> getNodes() {
-		return new ArrayList<String>(Arrays.asList("play.command", "playlist.command", "pause.command", "resume.command", "forceskip.command", 
-				"skip.command", "stop.command"));
+	public Set<PermissionNode> getNodes() {
+		return nodes;
 	}
 
 }

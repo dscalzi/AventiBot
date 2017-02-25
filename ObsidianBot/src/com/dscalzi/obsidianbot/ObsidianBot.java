@@ -14,6 +14,7 @@ import com.dscalzi.obsidianbot.commands.CmdClear;
 import com.dscalzi.obsidianbot.commands.CmdHelloWorld;
 import com.dscalzi.obsidianbot.commands.CmdHelp;
 import com.dscalzi.obsidianbot.commands.CmdMusicControl;
+import com.dscalzi.obsidianbot.commands.CmdPermissionsControl;
 import com.dscalzi.obsidianbot.commands.CmdRoleId;
 import com.dscalzi.obsidianbot.commands.CmdSay;
 import com.dscalzi.obsidianbot.commands.CmdShutdown;
@@ -78,6 +79,7 @@ public class ObsidianBot {
 	
 	private void registerCommands(){
 		CmdMusicControl mcc = new CmdMusicControl();
+		CmdBlacklist cbl = new CmdBlacklist();
 		this.registry.register("play", mcc);
 		this.registry.register("playlist", mcc);
 		this.registry.register("forceskip", mcc);
@@ -91,8 +93,9 @@ public class ObsidianBot {
 		this.registry.register("clear", new CmdClear());
 		this.registry.register("shutdown", new CmdShutdown());
 		this.registry.register("roleid", new CmdRoleId());
-		this.registry.register("blacklist", new CmdBlacklist());
-		this.registry.register("unblacklist", new CmdBlacklist());
+		this.registry.register("blacklist", cbl);
+		this.registry.register("unblacklist", cbl);
+		this.registry.register("permissions", new CmdPermissionsControl());
 	}
 	
 	private void registerListeners(){

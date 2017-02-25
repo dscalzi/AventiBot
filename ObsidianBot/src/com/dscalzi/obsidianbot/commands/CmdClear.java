@@ -4,13 +4,16 @@ import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 import com.dscalzi.obsidianbot.cmdutil.CommandExecutor;
+import com.dscalzi.obsidianbot.cmdutil.PermissionNode;
 import com.dscalzi.obsidianbot.cmdutil.PermissionUtil;
+import com.dscalzi.obsidianbot.cmdutil.PermissionNode.NodeType;
 import com.dscalzi.obsidianbot.util.InputUtils;
 import com.dscalzi.obsidianbot.util.TimeUtils;
 
@@ -26,10 +29,20 @@ public class CmdClear implements CommandExecutor{
 	private volatile boolean processing;
 	private volatile long lastRun;
 	
+	private final PermissionNode permClear = PermissionNode.get(NodeType.COMMAND, "clear");
+	
+	public final Set<PermissionNode> nodes;
+	
+	public CmdClear(){
+		nodes = new HashSet<PermissionNode>(Arrays.asList(
+					permClear
+				));
+	}
+	
 	@Override
 	public boolean onCommand(MessageReceivedEvent e, String cmd, String[] args, String[] rawArgs) {
 		
-		if(!PermissionUtil.hasPermission(e.getAuthor(), e.getGuild(), "clear.command")) return false;
+		if(!PermissionUtil.hasPermission(e.getAuthor(), permClear, e.getGuild())) return false;
 		
 		if(processing){
 			e.getChannel().sendMessage("I'm currently clearing out a channel, try again later!").queue();
@@ -97,6 +110,10 @@ public class CmdClear implements CommandExecutor{
 			e.getChannel().sendMessage("You must specify a channel.").queue();
 			return false;
 		}
+		if(!e.getGuild().getTextChannels().contains(channel)){
+			e.getChannel().sendMessage("I cannot clear messages in other guilds for you, sorry!").queue();
+			return false;
+		}
 		
 		if(e.getChannel().equals(channel))
 			e.getMessage().delete();
@@ -157,8 +174,8 @@ public class CmdClear implements CommandExecutor{
 	}
 
 	@Override
-	public List<String> getNodes() {
-		return new ArrayList<String>(Arrays.asList("clear.command"));
+	public Set<PermissionNode> getNodes() {
+		return nodes;
 	}
 
 }

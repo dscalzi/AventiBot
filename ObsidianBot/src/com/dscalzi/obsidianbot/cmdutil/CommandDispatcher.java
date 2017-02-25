@@ -1,5 +1,8 @@
 package com.dscalzi.obsidianbot.cmdutil;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import com.dscalzi.obsidianbot.ObsidianBot;
@@ -15,11 +18,11 @@ public class CommandDispatcher {
 		exec.ifPresent((cmdEx) -> {
 			String msg = e.getMessage().getContent();
 			String argStr = msg.substring(msg.indexOf(cmd) + cmd.length()).trim();
-			String[] args = (argStr.length() > 0) ? argStr.split("\\s") : new String[0];
+			String[] args = cleanArgsArray((argStr.length() > 0) ? argStr.split("\\s") : new String[0]);
 			
 			String rawMsg = e.getMessage().getRawContent();
 			String rawArgStr = rawMsg.substring(rawMsg.indexOf(cmd) + cmd.length()).trim();
-			String[] rawArgs = (rawArgStr.length() > 0) ?  rawArgStr.split("\\s") : new String[0];
+			String[] rawArgs = cleanArgsArray((rawArgStr.length() > 0) ?  rawArgStr.split("\\s") : new String[0]);
 			
 			cmdEx.onCommand(e, cmd, args, rawArgs);
 			
@@ -27,6 +30,13 @@ public class CommandDispatcher {
 			
 			SimpleLog.getLog("CommandDispatcher").info("User " + e.getAuthor().getName() + " (" + e.getAuthor().getId() + ") has just run the command '" + ObsidianBot.commandPrefix + cmd + (fullArgs.length() > 0 ? " " : "") + fullArgs + "'");
 		});
+	}
+	
+	private static String[] cleanArgsArray(String[] args){
+		if(args.length == 0) return args;
+		List<String> argsTemp = new ArrayList<String>(Arrays.asList(args));
+		for(int i=argsTemp.size()-1; i>=0; --i)	if(argsTemp.get(i).isEmpty()) argsTemp.remove(i);
+		return argsTemp.toArray(new String[0]);
 	}
 	
 	public static String parseMessage(MessageReceivedEvent e){
