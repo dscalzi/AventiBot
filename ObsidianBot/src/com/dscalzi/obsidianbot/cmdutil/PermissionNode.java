@@ -24,13 +24,22 @@ public class PermissionNode {
 	}
 	
 	@Override
-	public boolean equals(Object o){
-		if(this == o) return true;
-		if(o == null) return false;
-		if(o.getClass() != this.getClass()) return false;
-		PermissionNode n = (PermissionNode)o;
-		if(!n.toString().equals(this.toString())) return false;
-		//Ignores op value.
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((nodeText == null) ? 0 : nodeText.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) return true;
+		if (obj == null) return false;
+		if (getClass() != obj.getClass()) return false;
+		PermissionNode other = (PermissionNode) obj;
+		if (nodeText == null) {
+			if (other.nodeText != null) return false;
+		} else if (!nodeText.equals(other.nodeText)) return false;
 		return true;
 	}
 	

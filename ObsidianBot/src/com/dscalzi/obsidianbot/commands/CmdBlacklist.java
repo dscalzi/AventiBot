@@ -88,8 +88,8 @@ public class CmdBlacklist implements CommandExecutor{
 			return false;
 		}
 		
-		if(!ObsidianBot.getInstance().getCommandRegistry().getAllRegisteredNodes().contains(args[1])){
-			e.getChannel().sendMessage("Invalid node.").queue();
+		if(!ObsidianBot.getInstance().getCommandRegistry().getAllRegisteredNodes().contains(PermissionNode.get(args[1]))){
+			e.getChannel().sendMessage("Invalid node: " + PermissionNode.get(args[1]).toString()).queue();
 			return false;
 		}
 		

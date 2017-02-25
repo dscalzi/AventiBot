@@ -103,10 +103,11 @@ public final class PermissionUtil {
 		
 		for(Role r : roles){
 			if(add ? !permissions.contains(r.getId()) : permissions.contains(r.getId())){
-				failed.add(r);
 				queued.add(r.getId());
 				if(add) permissions.add(r.getId());
 				else permissions.remove(r.getId());
+			} else {
+				failed.add(r);
 			}
 		}
 		
@@ -204,14 +205,15 @@ public final class PermissionUtil {
 			boolean needsUpdate = false;
 			JsonObject result = null;
 			JsonElement parsed = p.parse(file);
-			Set<PermissionNode> nodes = new HashSet<PermissionNode>(ObsidianBot.getInstance().getCommandRegistry().getAllRegisteredNodes());
+			Set<String> stringNodes = new HashSet<String>();
+			ObsidianBot.getInstance().getCommandRegistry().getAllRegisteredNodes().forEach(pn -> stringNodes.add(pn.toString()));
 			List<Guild> expectedGuilds = ObsidianBot.getInstance().getJDA().getGuilds();
 			if(parsed.isJsonObject()){
 				result = parsed.getAsJsonObject();
 				
 				//get nodes
 				for(Map.Entry<String, JsonElement> e : result.entrySet()){
-					if(nodes.contains(e.getKey())) nodes.remove(e.getKey());
+					if(stringNodes.contains(e.getKey())) stringNodes.remove(e.getKey());
 					
 					//get guilds
 					if(e.getValue().isJsonObject()){
@@ -260,13 +262,13 @@ public final class PermissionUtil {
 				}
 			}
 			
-			if(nodes.size() > 0){
+			if(stringNodes.size() > 0){
 				//If permissions is empty
 				if(result == null) result = new JsonObject();
 				
 				Gson g = new GsonBuilder().setPrettyPrinting().create();
-				Set<PermissionNode> leftover = new HashSet<PermissionNode>(nodes);
-				for(PermissionNode pn : leftover){
+				Set<String> leftover = new HashSet<String>(stringNodes);
+				for(String s : leftover){
 					JsonObject guilds = new JsonObject();
 					for(Guild guild : ObsidianBot.getInstance().getJDA().getGuilds()){
 						JsonObject container = new JsonObject();
@@ -276,7 +278,7 @@ public final class PermissionUtil {
 						container.add(PermissionUtil.BLACKLISTKEY, new JsonArray());
 						guilds.add(guild.getId(), container);
 					}
-					result.add(pn.toString(), guilds);
+					result.add(s, guilds);
 				}
 				try(JsonWriter writer = g.newJsonWriter(new FileWriter(permissionFile))){
 					needsUpdate = false;
