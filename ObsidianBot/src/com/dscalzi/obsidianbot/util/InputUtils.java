@@ -42,6 +42,20 @@ public class InputUtils {
 		return null;
 	}
 	
+	public static Role parseRole(Message m, String reference, Guild g){
+		Role r = g.getRoleById(reference);
+		if(r != null) return r;
+		List<Role> nameSearch = g.getRolesByName(reference, true);
+		if(nameSearch.size() > 0) r = nameSearch.get(0);
+		if(r != null) return r;
+		List<Role> mentioned = m.getMentionedRoles();
+		for(Role mr : mentioned){
+			if(mr.getName().replace("@", "").equalsIgnoreCase(reference))
+				return mr;
+		}
+		return null;
+	}
+	
 	/**
 	 * Parse a message for roles. It will look for mentions, strings that match role names,
 	 * and role ids.

@@ -1,7 +1,6 @@
 package com.dscalzi.obsidianbot.cmdutil;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -110,15 +109,70 @@ public final class PermissionUtil {
 		return blacklistMap.get(String.join(":", node.toString(), g.getId()));
 	}
 	
-	public static Set<Role> bulkPermissionAdd(PermissionNode node, Guild g, Set<Role> roles) throws FileNotFoundException, IOException{
-		return writeBulkPermissionChange(node, g, true, roles);
+	public static Boolean permissionAdd(PermissionNode node, Guild g, Role role) throws IOException {
+		return writePermissionChange(node, g, role, true);
 	}
 	
-	public static Set<Role> bulkPermissionRemove(PermissionNode node, Guild g, Set<Role> roles) throws FileNotFoundException, IOException{
-		return writeBulkPermissionChange(node, g, false, roles);
+	public static Boolean permissionRemove(PermissionNode node, Guild g, Role role) throws IOException {
+		return writePermissionChange(node, g, role, false);
 	}
 	
-	private static Set<Role> writeBulkPermissionChange(PermissionNode node, Guild g, boolean add, Set<Role> roles) throws FileNotFoundException, IOException{
+	private static Boolean writePermissionChange(PermissionNode node, Guild g, Role role, boolean add) throws IOException{
+		File target = verifyFile(getPermFileName(g));
+		if(target == null) throw new IOException();
+		
+		String key = String.join(":", node.toString(), g.getId());
+		
+		if(permissionMap.get(key) == null) return null;
+		List<String> permissions = permissionMap.get(key);
+		
+		if(add ? !permissions.contains(role.getId()) : permissions.contains(role.getId())){
+			if(add) permissions.add(role.getId());
+			else permissions.remove(role.getId());
+		} else
+			return false;
+		
+		permissionMap.put(key, permissions);
+		
+		JsonParser p = new JsonParser();
+		try(JsonReader file = new JsonReader(new FileReader(target))){
+			JsonObject result = null;
+			JsonElement parsed = p.parse(file);
+			if(parsed.isJsonObject()){
+				result = parsed.getAsJsonObject();
+				JsonObject section = result.get(node.toString()).getAsJsonObject();
+				JsonArray arr = section.get(PermissionUtil.ALLOWEDKEY).getAsJsonArray();
+				if(add)
+					arr.add(role.getId());
+				else {
+					for(int i=arr.size()-1; i>=0; --i){
+					    String val = arr.get(i).getAsString();
+					    if(val.equals(role.getId())){            
+					        arr.remove(i);
+					        break;
+					    }
+					}
+				}
+			}
+			
+			Gson gson = new GsonBuilder().setPrettyPrinting().create();
+			try(JsonWriter writer = gson.newJsonWriter(new FileWriter(target))){
+				gson.toJson(result, writer);
+			}
+		}
+		
+		return true;
+	}
+	
+	public static Set<Role> bulkPermissionAdd(PermissionNode node, Guild g, Set<Role> roles) throws IOException{
+		return writeBulkPermissionChange(node, g, roles, true);
+	}
+	
+	public static Set<Role> bulkPermissionRemove(PermissionNode node, Guild g, Set<Role> roles) throws IOException{
+		return writeBulkPermissionChange(node, g, roles, false);
+	}
+	
+	private static Set<Role> writeBulkPermissionChange(PermissionNode node, Guild g, Set<Role> roles, boolean add) throws IOException{
 		File target = verifyFile(getPermFileName(g));
 		if(target == null) throw new IOException();
 		
@@ -139,6 +193,8 @@ public final class PermissionUtil {
 				failed.add(r);
 			}
 		}
+		
+		if(queued.size() == 0) return failed;
 		
 		permissionMap.put(key, permissions);
 		
@@ -174,17 +230,17 @@ public final class PermissionUtil {
 		return failed;
 	}
 	
-	public static boolean blacklistUser(User u, PermissionNode node, Guild g) throws FileNotFoundException, IOException{
+	public static boolean blacklistUser(User u, PermissionNode node, Guild g) throws IOException{
 		if(g == null) throw new IllegalArgumentException();
 		return writeBlacklistChange(u, node, g, true);
 	}
 	
-	public static boolean unBlacklistUser(User u, PermissionNode node, Guild g) throws FileNotFoundException, IOException{
+	public static boolean unBlacklistUser(User u, PermissionNode node, Guild g) throws IOException{
 		if(g == null) throw new IllegalArgumentException();
 		return writeBlacklistChange(u, node, g, false);
 	}
 	
-	private static boolean writeBlacklistChange(User u, PermissionNode node, Guild g, boolean add) throws FileNotFoundException, IOException{
+	private static boolean writeBlacklistChange(User u, PermissionNode node, Guild g, boolean add) throws IOException{
 		File target = verifyFile(getPermFileName(g));
 		if(target == null) throw new IOException();
 		
@@ -232,7 +288,7 @@ public final class PermissionUtil {
 		return true;
 	}
 	
-	public static void loadJson(Guild g) throws FileNotFoundException, IOException {
+	public static void loadJson(Guild g) throws IOException {
 		File target = verifyFile(getPermFileName(g));
 		if(target == null) throw new IOException();
 		
