@@ -7,7 +7,6 @@ import javax.xml.ws.http.HTTPException;
 
 import com.dscalzi.obsidianbot.cmdutil.CommandListener;
 import com.dscalzi.obsidianbot.cmdutil.CommandRegistry;
-import com.dscalzi.obsidianbot.cmdutil.PermissionUtil;
 import com.dscalzi.obsidianbot.commands.CmdAuthor;
 import com.dscalzi.obsidianbot.commands.CmdBlacklist;
 import com.dscalzi.obsidianbot.commands.CmdClear;
@@ -64,13 +63,6 @@ public class ObsidianBot {
 			if(status == BotStatus.CONNECTED){
 				instance.registerCommands();
 				instance.registerListeners();
-				try{
-					PermissionUtil.loadJson();
-				} catch(Throwable t){
-					SimpleLog.getLog("ObsidianBot").fatal("Error occured loading permissions.. shutting down!");
-					t.printStackTrace();
-					ObsidianBot.getInstance().shutdown();
-				}
 			}
 			return true;
 		}

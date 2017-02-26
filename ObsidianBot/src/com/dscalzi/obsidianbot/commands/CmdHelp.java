@@ -13,7 +13,7 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 public class CmdHelp implements CommandExecutor{
 
-	private final PermissionNode permHelp = PermissionNode.get(NodeType.COMMAND, "help");
+	private final PermissionNode permHelp = PermissionNode.get(NodeType.COMMAND, "help", true);
 	
 	public final Set<PermissionNode> nodes;
 	

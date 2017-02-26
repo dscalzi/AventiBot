@@ -34,24 +34,46 @@ public final class PermissionUtil {
 	private static final String ALLOWEDKEY = "allowedRoles";
 	private static final String BLACKLISTKEY = "blacklistedUsers";
 	private static final String GATEKEY = "requiresPermission";
-	private static final String FRIENDLYNAME = "friendlyName";
 	private static final SimpleLog log = SimpleLog.getLog("PermissionUtil");
 	
-	private static final File permissionFile;
+	private static final File permissionFolder;
+	private static final String permissionNameTemplate;
+	private static final String guildRegex;
+	private static final Map<Guild, Boolean> initialized;
 
 	//Key is node:guildid
 	private static final Map<String, List<String>> permissionMap;
 	private static final Map<String, List<String>> blacklistMap;
 	
 	static {
-		permissionFile = new File(ObsidianBot.getDataPath(), "permissions.json");
+		permissionFolder = new File(ObsidianBot.getDataPath(), "permissions");
+		permissionNameTemplate = "perms{g}.json";
+		guildRegex = "{g}";
 		permissionMap = new HashMap<String, List<String>>();
 		blacklistMap = new HashMap<String, List<String>>();
+		initialized = new HashMap<Guild, Boolean>();
 	}
 	
-	private static boolean verifyFile() throws IOException{
-		if(!permissionFile.exists()) return permissionFile.createNewFile();
-		return true;
+	private static File verifyFile(String name){
+		if(!permissionFolder.exists()) {
+			boolean status = permissionFolder.mkdirs();
+			if(!status) return null;
+		}
+		File target = new File(permissionFolder, name);
+		if(!target.exists()) {
+			boolean status;
+			try {
+				status = target.createNewFile();
+			} catch (IOException e) {
+				status = false;
+			}
+			return status ? target : null;
+		}
+		return target;
+	}
+	
+	public static boolean isInitialized(Guild g){
+		return initialized.get(g) == null ? false : initialized.get(g);
 	}
 	
 	public static boolean hasPermission(User user, PermissionNode node, Guild g){
@@ -76,6 +98,10 @@ public final class PermissionUtil {
 		
 	}
 	
+	public static String getPermFileName(Guild g){
+		return permissionNameTemplate.replace(guildRegex, g.getId());
+	}
+	
 	public static List<String> getAllowedRoles(PermissionNode node, Guild g){
 		return permissionMap.get(String.join(":", node.toString(), g.getId()));
 	}
@@ -93,6 +119,9 @@ public final class PermissionUtil {
 	}
 	
 	private static Set<Role> writeBulkPermissionChange(PermissionNode node, Guild g, boolean add, Set<Role> roles) throws FileNotFoundException, IOException{
+		File target = verifyFile(getPermFileName(g));
+		if(target == null) throw new IOException();
+		
 		Set<Role> failed = new HashSet<Role>();
 		
 		String key = String.join(":", node.toString(), g.getId());
@@ -115,27 +144,31 @@ public final class PermissionUtil {
 		
 
 		JsonParser p = new JsonParser();
-		try(JsonReader file = new JsonReader(new FileReader(permissionFile))){
+		try(JsonReader file = new JsonReader(new FileReader(target))){
 			JsonObject result = null;
 			JsonElement parsed = p.parse(file);
 			if(parsed.isJsonObject()){
 				result = parsed.getAsJsonObject();
 				JsonObject section = result.get(node.toString()).getAsJsonObject();
-				JsonObject guild = section.get(g.getId()).getAsJsonObject();
-				JsonArray arr = guild.get(PermissionUtil.ALLOWEDKEY).getAsJsonArray();
+				JsonArray arr = section.get(PermissionUtil.ALLOWEDKEY).getAsJsonArray();
 				if(add)
 					queued.forEach(r -> arr.add(r));
 				else {
-					for(int i=0; i<arr.size(); ++i){
+					for(int i=arr.size()-1; i>=0; --i){
 					    String val = arr.get(i).getAsString();
 					    if(queued.contains(val)){            
 					        arr.remove(i);
 					        queued.remove(val);
-					        break;
 					    }
 					}
 				}
 			}
+			
+			Gson gson = new GsonBuilder().setPrettyPrinting().create();
+			try(JsonWriter writer = gson.newJsonWriter(new FileWriter(target))){
+				gson.toJson(result, writer);
+			}
+			
 		}
 		
 		return failed;
@@ -152,6 +185,9 @@ public final class PermissionUtil {
 	}
 	
 	private static boolean writeBlacklistChange(User u, PermissionNode node, Guild g, boolean add) throws FileNotFoundException, IOException{
+		File target = verifyFile(getPermFileName(g));
+		if(target == null) throw new IOException();
+		
 		String key = String.join(":", node.toString(), g.getId());
 		List<String> blacklisted = blacklistMap.get(key);
 		
@@ -166,14 +202,13 @@ public final class PermissionUtil {
 		blacklistMap.put(key, blacklisted);
 		
 		JsonParser p = new JsonParser();
-		try(JsonReader file = new JsonReader(new FileReader(permissionFile))){
+		try(JsonReader file = new JsonReader(new FileReader(target))){
 			JsonObject result = null;
 			JsonElement parsed = p.parse(file);
 			if(parsed.isJsonObject()){
 				result = parsed.getAsJsonObject();
 				JsonObject section = result.get(node.toString()).getAsJsonObject();
-				JsonObject guild = section.get(g.getId()).getAsJsonObject();
-				JsonArray arr = guild.get(PermissionUtil.BLACKLISTKEY).getAsJsonArray();
+				JsonArray arr = section.get(PermissionUtil.BLACKLISTKEY).getAsJsonArray();
 				if(add)
 					arr.add(u.getId());
 				else {
@@ -188,7 +223,7 @@ public final class PermissionUtil {
 			}
 			
 			Gson gson = new GsonBuilder().setPrettyPrinting().create();
-			try(JsonWriter writer = gson.newJsonWriter(new FileWriter(permissionFile))){
+			try(JsonWriter writer = gson.newJsonWriter(new FileWriter(target))){
 				gson.toJson(result, writer);
 			}
 			
@@ -197,102 +232,74 @@ public final class PermissionUtil {
 		return true;
 	}
 	
-	public static void loadJson() throws FileNotFoundException, IOException {
-		if(!verifyFile()) return;
-		log.info("Using permission file located at " + permissionFile.getAbsolutePath());
+	public static void loadJson(Guild g) throws FileNotFoundException, IOException {
+		File target = verifyFile(getPermFileName(g));
+		if(target == null) throw new IOException();
+		
+		log.info("Using permission file located at " + target.getAbsolutePath() + " for guild " + g.getName() + "(" + g.getId() + ").");
 		JsonParser p = new JsonParser();
-		try(JsonReader file = new JsonReader(new FileReader(permissionFile))){
-			boolean needsUpdate = false;
+		try(JsonReader file = new JsonReader(new FileReader(target))){
 			JsonObject result = null;
 			JsonElement parsed = p.parse(file);
-			Set<String> stringNodes = new HashSet<String>();
-			ObsidianBot.getInstance().getCommandRegistry().getAllRegisteredNodes().forEach(pn -> stringNodes.add(pn.toString()));
-			List<Guild> expectedGuilds = ObsidianBot.getInstance().getJDA().getGuilds();
+			Set<PermissionNode> registered = new HashSet<PermissionNode>(ObsidianBot.getInstance().getCommandRegistry().getAllRegisteredNodes());
 			if(parsed.isJsonObject()){
 				result = parsed.getAsJsonObject();
 				
 				//get nodes
 				for(Map.Entry<String, JsonElement> e : result.entrySet()){
-					if(stringNodes.contains(e.getKey())) stringNodes.remove(e.getKey());
+					PermissionNode current = PermissionNode.get(e.getKey());
+					if(registered.contains(current)) registered.remove(current);
 					
-					//get guilds
 					if(e.getValue().isJsonObject()){
-						List<String> eGuilds = new ArrayList<String>();
-						expectedGuilds.forEach(val -> eGuilds.add(val.getId()));
-						for(Map.Entry<String, JsonElement> gu : e.getValue().getAsJsonObject().entrySet()){
-							if(gu.getValue().isJsonObject()){
-								if(eGuilds.contains(gu.getKey())) eGuilds.remove(gu.getKey());
-								boolean ignorePerms = false;
-								String key = String.join(":", e.getKey(), gu.getKey());
-								for(Map.Entry<String, JsonElement> e2 : gu.getValue().getAsJsonObject().entrySet()){
-									if(e2.getKey().equals(PermissionUtil.GATEKEY) && !e2.getValue().getAsBoolean()) {
-										permissionMap.put(key, null);
-										ignorePerms = true;
-										continue;
-									} else if(e2.getKey().equals(PermissionUtil.ALLOWEDKEY) && e2.getValue().isJsonArray() && !ignorePerms){
-										JsonArray roles = e2.getValue().getAsJsonArray();
-										List<String> roleIds = new ArrayList<String>();
-										for(JsonElement e3 : roles){
-											roleIds.add(e3.getAsString());
-										}
-										permissionMap.put(key, roleIds);
-									} else if(e2.getKey().equals(PermissionUtil.BLACKLISTKEY) && e2.getValue().isJsonArray()){
-										JsonArray blacklist = e2.getValue().getAsJsonArray();
-										List<String> userIds = new ArrayList<String>();
-										for(JsonElement e3 : blacklist){
-											userIds.add(e3.getAsString());
-										}
-										blacklistMap.put(key, userIds);
-									}
+						boolean ignorePerms = false;
+						String key = String.join(":", e.getKey(), g.getId());
+						for(Map.Entry<String, JsonElement> e2 : e.getValue().getAsJsonObject().entrySet()){
+							if(e2.getKey().equals(PermissionUtil.GATEKEY) && !e2.getValue().getAsBoolean()) {
+								permissionMap.put(key, null);
+								ignorePerms = true;
+								continue;
+							} else if(e2.getKey().equals(PermissionUtil.ALLOWEDKEY) && e2.getValue().isJsonArray() && !ignorePerms){
+								JsonArray roles = e2.getValue().getAsJsonArray();
+								List<String> roleIds = new ArrayList<String>();
+								for(JsonElement e3 : roles){
+									roleIds.add(e3.getAsString());
 								}
-							}
-						}
-						if(eGuilds.size() > 0) {
-							needsUpdate = true;
-							for(String leftover : eGuilds){
-								JsonObject container = new JsonObject();
-								container.addProperty(PermissionUtil.FRIENDLYNAME, ObsidianBot.getInstance().getJDA().getGuildById(leftover).getName());
-								container.addProperty(PermissionUtil.GATEKEY, false);
-								container.add(PermissionUtil.ALLOWEDKEY, new JsonArray());
-								container.add(PermissionUtil.BLACKLISTKEY, new JsonArray());
-								e.getValue().getAsJsonObject().add(leftover, container);
+								permissionMap.put(key, roleIds);
+							} else if(e2.getKey().equals(PermissionUtil.BLACKLISTKEY) && e2.getValue().isJsonArray()){
+								JsonArray blacklist = e2.getValue().getAsJsonArray();
+								List<String> userIds = new ArrayList<String>();
+								for(JsonElement e3 : blacklist){
+									userIds.add(e3.getAsString());
+								}
+								blacklistMap.put(key, userIds);
 							}
 						}
 					}
 				}
 			}
 			
-			if(stringNodes.size() > 0){
+			if(registered.size() > 0){
 				//If permissions is empty
 				if(result == null) result = new JsonObject();
 				
-				Gson g = new GsonBuilder().setPrettyPrinting().create();
-				Set<String> leftover = new HashSet<String>(stringNodes);
-				for(String s : leftover){
-					JsonObject guilds = new JsonObject();
-					for(Guild guild : ObsidianBot.getInstance().getJDA().getGuilds()){
-						JsonObject container = new JsonObject();
-						container.addProperty(PermissionUtil.FRIENDLYNAME, guild.getName());
-						container.addProperty(PermissionUtil.GATEKEY, false);
-						container.add(PermissionUtil.ALLOWEDKEY, new JsonArray());
-						container.add(PermissionUtil.BLACKLISTKEY, new JsonArray());
-						guilds.add(guild.getId(), container);
-					}
-					result.add(s, guilds);
+				Set<PermissionNode> leftover = new HashSet<PermissionNode>(registered);
+				
+				Gson gson = new GsonBuilder().setPrettyPrinting().create();
+				for(PermissionNode pn : leftover){
+					JsonObject container = new JsonObject();
+					container.addProperty(PermissionUtil.GATEKEY, pn.isOp());
+					container.add(PermissionUtil.ALLOWEDKEY, new JsonArray());
+					container.add(PermissionUtil.BLACKLISTKEY, new JsonArray());
+					result.add(pn.toString(), container);
 				}
-				try(JsonWriter writer = g.newJsonWriter(new FileWriter(permissionFile))){
-					needsUpdate = false;
-					g.toJson(result, writer);
-				}
-			}
-			
-			if(needsUpdate){
-				Gson g = new GsonBuilder().setPrettyPrinting().create();
-				try(JsonWriter writer = g.newJsonWriter(new FileWriter(permissionFile))){
-					g.toJson(result, writer);
+				try(JsonWriter writer = gson.newJsonWriter(new FileWriter(target))){
+					gson.toJson(result, writer);
 				}
 			}
 		}
+		
+		initialized.put(g, true);
+		
 	}
 	
 }
