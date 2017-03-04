@@ -36,8 +36,8 @@ public final class PermissionUtil {
 	private static final SimpleLog log = SimpleLog.getLog("PermissionUtil");
 	
 	private static final File permissionFolder;
-	private static final String permissionNameTemplate;
 	private static final String guildRegex;
+	private static final String permissionNameTemplate;
 	private static final Map<Guild, Boolean> initialized;
 
 	//Key is node:guildid
@@ -46,8 +46,8 @@ public final class PermissionUtil {
 	
 	static {
 		permissionFolder = new File(ObsidianBot.getDataPath(), "permissions");
-		permissionNameTemplate = "perms{g}.json";
 		guildRegex = "{g}";
+		permissionNameTemplate = "perms" + guildRegex + ".json";
 		permissionMap = new HashMap<String, List<String>>();
 		blacklistMap = new HashMap<String, List<String>>();
 		initialized = new HashMap<Guild, Boolean>();
@@ -75,10 +75,29 @@ public final class PermissionUtil {
 		return initialized.get(g) == null ? false : initialized.get(g);
 	}
 	
+	/**
+	 * The following is equivalent to calling {@link #hasPermission(User, PermissionNode, Guild, boolean) PermissionUtil.hasPermission(user, node, g, false)}
+	 */
 	public static boolean hasPermission(User user, PermissionNode node, Guild g){
 		return hasPermission(user, node, g, false);
 	}
 	
+	/**
+	 * A user only has permission for the specified node in the specified guild if all of the following are true.
+	 * 
+	 * <ul>
+	 * <li>The user is <strong>not blacklisted</strong> from the node.</li>
+	 * <li>The user belongs to <strong>at least one</strong> role that has permission for the node <strong>if it requires permission</strong>.</li>
+	 * </ul>
+	 * 
+	 * <em>If the guild is null (ie private channel), a user only has permission if the parameter allowPrivate is true.</em>
+	 * 
+	 * @param user The user to check permission on.
+	 * @param node The permission node to check permission on.
+	 * @param g The guild in which permission is being checked.
+	 * @param allowPrivate If this command is allowed in private chat (permissions do not exist for private).
+	 * @return True if all of the above criteria is met, false otherwise.
+	 */
 	public static boolean hasPermission(User user, PermissionNode node, Guild g, boolean allowPrivate){
 		if(!(user instanceof ConsoleUser)){
 			
@@ -109,14 +128,43 @@ public final class PermissionUtil {
 		return blacklistMap.get(String.join(":", node.toString(), g.getId()));
 	}
 	
+	/**
+	 * Add the specified role to the specified Permission Node, granting permission to that role to use the command
+	 * that the node represents. 
+	 * 
+	 * @param node Permission Node to add a role to.
+	 * @param g Guild whose permissions will be changed.
+	 * @param role Role to add to the specified Permission Node.
+	 * @return True if successful, that is if the role was not previously allowed for the node and it was successfully
+	 * added. False if unsuccessful. Null if the Permission Node given is invalid or does not require permission.
+	 * @throws IOException If there was an issue writing the changes to the permission file.
+	 */
 	public static Boolean permissionAdd(PermissionNode node, Guild g, Role role) throws IOException {
 		return writePermissionChange(node, g, role, true);
 	}
 	
+	/**
+	 * Removes the specified role from the specified Permission Node, revoking permission from that role to use the 
+	 * command that the node represents. 
+	 * 
+	 * @param node Permission Node to remove a role to.
+	 * @param g Guild whose permissions will be changed.
+	 * @param role Role to remove from the specified Permission Node.
+	 * @return True if successful, that is if the role was previously allowed for the node and it was successfully
+	 * removed. False if unsuccessful. Null if the Permission Node given is invalid or does not require permission.
+	 * @throws IOException If there was an issue writing the changes to the permission file.
+	 */
 	public static Boolean permissionRemove(PermissionNode node, Guild g, Role role) throws IOException {
 		return writePermissionChange(node, g, role, false);
 	}
 	
+	/**
+	 * Not safe for use outside of PermissionUtil class.
+	 * <br>
+	 * If adding permission, see {@link #permissionAdd(PermissionNode, Guild, Role)}
+	 * <br>
+	 * If removing permission, see {@link #permissionRemove(PermissionNode, Guild, Role)}
+	 */
 	private static Boolean writePermissionChange(PermissionNode node, Guild g, Role role, boolean add) throws IOException{
 		File target = verifyFile(getPermFileName(g));
 		if(target == null) throw new IOException();
@@ -164,14 +212,45 @@ public final class PermissionUtil {
 		return true;
 	}
 	
+	/**
+	 * Adds a set of roles to the specified permission node, effectively granting permission to those roles to
+	 * use the command that the node represents. 
+	 * 
+	 * @param node Permission Node to add the roles to.
+	 * @param g Guild whose permissions will be changed.
+	 * @param roles A set of roles to add to the specified node.
+	 * @return A set of roles which failed the operation. A role fails if it was already added to the specified node. 
+	 * A set of size zero indicates complete success. Returns null if the Permission Node was invalid or did not require
+	 * permission.
+	 * @throws IOException If there was an issue writing the changes to the permission file.
+	 */
 	public static Set<Role> bulkPermissionAdd(PermissionNode node, Guild g, Set<Role> roles) throws IOException{
 		return writeBulkPermissionChange(node, g, roles, true);
 	}
 	
+	/**
+	 * Removes a set of roles from the specified permission node, effectively revoking permission from those roles to
+	 * use the command that the node represents. 
+	 * 
+	 * @param node Permission Node to remove the roles from.
+	 * @param g Guild whose permissions will be changed.
+	 * @param roles A set of roles to remove from the specified node.
+	 * @return A set of roles which failed the operation. A role fails if it was not already added to the specified node. 
+	 * A set of size zero indicates complete success. Returns null if the Permission Node was invalid or did not require
+	 * permission.
+	 * @throws IOException If there was an issue writing the changes to the permission file.
+	 */
 	public static Set<Role> bulkPermissionRemove(PermissionNode node, Guild g, Set<Role> roles) throws IOException{
 		return writeBulkPermissionChange(node, g, roles, false);
 	}
 	
+	/**
+	 * Not safe for use outside of PermissionUtil class.
+	 * <br>
+	 * If adding permission, see {@link #bulkPermissionAdd(PermissionNode, Guild, Set)}
+	 * <br>
+	 * If removing permission, see {@link #bulkPermissionRemove(PermissionNode, Guild, Set)}
+	 */
 	private static Set<Role> writeBulkPermissionChange(PermissionNode node, Guild g, Set<Role> roles, boolean add) throws IOException{
 		File target = verifyFile(getPermFileName(g));
 		if(target == null) throw new IOException();
@@ -179,7 +258,7 @@ public final class PermissionUtil {
 		Set<Role> failed = new HashSet<Role>();
 		
 		String key = String.join(":", node.toString(), g.getId());
-		if(permissionMap.containsKey(key)) if(permissionMap.get(key) == null) return null;
+		if(permissionMap.get(key) == null) return null;
 		List<String> permissions = permissionMap.get(key);
 		
 		Set<String> queued = new HashSet<String>();
@@ -230,6 +309,75 @@ public final class PermissionUtil {
 		return failed;
 	}
 	
+	public static Set<PermissionNode> bulkPermissionGrant(Role r, Guild g, Set<PermissionNode> nodes) throws IOException{
+		return writeBulkNodeChange(r, g, nodes, true);
+	}
+	
+	public static Set<PermissionNode> bulkPermissionRevoke(Role r, Guild g, Set<PermissionNode> nodes) throws IOException{
+		return writeBulkNodeChange(r, g, nodes, false);
+	}
+	
+	private static Set<PermissionNode> writeBulkNodeChange(Role r, Guild g, Set<PermissionNode> nodes, boolean add) throws IOException{
+		
+		File target = verifyFile(getPermFileName(g));
+		if(target == null) throw new IOException();
+		
+		Set<PermissionNode> failed = new HashSet<PermissionNode>();
+		Set<PermissionNode> queued = new HashSet<PermissionNode>();
+		
+		for(PermissionNode n : nodes){
+			String key = String.join(":", n.toString(), g.getId());
+			
+			if(permissionMap.get(key) == null) {
+				failed.add(n);
+				continue;
+			}
+			List<String> permissions = permissionMap.get(key);
+			if(add ? !permissions.contains(r.getId()) : permissions.contains(r.getId())){
+				if(add)	permissions.add(r.getId());
+				else permissions.remove(r.getId());
+				queued.add(n);
+				permissionMap.put(key, permissions);
+			} else {
+				failed.add(n);
+			}
+		}
+		
+		if(queued.size() == 0) return failed;
+		
+		JsonParser p = new JsonParser();
+		try(JsonReader file = new JsonReader(new FileReader(target))){
+			JsonObject result = null;
+			JsonElement parsed = p.parse(file);
+			if(parsed.isJsonObject()){
+				result = parsed.getAsJsonObject();
+				for(PermissionNode n : queued){
+					JsonObject section = result.get(n.toString()).getAsJsonObject();
+					JsonArray arr = section.get(PermissionUtil.ALLOWEDKEY).getAsJsonArray();
+					if(add)
+						arr.add(r.getId());
+					else {
+						inner:
+						for(int i=arr.size()-1; i>=0; --i){
+						    String val = arr.get(i).getAsString();
+						    if(val.equals(r.getId())){
+						    	arr.remove(i);
+						    	break inner;
+						    }
+						}
+					}
+				}
+			}
+			
+			Gson gson = new GsonBuilder().setPrettyPrinting().create();
+			try(JsonWriter writer = gson.newJsonWriter(new FileWriter(target))){
+				gson.toJson(result, writer);
+			}
+		}
+		
+		return failed;
+	}
+		
 	public static boolean blacklistUser(User u, PermissionNode node, Guild g) throws IOException{
 		if(g == null) throw new IllegalArgumentException();
 		return writeBlacklistChange(u, node, g, true);

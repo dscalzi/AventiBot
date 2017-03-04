@@ -20,7 +20,7 @@ public class CommandListener extends ListenerAdapter {
 						SimpleLog.getLog("ObsidianBot").fatal("Error occured loading permissions.. unable to process"
 								+ "requests for guild " + e.getGuild().getName() + "(" + e.getGuild().getId() +  ")!");
 						t.printStackTrace();
-						ObsidianBot.getInstance().shutdown();
+						return;
 					}
 				}
 			if(!e.getAuthor().getId().equals(ObsidianBot.getInstance().getId()))

@@ -45,7 +45,7 @@ public class CmdRoleId implements CommandExecutor{
 			return false;
 		}
 		
-		Pair<Set<Role>, Set<String>> results = InputUtils.parseBulkRoles(e.getMessage(), e.getGuild(), args);
+		Pair<Set<Role>, Set<String>> results = InputUtils.parseBulkRoles(rawArgs, e.getGuild());
 		Set<Role> roles = results.getKey();
 		Set<String> failedTerms = results.getValue();
 		
