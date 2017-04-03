@@ -1,15 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>ObsidianBot</groupId>
-  <artifactId>ObsidianBot</artifactId>
-  <name>ObsidianBot</name>
-  <version>0.0.1-SNAPSHOT</version>
-  <description>Discord bot for ObsidianCraft</description>
+  <groupId>com.dscalzi</groupId>
+  <artifactId>AventiBot</artifactId>
+  <name>AventiBot</name>
+  <version>BETA-1</version>
+  <description>Customizable Discord Bot</description>
+  <developers>
+    <developer>
+      <name>Daniel Scalzi</name>
+      <roles>
+        <role>Project Lead</role>
+      </roles>
+    </developer>
+  </developers>
   <build>
     <sourceDirectory>src</sourceDirectory>
     <defaultGoal>package</defaultGoal>
-    <finalName>ObsidianBot</finalName>
+    <resources>
+      <resource>
+        <targetPath>.</targetPath>
+        <directory>${basedir}/src/com/dscalzi/aventibot/resources/</directory>
+      </resource>
+      <resource>
+        <targetPath>${basedir}/target/classes/com/dscalzi/aventibot/ui/</targetPath>
+        <directory>${basedir}/src/com/dscalzi/aventibot/ui/</directory>
+        <includes>
+          <include>**/*</include>
+        </includes>
+      </resource>
+    </resources>
+    <finalName>AventiBot</finalName>
     <plugins>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -31,7 +52,7 @@
             <configuration>
               <transformers>
                 <transformer>
-                  <mainClass>com.dscalzi.obsidianbot.ui.TerminalExecutor</mainClass>
+                  <mainClass>com.dscalzi.aventibot.ui.TerminalExecutor</mainClass>
                 </transformer>
               </transformers>
               <filters>

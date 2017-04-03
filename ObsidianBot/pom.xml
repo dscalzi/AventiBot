@@ -1,15 +1,42 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>ObsidianBot</groupId>
-  <artifactId>ObsidianBot</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
-  <name>ObsidianBot</name>
-  <description>Discord bot for ObsidianCraft</description>
+  <groupId>com.dscalzi</groupId>
+  <artifactId>AventiBot</artifactId>
+  <version>BETA-1</version>
+  <name>AventiBot</name>
+  <description>Customizable Discord Bot</description>
+  
+  <developers>
+    <developer>
+      <name>Daniel Scalzi</name>
+        <roles>
+          <role>Project Lead</role>
+        </roles>
+    </developer>
+  </developers>
+  
   <build>
     <sourceDirectory>src</sourceDirectory>
     <defaultGoal>package</defaultGoal>
-    <finalName>ObsidianBot</finalName>
+    <finalName>AventiBot</finalName>
+    
+    <resources>
+        <resource>
+            <targetPath>.</targetPath>
+            <directory>${basedir}/src/com/dscalzi/aventibot/resources/</directory>
+        </resource>
+        <resource>
+        	<filtering>false</filtering>
+        	<targetPath>${basedir}/target/classes/com/dscalzi/aventibot/ui/</targetPath>
+            <directory>${basedir}/src/com/dscalzi/aventibot/ui/</directory>
+            <includes>                      
+                <include>**/*</include>
+            </includes>
+        </resource>
+    </resources>
+    
     <plugins>
+    
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.5.1</version>
@@ -18,6 +45,7 @@
           <target>1.8</target>
         </configuration>
       </plugin>
+      
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-shade-plugin</artifactId>
@@ -31,7 +59,7 @@
             <configuration>
 	            <transformers>
 	                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-	                  <mainClass>com.dscalzi.obsidianbot.ui.TerminalExecutor</mainClass>
+	                  <mainClass>com.dscalzi.aventibot.ui.TerminalExecutor</mainClass>
 	                </transformer>
 	              </transformers>
               <filters>
@@ -46,8 +74,10 @@
           </execution>
         </executions>
       </plugin>
+      
     </plugins>
   </build>
+  
   <repositories>
     <repository>
       <id>jcenter</id>
@@ -55,6 +85,7 @@
       <url>http://jcenter.bintray.com</url>
     </repository>
   </repositories>
+  
   <dependencies>
     <dependency>
       <groupId>net.dv8tion</groupId>
@@ -78,4 +109,5 @@
    		<version>2.8.0</version>
     </dependency>
   </dependencies>
+  
 </project>
