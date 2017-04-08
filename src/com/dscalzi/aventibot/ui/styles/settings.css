@@ -1,53 +1,44 @@
-/* Logger font, found on https://fonts.google.com/specimen/Inconsolata?selection.family=Inconsolata */
-@font-face {
-	font-family: inconsolata;
-	src: url('Inconsolata-Bold.ttf');
-}
-
-@font-face {
-	font-family: 'IM FELL Great Primer';
-	src: url('IMFeGPrm28P.ttf');
-}
-
-#console_log {
-	-fx-background-color: #072c50;
-	-fx-background-radius: 0em;
-	-fx-text-fill: white;
-	-fx-min-width: 300px;
-	-fx-min-height: 300px;
-	-fx-font: 12 inconsolata;
-}
-
-#console_log .content {
-	/* #2d2835 #340f0f #073e71 #072c50*/
-	-fx-background-color: #072c50;
-	-fx-background-radius: 0em;
-}
-
-#commandline {
-	-fx-background-radius: 0em;
-	-fx-focus-color: #2d2835;
-}
-
-#author {
-	-fx-font-size: 11px;
-	-fx-fill: white;
-}
-
-#title {
-	-fx-fill: white;
-	-fx-font: 17 'IM FELL Great Primer';
-}
-
-#leftpane {
+#main_root {
 	-fx-background-color: #262626;
-	-fx-padding: 10 10 10 10;
-	-fx-min-width: 150px;
+	-fx-spacing: 4px;
+}
+
+#root {
+	-fx-background-color: #0f579d;
+}
+
+#button_tray {
+	-fx-padding: 5px;
+}
+
+.setting_field {
+	-fx-padding: 10px;
 	-fx-spacing: 5px;
 }
 
-#body {
-	-fx-background-color: black;
+.text {
+	-fx-fill: white;
+}
+
+.text-field {
+	-fx-background-radius: 0px;
+}
+
+.text-field:focused {
+	-fx-background-color: #0f579d, #f4f4f4, white !important;
+	-fx-background-insets: 0, 1, 2;
+}
+
+.tooltip {
+    -fx-background: rgba(30,30,30);
+    -fx-text-fill: white;
+    -fx-background-color: #0f579d;/*rgba(30,30,30,0.8);*/
+    -fx-opacity: 0.8;
+    -fx-background-radius: 6px;
+    -fx-background-insets: 0;
+    -fx-padding: 0.667em 0.75em 0.667em 0.75em; /* 10px */
+    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.5) , 10, 0.0 , 0 , 3 );
+    -fx-font-size: 12px;
 }
 
 .button {

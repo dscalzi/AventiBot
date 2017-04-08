@@ -95,4 +95,16 @@ public class ConsolePrivateChannel implements PrivateChannel{
 		return false;
 	}
 
+	@Override
+	public String getLatestMessageId() {
+		// Not supported
+		return null;
+	}
+
+	@Override
+	public boolean hasLatestMessage() {
+		// Not supported
+		return false;
+	}
+
 }

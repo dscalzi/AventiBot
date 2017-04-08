@@ -19,8 +19,12 @@
 	<HBox id="body">
 		<VBox id="leftpane" alignment="top_center">
 			<StackPane id="infoBox" alignment="top_center">
-				<Text id="nameText" text="AventiBot &#10; Created by Daniel Scalzi"  textAlignment="center"/>
+				<VBox alignment="center">
+					<Text id="title" text="AventiBot" textAlignment="center"/>
+					<Text id="author" text="Created by Daniel Scalzi &#10; AGPL License"  textAlignment="center"/>
+				</VBox>
 			</StackPane>
+			<Button id="settings_button" text="Settings" prefWidth="110" onAction="#handleSettingsButton"/>
 			<StackPane id="spacer" VBox.vgrow="ALWAYS"/>
 			<VBox id="leftpaneButtom" alignment="bottom_center">
 				<Button fx:id="launch_button" text="Launch AventiBot" onAction="#handleLaunchButton"/>

@@ -19,6 +19,7 @@ import java.util.Set;
 
 import com.dscalzi.aventibot.AventiBot;
 import com.dscalzi.aventibot.console.ConsoleUser;
+import com.dscalzi.aventibot.settings.SettingsManager;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
@@ -40,9 +41,6 @@ public final class PermissionUtil {
 	private static final String GATEKEY = "requiresPermission";
 	private static final SimpleLog log = SimpleLog.getLog("PermissionUtil");
 	
-	private static final File permissionFolder;
-	private static final String guildRegex;
-	private static final String permissionNameTemplate;
 	private static final Map<Guild, Boolean> initialized;
 
 	//Key is node:guildid
@@ -50,30 +48,9 @@ public final class PermissionUtil {
 	private static final Map<String, List<String>> blacklistMap;
 	
 	static {
-		permissionFolder = new File(AventiBot.getDataPath(), "permissions");
-		guildRegex = "{g}";
-		permissionNameTemplate = "perms" + guildRegex + ".json";
 		permissionMap = new HashMap<String, List<String>>();
 		blacklistMap = new HashMap<String, List<String>>();
 		initialized = new HashMap<Guild, Boolean>();
-	}
-	
-	private static File verifyFile(String name){
-		if(!permissionFolder.exists()) {
-			boolean status = permissionFolder.mkdirs();
-			if(!status) return null;
-		}
-		File target = new File(permissionFolder, name);
-		if(!target.exists()) {
-			boolean status;
-			try {
-				status = target.createNewFile();
-			} catch (IOException e) {
-				status = false;
-			}
-			return status ? target : null;
-		}
-		return target;
 	}
 	
 	public static boolean isInitialized(Guild g){
@@ -119,10 +96,6 @@ public final class PermissionUtil {
 		}
 		return true;
 		
-	}
-	
-	public static String getPermFileName(Guild g){
-		return permissionNameTemplate.replace(guildRegex, g.getId());
 	}
 	
 	public static List<String> getAllowedRoles(PermissionNode node, Guild g){
@@ -171,7 +144,7 @@ public final class PermissionUtil {
 	 * If removing permission, see {@link #permissionRemove(PermissionNode, Guild, Role)}
 	 */
 	private static Boolean writePermissionChange(PermissionNode node, Guild g, Role role, boolean add) throws IOException{
-		File target = verifyFile(getPermFileName(g));
+		File target = SettingsManager.getPermissionFile(g);
 		if(target == null) throw new IOException();
 		
 		String key = String.join(":", node.toString(), g.getId());
@@ -257,7 +230,7 @@ public final class PermissionUtil {
 	 * If removing permission, see {@link #bulkPermissionRemove(PermissionNode, Guild, Set)}
 	 */
 	private static Set<Role> writeBulkPermissionChange(PermissionNode node, Guild g, Set<Role> roles, boolean add) throws IOException{
-		File target = verifyFile(getPermFileName(g));
+		File target = SettingsManager.getPermissionFile(g);
 		if(target == null) throw new IOException();
 		
 		Set<Role> failed = new HashSet<Role>();
@@ -353,7 +326,7 @@ public final class PermissionUtil {
 	 */
 	private static Set<PermissionNode> writeBulkNodeChange(Role r, Guild g, Set<PermissionNode> nodes, boolean add) throws IOException{
 		
-		File target = verifyFile(getPermFileName(g));
+		File target = SettingsManager.getPermissionFile(g);
 		if(target == null) throw new IOException();
 		
 		Set<PermissionNode> failed = new HashSet<PermissionNode>();
@@ -423,7 +396,7 @@ public final class PermissionUtil {
 	}
 	
 	private static boolean writeBlacklistChange(User u, PermissionNode node, Guild g, boolean add) throws IOException{
-		File target = verifyFile(getPermFileName(g));
+		File target = SettingsManager.getPermissionFile(g);
 		if(target == null) throw new IOException();
 		
 		String key = String.join(":", node.toString(), g.getId());
@@ -471,7 +444,7 @@ public final class PermissionUtil {
 	}
 	
 	public static void loadJson(Guild g) throws IOException {
-		File target = verifyFile(getPermFileName(g));
+		File target = SettingsManager.getPermissionFile(g);
 		if(target == null) throw new IOException();
 		
 		log.info("Using permission file located at " + target.getAbsolutePath() + " for guild " + g.getName() + "(" + g.getId() + ").");

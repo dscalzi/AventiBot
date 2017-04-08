@@ -6,7 +6,6 @@
 package com.dscalzi.aventibot;
 
 import java.io.File;
-
 import javax.security.auth.login.LoginException;
 import javax.xml.ws.http.HTTPException;
 
@@ -58,6 +57,12 @@ public class AventiBot {
 		if(!this.connect()) return;
 		this.console = ConsoleUser.build(jda);
 		((JDAImpl)jda).getPrivateChannelMap().put("consolepm", console.getPrivateChannel());
+		/*try {
+			jda.getSelfUser().getManager().setAvatar(Icon.from(new File("C:/Users/Asus/Desktop/HgXD7h2O.jpg"))).queue();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}*/
 	}
 	
 	public static boolean launch(){
