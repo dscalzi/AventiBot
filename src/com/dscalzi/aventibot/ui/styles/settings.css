@@ -11,6 +11,10 @@
 	-fx-padding: 5px;
 }
 
+#color_settings_container {
+	-fx-spacing: 4px;
+}
+
 .setting_field {
 	-fx-padding: 10px;
 	-fx-spacing: 5px;
@@ -25,7 +29,12 @@
 }
 
 .text-field:focused {
-	-fx-background-color: #0f579d, #f4f4f4, white !important;
+	-fx-background-color: #0f579d, #f4f4f4, white;
+	-fx-background-insets: 0, 1, 2;
+}
+
+.textfieldinvalid {
+	-fx-background-color: red, #f4f4f4, white !important;
 	-fx-background-insets: 0, 1, 2;
 }
 

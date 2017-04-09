@@ -5,7 +5,6 @@
  */
 package com.dscalzi.aventibot.commands;
 
-import java.awt.Color;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,6 +24,7 @@ import com.dscalzi.aventibot.cmdutil.PermissionNode.NodeType;
 import com.dscalzi.aventibot.music.LavaWrapper;
 import com.dscalzi.aventibot.music.TrackMeta;
 import com.dscalzi.aventibot.music.TrackScheduler;
+import com.dscalzi.aventibot.settings.SettingsManager;
 import com.dscalzi.aventibot.util.PageList;
 import com.dscalzi.aventibot.util.TimeUtils;
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
@@ -204,7 +204,7 @@ public class CmdMusicControl implements CommandExecutor{
 				return;
 			}
 			
-			EmbedBuilder eb = new EmbedBuilder().setColor(Color.decode("#df4efc"));
+			EmbedBuilder eb = new EmbedBuilder().setColor(SettingsManager.getGlobalConfig().getBotColor());
 			eb.addField(new Field("Currently Playing:", current.getTrack().getInfo().title + " (" + TimeUtils.formatTrackDuration(current.getTrack().getPosition()) + "/" + TimeUtils.formatTrackDuration(current.getTrack().getDuration()) + ")", false));
 			String desc = "";
 			
@@ -236,7 +236,7 @@ public class CmdMusicControl implements CommandExecutor{
 				return;
 			}
 			e.getChannel().sendTyping().queue((v) -> {
-				EmbedBuilder eb = new EmbedBuilder().setTitle("Paused " + tm.getTrack().getInfo().title, null).setColor(Color.decode("#df4efc"));
+				EmbedBuilder eb = new EmbedBuilder().setTitle("Paused " + tm.getTrack().getInfo().title, null).setColor(SettingsManager.getGlobalConfig().getBotColor());
 				eb.setDescription("Song Duration: (" + TimeUtils.formatTrackDuration(tm.getTrack().getPosition()) + "/" + TimeUtils.formatTrackDuration(tm.getTrack().getDuration()) + ")");
 				eb.setFooter("Use " + AventiBot.commandPrefix + "resume to unpause.", "http://i.imgur.com/ccX8Pvi.png");
 				e.getChannel().sendMessage(new MessageBuilder().setEmbed(eb.build()).build()).queue();
@@ -259,7 +259,7 @@ public class CmdMusicControl implements CommandExecutor{
 		if(otm.isPresent()){
 			TrackMeta tm = otm.get();
 			e.getChannel().sendTyping().queue((v) -> {
-				EmbedBuilder eb = new EmbedBuilder().setTitle("Resumed " + tm.getTrack().getInfo().title, null).setColor(Color.decode("#df4efc"));
+				EmbedBuilder eb = new EmbedBuilder().setTitle("Resumed " + tm.getTrack().getInfo().title, null).setColor(SettingsManager.getGlobalConfig().getBotColor());
 				eb.setDescription("Song Duration: (" + TimeUtils.formatTrackDuration(tm.getTrack().getPosition()) + "/" + TimeUtils.formatTrackDuration(tm.getTrack().getDuration()) + ")");
 				eb.setFooter("Use " + AventiBot.commandPrefix + "pause to pause.", "http://i.imgur.com/ccX8Pvi.png");
 				e.getChannel().sendMessage(new MessageBuilder().setEmbed(eb.build()).build()).queue();

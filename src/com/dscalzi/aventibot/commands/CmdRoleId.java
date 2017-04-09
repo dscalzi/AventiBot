@@ -5,7 +5,6 @@
  */
 package com.dscalzi.aventibot.commands;
 
-import java.awt.Color;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -15,6 +14,7 @@ import com.dscalzi.aventibot.cmdutil.PermissionNode;
 import com.dscalzi.aventibot.cmdutil.PermissionUtil;
 import com.dscalzi.aventibot.cmdutil.PermissionNode.NodeType;
 import com.dscalzi.aventibot.console.ConsoleUser;
+import com.dscalzi.aventibot.settings.SettingsManager;
 import com.dscalzi.aventibot.util.InputUtils;
 
 import javafx.util.Pair;
@@ -66,7 +66,7 @@ public class CmdRoleId implements CommandExecutor{
 			}
 		} else {
 			EmbedBuilder eb = new EmbedBuilder();
-			eb.setColor(roles.size() == 1 ? roles.iterator().next().getColor() : Color.decode("#df4efc"));
+			eb.setColor(roles.size() == 1 ? roles.iterator().next().getColor() : SettingsManager.getGlobalConfig().getBotColor());
 			String desc = "";
 			for(Role r : roles){
 				desc += r.getAsMention() + "\n`" + r.getId() + "`\n";

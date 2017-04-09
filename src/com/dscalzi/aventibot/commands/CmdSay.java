@@ -46,7 +46,7 @@ public class CmdSay implements CommandExecutor{
 		
 		MessageChannel ch = (args.length > 0) ? InputUtils.parseChannel(e.getMessage(), args[0]) : null;
 		
-		if(ch != null){
+		if(ch != null && e.getGuild() != null){
 			if(!e.getGuild().getTextChannels().contains(ch)){
 				e.getChannel().sendMessage("I cannot message other guilds for you, sorry!").queue();
 				return false;
@@ -58,9 +58,10 @@ public class CmdSay implements CommandExecutor{
 		mb.append(message);
 		
 		if(ch == null) {
-			if(e.getAuthor() instanceof ConsoleUser)
-				ch = e.getGuild().getPublicChannel();
-			else if(e.isFromType(ChannelType.PRIVATE))
+			if(e.getAuthor() instanceof ConsoleUser){
+				e.getChannel().sendMessage("Please specify a valid channel!").queue();
+				return false;
+			} else if(e.isFromType(ChannelType.PRIVATE))
 				ch = e.getPrivateChannel();
 			else
 				ch = e.getTextChannel();

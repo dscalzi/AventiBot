@@ -39,7 +39,9 @@ import net.dv8tion.jda.core.utils.SimpleLog;
 
 public class TerminalController implements Initializable {
 
-	private final SimpleLog LOG = SimpleLog.getLog("Launcher");
+	protected static boolean markSoftShutdown;
+	
+	private static final SimpleLog LOG = SimpleLog.getLog("Launcher");
 	
 	@FXML private Button launch_button;
 	@FXML private Button terminate_button;
@@ -65,8 +67,12 @@ public class TerminalController implements Initializable {
 		} catch (IOException e1) {
 			LOG.fatal("Unable to open settings window..");
 			e1.printStackTrace();
+			if(markSoftShutdown){
+				this.softShutdown();
+			}
 			return;
 		}
+		
 		Stage stage = new Stage();
 		stage.getIcons().add(new Image(getClass().getResourceAsStream("styles/avatar.png")));
 		stage.initOwner(launch_button.getScene().getWindow());
@@ -114,6 +120,10 @@ public class TerminalController implements Initializable {
 					launch_button.setDisable(false);
 			}
 		});
+	}
+	
+	public void softShutdown(){
+		launch_button.setDisable(true);
 	}
 	
 	@FXML

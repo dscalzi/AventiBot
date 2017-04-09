@@ -6,6 +6,8 @@
 package com.dscalzi.aventibot;
 
 import java.io.File;
+import java.io.IOException;
+
 import javax.security.auth.login.LoginException;
 import javax.xml.ws.http.HTTPException;
 
@@ -23,6 +25,8 @@ import com.dscalzi.aventibot.commands.CmdSay;
 import com.dscalzi.aventibot.commands.CmdShutdown;
 import com.dscalzi.aventibot.console.ConsoleUser;
 import com.dscalzi.aventibot.music.LavaWrapper;
+import com.dscalzi.aventibot.settings.GlobalConfig;
+import com.dscalzi.aventibot.settings.SettingsManager;
 
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
@@ -35,7 +39,6 @@ import net.dv8tion.jda.core.utils.SimpleLog;
 
 public class AventiBot {
 	
-	private static final String token;
 	public static final String commandPrefix;
 	
 	private static BotStatus status;
@@ -43,8 +46,8 @@ public class AventiBot {
 	
 	static {
 		commandPrefix = "--";
-		//token = "MjMxOTA2OTY2MzA0MTk0NTYx.CtjFKQ.Y5nPGpJwQy5kVSLfra-01dvD-_A";
-		token = "MjMxOTA2OTY2MzA0MTk0NTYx.C5FcMQ.AnCpNadk33r9eGczmOV6SX5QfOw";
+		//OLDtoken = "MjMxOTA2OTY2MzA0MTk0NTYx.CtjFKQ.Y5nPGpJwQy5kVSLfra-01dvD-_A";
+		//OCtoken = "MjMxOTA2OTY2MzA0MTk0NTYx.C5FcMQ.AnCpNadk33r9eGczmOV6SX5QfOw";
 		status = BotStatus.NULL;
 	}
 	
@@ -55,8 +58,6 @@ public class AventiBot {
 	private AventiBot(){
 		this.registry = new CommandRegistry();
 		if(!this.connect()) return;
-		this.console = ConsoleUser.build(jda);
-		((JDAImpl)jda).getPrivateChannelMap().put("consolepm", console.getPrivateChannel());
 		/*try {
 			jda.getSelfUser().getManager().setAvatar(Icon.from(new File("C:/Users/Asus/Desktop/HgXD7h2O.jpg"))).queue();
 		} catch (IOException e) {
@@ -69,14 +70,17 @@ public class AventiBot {
 		if(status == BotStatus.NULL) {
 			status = BotStatus.LAUNCHED;
 			instance = new AventiBot();
-			LavaWrapper.initialize();
-			if(status == BotStatus.CONNECTED){
-				instance.registerCommands();
-				instance.registerListeners();
-			}
 			return true;
 		}
 		return false;
+	}
+	
+	private void postConntectionSetup(){
+		registerCommands();
+		registerListeners();
+		LavaWrapper.initialize();
+		this.console = ConsoleUser.build(jda);
+		((JDAImpl)jda).getPrivateChannelMap().put("consolepm", console.getPrivateChannel());
 	}
 	
 	private void registerCommands(){
@@ -102,17 +106,21 @@ public class AventiBot {
 	
 	private void registerListeners(){
 		jda.addEventListener(new CommandListener());
+		jda.addEventListener(new MessageListener());
 	}
 	
 	public boolean connect(){
 		try {
+			GlobalConfig g = SettingsManager.loadGlobalConfig();
 			jda = new JDABuilder(AccountType.BOT)
-					.setToken(AventiBot.token)
-					.setGame(new GameImpl(commandPrefix + "help | Developed by Dan", "http://aventiumsoftworks.com/", GameType.DEFAULT))
+					.setToken(g.getAPIKey())
+					.setGame(new GameImpl(g.getCurrentGame(), "TBD", GameType.DEFAULT))
 					.buildBlocking();
 			jda.setAutoReconnect(true);
 			status = BotStatus.CONNECTED;
-		} catch (LoginException | IllegalArgumentException | InterruptedException | HTTPException | RateLimitedException e) {
+			postConntectionSetup();
+		} catch (LoginException | IllegalArgumentException | InterruptedException | HTTPException | RateLimitedException | IOException e) {
+			status = BotStatus.LAUNCHED;
 			SimpleLog.getLog("JDA").fatal("Failed to connect to Discord!");
 			e.printStackTrace();
 			return false;
