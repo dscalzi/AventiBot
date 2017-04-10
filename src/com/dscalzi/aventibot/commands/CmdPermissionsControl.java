@@ -83,7 +83,7 @@ public class CmdPermissionsControl implements CommandExecutor{
 			for(int i=0; i<terms.length; ++i) terms[i] = rawArgs[i+2];
 			Pair<Set<Role>,Set<String>> result = InputUtils.parseBulkRoles(terms, e.getGuild());
 			e.getChannel().sendTyping().queue((v) -> {
-				EmbedBuilder eb = new EmbedBuilder().setAuthor("Permission Add Results", null, "http://i.imgur.com/7OfFSFx.png").setDescription("Target node `" + node + "`").setColor(SettingsManager.getGlobalConfig().getBotColor());
+				EmbedBuilder eb = new EmbedBuilder().setAuthor("Permission Add Results", null, "http://i.imgur.com/7OfFSFx.png").setDescription("Target node `" + node + "`").setColor(SettingsManager.getColor(e.getGuild()));
 				if(result.getKey().size() != 0){	
 					try {
 						
@@ -118,7 +118,7 @@ public class CmdPermissionsControl implements CommandExecutor{
 			});
 			return;
 		}
-		e.getChannel().sendMessage("Proper usage: " + AventiBot.commandPrefix + "permissions add <node> <ranks>").queue();
+		e.getChannel().sendMessage("Proper usage: " + SettingsManager.getCommandPrefix(e.getGuild()) + "permissions add <node> <ranks>").queue();
 	}
 	
 	private void cmdRemove(MessageReceivedEvent e, String[] rawArgs){
@@ -135,7 +135,7 @@ public class CmdPermissionsControl implements CommandExecutor{
 			for(int i=0; i<terms.length; ++i) terms[i] = rawArgs[i+2];
 			Pair<Set<Role>,Set<String>> result = InputUtils.parseBulkRoles(terms, e.getGuild());
 			e.getChannel().sendTyping().queue((v) -> {
-				EmbedBuilder eb = new EmbedBuilder().setAuthor("Permission Remove Results", null, "http://i.imgur.com/voGutMQ.png").setDescription("Target node `" + node + "`").setColor(SettingsManager.getGlobalConfig().getBotColor());
+				EmbedBuilder eb = new EmbedBuilder().setAuthor("Permission Remove Results", null, "http://i.imgur.com/voGutMQ.png").setDescription("Target node `" + node + "`").setColor(SettingsManager.getColor(e.getGuild()));
 				if(result.getKey().size() != 0){
 					try {
 						Set<Role> fails;
@@ -171,7 +171,7 @@ public class CmdPermissionsControl implements CommandExecutor{
 			});
 			return;
 		}
-		e.getChannel().sendMessage("Proper usage: " + AventiBot.commandPrefix + "permissions remove <node> <ranks>").queue();
+		e.getChannel().sendMessage("Proper usage: " + SettingsManager.getCommandPrefix(e.getGuild()) + "permissions remove <node> <ranks>").queue();
 		
 	}
 	
@@ -206,7 +206,7 @@ public class CmdPermissionsControl implements CommandExecutor{
 					}
 				}
 				e.getChannel().sendTyping().queue((v) -> {
-					EmbedBuilder eb = new EmbedBuilder().setAuthor("Permission Grant Results", null, "http://i.imgur.com/7OfFSFx.png").setDescription("Target Role " + r.getAsMention()).setColor(SettingsManager.getGlobalConfig().getBotColor());
+					EmbedBuilder eb = new EmbedBuilder().setAuthor("Permission Grant Results", null, "http://i.imgur.com/7OfFSFx.png").setDescription("Target Role " + r.getAsMention()).setColor(SettingsManager.getColor(e.getGuild()));
 					if(nodes.size() > 0){
 						try {
 							Set<PermissionNode> fails;
@@ -237,7 +237,7 @@ public class CmdPermissionsControl implements CommandExecutor{
 				return;
 			}
 		}
-		e.getChannel().sendMessage("Proper usage: " + AventiBot.commandPrefix + "permissions grant <node> <ranks>").queue();
+		e.getChannel().sendMessage("Proper usage: " + SettingsManager.getCommandPrefix(e.getGuild()) + "permissions grant <node> <ranks>").queue();
 	}
 	
 	private void cmdRevoke(MessageReceivedEvent e, String[] rawArgs){
@@ -271,7 +271,7 @@ public class CmdPermissionsControl implements CommandExecutor{
 					}
 				}
 				e.getChannel().sendTyping().queue((v) -> {
-					EmbedBuilder eb = new EmbedBuilder().setAuthor("Permission Revoke Results", null, "http://i.imgur.com/voGutMQ.png").setDescription("Target Role " + r.getAsMention()).setColor(SettingsManager.getGlobalConfig().getBotColor());
+					EmbedBuilder eb = new EmbedBuilder().setAuthor("Permission Revoke Results", null, "http://i.imgur.com/voGutMQ.png").setDescription("Target Role " + r.getAsMention()).setColor(SettingsManager.getColor(e.getGuild()));
 					if(nodes.size() > 0){
 						try {
 							Set<PermissionNode> fails;
@@ -302,7 +302,7 @@ public class CmdPermissionsControl implements CommandExecutor{
 				return;
 			}
 		}
-		e.getChannel().sendMessage("Proper usage: " + AventiBot.commandPrefix + "permissions revoke <node> <ranks>").queue();
+		e.getChannel().sendMessage("Proper usage: " + SettingsManager.getCommandPrefix(e.getGuild()) + "permissions revoke <node> <ranks>").queue();
 	}
 	
 	private boolean validate(MessageReceivedEvent e, PermissionNode permission){

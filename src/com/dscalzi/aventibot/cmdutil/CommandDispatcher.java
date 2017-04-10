@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.dscalzi.aventibot.AventiBot;
+import com.dscalzi.aventibot.settings.SettingsManager;
 
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.utils.SimpleLog;
@@ -20,7 +21,9 @@ public class CommandDispatcher {
 	public static void dispatchCommand(MessageReceivedEvent e, String cmd){
 		Optional<CommandExecutor> exec = AventiBot.getInstance().getCommandRegistry().getExecutor(cmd);
 		
-		exec.ifPresent((cmdEx) -> {
+		if(exec.isPresent()){
+			CommandExecutor cmdEx = exec.get();
+			
 			String msg = e.getMessage().getContent();
 			String argStr = msg.substring(msg.indexOf(cmd) + cmd.length()).trim();
 			String[] args = cleanArgsArray((argStr.length() > 0) ? argStr.split("\\s") : new String[0]);
@@ -30,10 +33,15 @@ public class CommandDispatcher {
 			String[] rawArgs = cleanArgsArray((rawArgStr.length() > 0) ?  rawArgStr.split("\\s") : new String[0]);
 			
 			String fullArgs = String.join(" ", args).trim();
-			SimpleLog.getLog("CommandDispatcher").info("User " + e.getAuthor().getName() + " (" + e.getAuthor().getId() + ") has just run the command '" + AventiBot.commandPrefix + cmd + (fullArgs.length() > 0 ? " " : "") + fullArgs + "'");
+			
+			String cmdPrefix = SettingsManager.getCommandPrefix(e.getGuild());
+			if(cmdPrefix.equals(AventiBot.getInstance().getJDA().getSelfUser().getAsMention()))
+				cmdPrefix = cmdPrefix + " ";
+			
+			SimpleLog.getLog("CommandDispatcher").info("User " + e.getAuthor().getName() + " (" + e.getAuthor().getId() + ") has just run the command '" + cmdPrefix + cmd + (fullArgs.length() > 0 ? " " : "") + fullArgs + "'");
 			
 			cmdEx.onCommand(e, cmd, args, rawArgs);
-		});
+		}
 	}
 	
 	private static String[] cleanArgsArray(String[] args){
@@ -44,9 +52,14 @@ public class CommandDispatcher {
 	}
 	
 	public static String parseMessage(MessageReceivedEvent e){
-		String c = e.getMessage().getContent();
+		String c = e.getMessage().getRawContent();
+		String prefix = SettingsManager.getCommandPrefix(e.getGuild());
+		c = c.substring(prefix.length());
+		if(prefix.equals(AventiBot.getInstance().getJDA().getSelfUser().getAsMention()))
+			c = c.trim();
+		
 		try{
-			return c.substring(AventiBot.commandPrefix.length(), (c.indexOf(" ") > -1 ? c.indexOf(" ") : c.length()));
+			return c.substring(0, (c.indexOf(" ") > -1 ? c.indexOf(" ") : c.length()));
 		} catch (Exception ex){
 			return null;
 		}

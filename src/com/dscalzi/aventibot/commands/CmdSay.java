@@ -9,12 +9,12 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.dscalzi.aventibot.AventiBot;
 import com.dscalzi.aventibot.cmdutil.CommandExecutor;
 import com.dscalzi.aventibot.cmdutil.PermissionNode;
 import com.dscalzi.aventibot.cmdutil.PermissionUtil;
 import com.dscalzi.aventibot.cmdutil.PermissionNode.NodeType;
 import com.dscalzi.aventibot.console.ConsoleUser;
+import com.dscalzi.aventibot.settings.SettingsManager;
 import com.dscalzi.aventibot.util.InputUtils;
 
 import net.dv8tion.jda.core.MessageBuilder;
@@ -53,7 +53,7 @@ public class CmdSay implements CommandExecutor{
 			}
 		}
 		
-		String message = e.getMessage().getRawContent().substring((ch == null) ? (AventiBot.commandPrefix + cmd).length() : e.getMessage().getRawContent().indexOf(rawArgs[0]) + rawArgs[0].length());
+		String message = e.getMessage().getRawContent().substring((ch == null) ? (SettingsManager.getCommandPrefix(e.getGuild()) + cmd).length() : e.getMessage().getRawContent().indexOf(rawArgs[0]) + rawArgs[0].length());
 		MessageBuilder mb = new MessageBuilder();
 		mb.append(message);
 		

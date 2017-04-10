@@ -5,6 +5,9 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.dscalzi.aventibot.AventiBot;
+import com.dscalzi.aventibot.BotStatus;
+
 import javafx.util.Pair;
 
 public class GlobalConfig {
@@ -16,7 +19,8 @@ public class GlobalConfig {
 		try {
 			keyMap.put(new Pair<String, Object>("token", "NULL"), GlobalConfig.class.getMethod("setToken", String.class));
 			keyMap.put(new Pair<String, Object>("currentGame", "Developed by Dan"), GlobalConfig.class.getMethod("setCurrentGame", String.class));
-			keyMap.put(new Pair<String, Object>("botColorHex", "#0f579d"), GlobalConfig.class.getMethod("setBotColor", String.class));
+			keyMap.put(new Pair<String, Object>("defaultColorHex", "#0f579d"), GlobalConfig.class.getMethod("setDefaultColor", String.class));
+			keyMap.put(new Pair<String, Object>("defaultCommandPrefix", "--"), GlobalConfig.class.getMethod("setDefaultCommandPrefix", String.class));
 		} catch (NoSuchMethodException | SecurityException e) {
 			//Shouldn't happen since this is hard coded.
 			e.printStackTrace();
@@ -25,17 +29,17 @@ public class GlobalConfig {
 	
 	private String token;
 	private String currentGame;
-	private transient Color botColor;
-	private String botColorHex;
+	private String defaultColorHex;
+	private transient Color defaultColorAWT;
+	private String defaultCommandPrefix;
 	
-	public GlobalConfig(){
-		//For deserialization.
-	}
+	public GlobalConfig(){ /* For deserialization. */ }
 	
-	public GlobalConfig(String token, String currentGame, String botColor) {
+	public GlobalConfig(String token, String currentGame, String defaultColorHex, String defaultCommandPrefix) {
 		this.token = token;
 		this.currentGame = currentGame;
-		setBotColor(botColor);
+		setDefaultColor(defaultColorHex);
+		this.defaultCommandPrefix = defaultCommandPrefix;
 	}
 	
 	public String getToken(){
@@ -54,24 +58,35 @@ public class GlobalConfig {
 		this.currentGame = currentGame;
 	}
 	
-	public Color getBotColor(){
-		if(botColor == null) setBotColor(getBotColorHex());
-		return botColor;
+	public Color getDefaultColor(){
+		if(defaultColorAWT == null) setDefaultColor(getDefaultColorHex());
+		return defaultColorAWT;
 	}
 	
-	public String getBotColorHex(){
-		return botColorHex;
+	public String getDefaultColorHex(){
+		return defaultColorHex;
 	}
 	
-	public void setBotColor(String botColor){
+	public void setDefaultColor(String defaultColor){
 		try {
-			botColorHex = botColor;
-			this.botColor = Color.decode(botColorHex);
+			defaultColorHex = defaultColor;
+			this.defaultColorAWT = Color.decode(defaultColorHex);
 		} catch (NumberFormatException | NullPointerException e){
 			//Assign default
-			botColorHex = "#0f579d";
-			this.botColor = Color.decode(botColorHex);
+			defaultColorHex = "#0f579d";
+			this.defaultColorAWT = Color.decode(defaultColorHex);
 		}
+	}
+	
+	public String getCommandPrefix(){
+		if(defaultCommandPrefix.equalsIgnoreCase("@MENTION") && AventiBot.getStatus() == BotStatus.CONNECTED)
+			return AventiBot.getInstance().getJDA().getSelfUser().getAsMention();
+		
+		return this.defaultCommandPrefix;
+	}
+	
+	public void setDefaultCommandPrefix(String defaultCommandPrefix){
+		this.defaultCommandPrefix = defaultCommandPrefix;
 	}
 	
 }

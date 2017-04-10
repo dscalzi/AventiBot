@@ -15,6 +15,12 @@
 	-fx-spacing: 4px;
 }
 
+#settings_clarification_g,
+#settings_clarification_gd {
+	-fx-padding: 10px;
+	-fx-font-weight: bold;
+}
+
 .setting_field {
 	-fx-padding: 10px;
 	-fx-spacing: 5px;
@@ -48,6 +54,7 @@
     -fx-padding: 0.667em 0.75em 0.667em 0.75em; /* 10px */
     -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.5) , 10, 0.0 , 0 , 3 );
     -fx-font-size: 12px;
+    -fx-font-weight: normal !important;
 }
 
 .button {

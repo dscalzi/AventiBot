@@ -156,7 +156,7 @@ public class TerminalController implements Initializable {
             constructor.setAccessible(true);
             Object tooltipBehavior = constructor.newInstance(
                     new Duration(100),  //open
-                    new Duration(10000), //visible
+                    new Duration(30000), //visible
                     new Duration(200),  //close
                     false);
             Field fieldBehavior = obj.getClass().getDeclaredField("BEHAVIOR");

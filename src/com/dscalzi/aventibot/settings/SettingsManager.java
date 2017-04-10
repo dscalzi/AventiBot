@@ -5,12 +5,14 @@
  */
 package com.dscalzi.aventibot.settings;
 
+import java.awt.Color;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.Map;
 
 import com.dscalzi.aventibot.AventiBot;
@@ -37,7 +39,8 @@ public class SettingsManager {
 	
 	private static final SimpleLog LOG = SimpleLog.getLog("SettingsManager");
 	
-	private static GlobalConfig configCache;
+	private static GlobalConfig configCache = null;
+	private static Map<String, GuildConfig> gConfigCache = new HashMap<String, GuildConfig>();
 	
 	/* * * * *
 	 * 
@@ -214,7 +217,7 @@ public class SettingsManager {
 		try(JsonReader file = new JsonReader(new FileReader(target))){
 			JsonObject result = null;
 			JsonElement parsed = p.parse(file);
-			if(parsed.isJsonNull()) return generateDefault();
+			if(parsed.isJsonNull()) return generateDefaultGlobal();
 			if(parsed.isJsonObject()){
 				result = parsed.getAsJsonObject();
 				Gson gson = new Gson();
@@ -229,7 +232,7 @@ public class SettingsManager {
 						}else
 							m.invoke(g, gson.fromJson(v, required));
 					} catch (JsonSyntaxException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e1) {
-						LOG.fatal("Exception while parsing global config on token " + e.getKey() + ".");
+						LOG.fatal("Exception while parsing global config on value '" + e.getKey() + "'.");
 						e1.printStackTrace();
 					}
 				}
@@ -248,10 +251,156 @@ public class SettingsManager {
 	 * @return The GlobalConfig object with default assigned values which was serialized.
 	 * @throws IOException If the target file was not found/could not be created.
 	 */
-	private static GlobalConfig generateDefault() throws IOException{
-		GlobalConfig def = new GlobalConfig("NULL", "Developed by Dan", "#0f579d");
+	private static GlobalConfig generateDefaultGlobal() throws IOException{
+		GlobalConfig def = new GlobalConfig();
+		for(Map.Entry<Pair<String, Object>, Method> e : GlobalConfig.keyMap.entrySet()){
+			try {
+				e.getValue().invoke(def, e.getKey().getValue());
+			} catch (Throwable t){
+				LOG.fatal("Error while creating default configuration:");
+				t.printStackTrace();
+			}
+		}
 		saveGlobalConfig(def);
 		return def;
+	}
+	
+	/* * * * *
+	 * 
+	 * Guild Config Saving/Loading
+	 * 
+	 * * * * */
+	
+	/**
+	 * Retrieves the cached GlobalConfig value that was stored the last time
+	 * it was loaded. If no value is already cached, it will load the value
+	 * and cache it.
+	 * 
+	 * In order to load the GlobalConfig directly from the serialized JSON form,
+	 * see {@link #loadGlobalConfig()}
+	 * 
+	 * @return The latest cached GlobalConfig object.
+	 */
+	public static GuildConfig getGuildConfig(Guild g){
+		try {
+			if(gConfigCache.containsKey(g.getId())) return gConfigCache.get(g.getId());
+			else return loadGuildConfig(g);
+		} catch (IOException e) {
+			LOG.warn("IOException when loading the global config.");
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	/**
+	 * Serializes the GuildConfig object to JSON.
+	 * 
+	 * @param id Guild to save the settings for.
+	 * @param g GuildConfig object to serialize.
+	 * @throws IOException If the target file was not found/could not be created.
+	 */
+	public static void saveGuildConfig(Guild id, GuildConfig g) throws IOException{
+		File target = SettingsManager.getConfigurationFile(id);
+		if(target == null) throw new IOException();
+		
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		try(FileWriter w = new FileWriter(target)){
+			gson.toJson(g, w);
+		}
+		gConfigCache.put(id.getId(), g);
+	}
+	
+	/**
+	 * Deserializes the configuration for a specific guild from JSON.
+	 * 
+	 * @param id Guild to load the settings for.
+	 * 
+	 * @return The GlobalConfig data directly from JSON.
+	 * @throws IOException If the target file was not found/could not be created.
+	 */
+	public static GuildConfig loadGuildConfig(Guild id) throws IOException{
+		File target = SettingsManager.getConfigurationFile(id);
+		if(target == null) throw new IOException();
+		
+		JsonParser p = new JsonParser();
+		GuildConfig g = new GuildConfig();
+		boolean requiresSave = false;
+		
+		try(JsonReader file = new JsonReader(new FileReader(target))){
+			JsonObject result = null;
+			JsonElement parsed = p.parse(file);
+			if(parsed.isJsonNull()) return generateDefaultGuild(id);
+			if(parsed.isJsonObject()){
+				result = parsed.getAsJsonObject();
+				Gson gson = new Gson();
+				for(Map.Entry<Pair<String, Object>, Method> e : GuildConfig.keyMap.entrySet()){
+					JsonElement v = result.get(e.getKey().getKey());
+					Method m = e.getValue();
+					Class<?> required = m.getParameterTypes()[0];
+					try {
+						if(v == null || v.isJsonNull()) {
+							requiresSave = true;
+							m.invoke(g, e.getKey().getValue());
+						}else
+							m.invoke(g, gson.fromJson(v, required));
+					} catch (JsonSyntaxException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e1) {
+						LOG.fatal("Exception while parsing config for guild "+id.getName()+" ("+id.getId()+") on value '" + e.getKey() + "'.");
+						e1.printStackTrace();
+					}
+				}
+			}
+		}
+		
+		if(requiresSave) saveGuildConfig(id, g);
+		else gConfigCache.put(id.getId(), g);
+		
+		return g;
+	}
+	
+	/**
+	 * Generates a default configuration file for the specified guild and serializes it to JSON.
+	 * 
+	 * @param id Guild to generate the settings for.
+	 * 
+	 * @return The GuildConfig object with default assigned values which was serialized.
+	 * @throws IOException If the target file was not found/could not be created.
+	 */
+	private static GuildConfig generateDefaultGuild(Guild g) throws IOException{
+		GuildConfig def = new GuildConfig();
+		for(Map.Entry<Pair<String, Object>, Method> e : GuildConfig.keyMap.entrySet()){
+			try {
+				e.getValue().invoke(def, e.getKey().getValue());
+			} catch (Throwable t){
+				LOG.fatal("Error while creating default configuration:");
+				t.printStackTrace();
+			}
+		}
+		saveGuildConfig(g, def);
+		return def;
+	}
+	
+	/* * * * *
+	 * 
+	 * Utility Methods
+	 * 
+	 * * * * */
+	
+	public static String getCommandPrefix(){
+		return getCommandPrefix(null);
+	}
+	
+	public static String getCommandPrefix(Guild g){
+		if(g == null) return getGlobalConfig().getCommandPrefix();
+		else return getGuildConfig(g).getCommandPrefix();
+	}
+	
+	public static Color getColor(){
+		return getColor(null);
+	}
+	
+	public static Color getColor(Guild g){
+		if(g == null) return getGlobalConfig().getDefaultColor();
+		else return getGuildConfig(g).getColor();
 	}
 	
 }

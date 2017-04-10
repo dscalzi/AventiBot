@@ -39,13 +39,10 @@ import net.dv8tion.jda.core.utils.SimpleLog;
 
 public class AventiBot {
 	
-	public static final String commandPrefix;
-	
 	private static BotStatus status;
 	private static AventiBot instance;
 	
 	static {
-		commandPrefix = "--";
 		//OLDtoken = "MjMxOTA2OTY2MzA0MTk0NTYx.CtjFKQ.Y5nPGpJwQy5kVSLfra-01dvD-_A";
 		//OCtoken = "MjMxOTA2OTY2MzA0MTk0NTYx.C5FcMQ.AnCpNadk33r9eGczmOV6SX5QfOw";
 		status = BotStatus.NULL;
@@ -112,10 +109,11 @@ public class AventiBot {
 	public boolean connect(){
 		try {
 			GlobalConfig g = SettingsManager.loadGlobalConfig();
-			jda = new JDABuilder(AccountType.BOT)
-					.setToken(g.getToken())
-					.setGame(new GameImpl(g.getCurrentGame(), "TBD", GameType.DEFAULT))
-					.buildBlocking();
+			JDABuilder jdaBuilder = new JDABuilder(AccountType.BOT)
+					.setToken(g.getToken());
+			if(!g.getCurrentGame().isEmpty()) 
+				jdaBuilder.setGame(new GameImpl(g.getCurrentGame(), "TBD", GameType.DEFAULT));
+			jda = jdaBuilder.buildBlocking();
 			jda.setAutoReconnect(true);
 			status = BotStatus.CONNECTED;
 			postConntectionSetup();

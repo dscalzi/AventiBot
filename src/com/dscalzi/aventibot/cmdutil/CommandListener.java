@@ -6,6 +6,7 @@
 package com.dscalzi.aventibot.cmdutil;
 
 import com.dscalzi.aventibot.AventiBot;
+import com.dscalzi.aventibot.settings.SettingsManager;
 
 import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
@@ -16,7 +17,7 @@ public class CommandListener extends ListenerAdapter {
 
 	@Override
 	public void onMessageReceived(MessageReceivedEvent e){
-		if(e.getMessage().getContent().trim().startsWith(AventiBot.commandPrefix)){
+		if(e.getMessage().getRawContent().trim().startsWith(SettingsManager.getCommandPrefix(e.getGuild()))){
 			if(e.getChannelType() != ChannelType.PRIVATE)
 				if(!PermissionUtil.isInitialized(e.getGuild())){
 					try{
@@ -28,8 +29,9 @@ public class CommandListener extends ListenerAdapter {
 						return;
 					}
 				}
-			if(!e.getAuthor().getId().equals(AventiBot.getInstance().getId()))
+			if(!e.getAuthor().getId().equals(AventiBot.getInstance().getId())){
 				CommandDispatcher.dispatchCommand(e, CommandDispatcher.parseMessage(e));
+			}
 		}
 	}
 	

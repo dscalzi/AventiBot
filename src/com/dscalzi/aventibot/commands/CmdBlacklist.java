@@ -15,6 +15,7 @@ import com.dscalzi.aventibot.cmdutil.CommandExecutor;
 import com.dscalzi.aventibot.cmdutil.PermissionNode;
 import com.dscalzi.aventibot.cmdutil.PermissionUtil;
 import com.dscalzi.aventibot.cmdutil.PermissionNode.NodeType;
+import com.dscalzi.aventibot.settings.SettingsManager;
 import com.dscalzi.aventibot.util.InputUtils;
 
 import net.dv8tion.jda.core.entities.User;
@@ -84,7 +85,7 @@ public class CmdBlacklist implements CommandExecutor{
 		if(!PermissionUtil.hasPermission(e.getAuthor(), permission, e.getGuild())) return false;
 		
 		if(args.length < 2){
-			e.getChannel().sendMessage("Proper usage is " + AventiBot.commandPrefix + "blacklist <user> <permission>").queue();
+			e.getChannel().sendMessage("Proper usage is " + SettingsManager.getCommandPrefix(e.getGuild()) + "blacklist <user> <permission>").queue();
 			return false;
 		}
 		

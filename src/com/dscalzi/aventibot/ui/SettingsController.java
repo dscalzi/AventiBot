@@ -34,6 +34,7 @@ public class SettingsController implements Initializable, ChangeListener<String>
 	@FXML private TextField apikey_settings_field;
 	@FXML private TextField currentgame_settings_field;
 	@FXML private TextField color_settings_field;
+	@FXML private TextField commandprefix_settings_field;
 	
 	@FXML private Rectangle color_settings_display;
 	
@@ -63,6 +64,8 @@ public class SettingsController implements Initializable, ChangeListener<String>
 		apikey_settings_field.setText(current.getToken());
 		currentgame_settings_field.textProperty().addListener(this);
 		currentgame_settings_field.setText(current.getCurrentGame());
+		commandprefix_settings_field.textProperty().addListener(this);
+		commandprefix_settings_field.setText(current.getCommandPrefix());
 		color_settings_field.textProperty().addListener(this);
 		color_settings_field.lengthProperty().addListener((o, oV, nV) -> {
 			if(nV.intValue() > oV.intValue() && nV.intValue() > COLOR_MAX_LENGTH)
@@ -77,14 +80,15 @@ public class SettingsController implements Initializable, ChangeListener<String>
 				}
 			}
 		});
-		color_settings_field.setText(current.getBotColorHex());
+		color_settings_field.setText(current.getDefaultColorHex());
 	}
 
 	@FXML
 	private void handleSaveButton(ActionEvent e){
 		GlobalConfig g = new GlobalConfig(apikey_settings_field.getText(),
 				currentgame_settings_field.getText(),
-				color_settings_field.getText());
+				color_settings_field.getText(),
+				commandprefix_settings_field.getText());
 		try {
 			SettingsManager.saveGlobalConfig(g);
 			current = g;
@@ -108,7 +112,7 @@ public class SettingsController implements Initializable, ChangeListener<String>
 			status_text.setText(notsaved);
 			return;
 		}
-		if(source == color_settings_field && !newValue.equals(current.getBotColorHex())){
+		if(source == color_settings_field && !newValue.equals(current.getDefaultColorHex())){
 			status_text.setText(notsaved);
 			return;
 		}
