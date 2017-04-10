@@ -60,7 +60,7 @@ public class SettingsController implements Initializable, ChangeListener<String>
 			apikey_settings_field.setDisable(true);
 		}
 		apikey_settings_field.textProperty().addListener(this);
-		apikey_settings_field.setText(current.getAPIKey());
+		apikey_settings_field.setText(current.getToken());
 		currentgame_settings_field.textProperty().addListener(this);
 		currentgame_settings_field.setText(current.getCurrentGame());
 		color_settings_field.textProperty().addListener(this);
@@ -87,8 +87,10 @@ public class SettingsController implements Initializable, ChangeListener<String>
 				color_settings_field.getText());
 		try {
 			SettingsManager.saveGlobalConfig(g);
+			current = g;
+			status_text.setText("Status: Saved");
 		} catch (IOException e1) {
-			// TODO Auto-generated catch block
+			LOG.fatal("Failed to save global configuration settings..");
 			e1.printStackTrace();
 		}
 	}
@@ -98,7 +100,7 @@ public class SettingsController implements Initializable, ChangeListener<String>
 		StringProperty textProperty = (StringProperty) observable ;
 		TextField source = (TextField) textProperty.getBean();
 		final String notsaved = "Status: Not Saved!";
-		if(source == apikey_settings_field && !newValue.equals(current.getAPIKey())){
+		if(source == apikey_settings_field && !newValue.equals(current.getToken())){
 			status_text.setText(notsaved);
 			return;
 		}

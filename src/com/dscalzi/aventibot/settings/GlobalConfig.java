@@ -1,26 +1,49 @@
 package com.dscalzi.aventibot.settings;
 
 import java.awt.Color;
+import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
+
+import javafx.util.Pair;
 
 public class GlobalConfig {
 	
-	private String apiKey;
+	public static final Map<Pair<String, Object>, Method> keyMap;
+	
+	static {
+		keyMap = new HashMap<Pair<String, Object>, Method>();
+		try {
+			keyMap.put(new Pair<String, Object>("token", "NULL"), GlobalConfig.class.getMethod("setToken", String.class));
+			keyMap.put(new Pair<String, Object>("currentGame", "Developed by Dan"), GlobalConfig.class.getMethod("setCurrentGame", String.class));
+			keyMap.put(new Pair<String, Object>("botColorHex", "#0f579d"), GlobalConfig.class.getMethod("setBotColor", String.class));
+		} catch (NoSuchMethodException | SecurityException e) {
+			//Shouldn't happen since this is hard coded.
+			e.printStackTrace();
+		}
+	}
+	
+	private String token;
 	private String currentGame;
 	private transient Color botColor;
 	private String botColorHex;
 	
 	public GlobalConfig(){
-		
+		//For deserialization.
 	}
 	
-	public GlobalConfig(String apiKey, String currentGame, String botColor) {
-		this.apiKey = apiKey;
+	public GlobalConfig(String token, String currentGame, String botColor) {
+		this.token = token;
 		this.currentGame = currentGame;
 		setBotColor(botColor);
 	}
 	
-	public String getAPIKey(){
-		return apiKey;
+	public String getToken(){
+		return token;
+	}
+	
+	public void setToken(String token){
+		this.token = token;
 	}
 	
 	public String getCurrentGame(){

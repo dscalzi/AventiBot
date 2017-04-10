@@ -9,13 +9,20 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Map;
 
 import com.dscalzi.aventibot.AventiBot;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonIOException;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
+import com.google.gson.stream.JsonReader;
 
+import javafx.util.Pair;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.utils.SimpleLog;
 
@@ -32,10 +39,16 @@ public class SettingsManager {
 	
 	private static GlobalConfig configCache;
 	
+	/* * * * *
+	 * 
+	 * Retrieval Methods
+	 * 
+	 * * * * */
+	
 	/**
 	 * Returns the base settings directory.
 	 * 
-	 * @return The base settings directory if it exists, otherwise null.
+	 * @return The base settings directory if it exists/was created, otherwise null.
 	 */
 	public static File getBaseSettingsDirectory(){
 		File f = new File(AventiBot.getDataPath(), "settings");
@@ -54,7 +67,7 @@ public class SettingsManager {
 	 * directory will be equal to the ID of the Guild.
 	 * 
 	 * @param g The Guild to get the settings directory for.
-	 * @return The settings directory for the specified guild if it exists, otherwise null.
+	 * @return The settings directory for the specified guild if it exists/was created, otherwise null.
 	 */
 	public static File getSettingsDirectory(Guild g){
 		File f = new File(getBaseSettingsDirectory(), g.getId());
@@ -73,7 +86,7 @@ public class SettingsManager {
 	 * directory will be equal to the ID of the Guild.
 	 * 
 	 * @param g The Guild to get the permission file for.
-	 * @return The permission file for the specified guild if it exists, otherwise null.
+	 * @return The permission file for the specified guild if it exists/was created, otherwise null.
 	 */
 	public static File getPermissionFile(Guild g){
 		File f = new File(getSettingsDirectory(g), "permissions.json");
@@ -98,7 +111,7 @@ public class SettingsManager {
 	 * directory will be equal to the ID of the Guild.
 	 * 
 	 * @param g The Guild to get the configuration file for.
-	 * @return The configuration file for the specified guild if it exists, otherwise null.
+	 * @return The configuration file for the specified guild if it exists/was created, otherwise null.
 	 */
 	public static File getConfigurationFile(Guild g){
 		File f = new File(getSettingsDirectory(g), "configuration.json");
@@ -118,6 +131,11 @@ public class SettingsManager {
 		return f;
 	}
 	
+	/**
+	 * Returns the global configuration file.
+	 * 
+	 * @return Returns the global configuration file if it exists/was created, otherwise null.
+	 */
 	public static File getGlobalConfigurationFile(){
 		File f = new File(getBaseSettingsDirectory(), "configuration.json");
 		if(!f.exists()){
@@ -136,17 +154,22 @@ public class SettingsManager {
 		return f;
 	}
 	
-	public static void saveGlobalConfig(GlobalConfig g) throws IOException{
-		File target = SettingsManager.getGlobalConfigurationFile();
-		if(target == null) throw new IOException();
-		
-		Gson gson = new GsonBuilder().setPrettyPrinting().create();
-		try(FileWriter w = new FileWriter(target)){
-			gson.toJson(g, w);
-		}
-		configCache = g;
-	}
+	/* * * * *
+	 * 
+	 * Global Config Saving/Loading
+	 * 
+	 * * * * */
 	
+	/**
+	 * Retrieves the cached GlobalConfig value that was stored the last time
+	 * it was loaded. If no value is already cached, it will load the value
+	 * and cache it.
+	 * 
+	 * In order to load the GlobalConfig directly from the serialized JSON form,
+	 * see {@link #loadGlobalConfig()}
+	 * 
+	 * @return The latest cached GlobalConfig object.
+	 */
 	public static GlobalConfig getGlobalConfig(){
 		try {
 			return configCache == null ? loadGlobalConfig() : configCache;
@@ -158,34 +181,72 @@ public class SettingsManager {
 	}
 	
 	/**
-	 * Loads Global Config from Json, caches the result.
+	 * Serializes the GlobalConfig object to JSON.
+	 * 
+	 * @param g GlobalConfig object to serialize.
+	 * @throws IOException If the target file was not found/could not be created.
+	 */
+	public static void saveGlobalConfig(GlobalConfig g) throws IOException{
+		File target = SettingsManager.getGlobalConfigurationFile();
+		if(target == null) throw new IOException();
+		
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		try(FileWriter w = new FileWriter(target)){
+			gson.toJson(g, w);
+		}
+		configCache = g;
+	}
+	
+	/**
+	 * Deserializes the GlobalConfig object from JSON.
+	 * 
+	 * @return The GlobalConfig data directly from JSON.
+	 * @throws IOException If the target file was not found/could not be created.
 	 */
 	public static GlobalConfig loadGlobalConfig() throws IOException{
 		File target = SettingsManager.getGlobalConfigurationFile();
 		if(target == null) throw new IOException();
 		
-		Gson gson = new Gson();
+		JsonParser p = new JsonParser();
+		GlobalConfig g = new GlobalConfig();
+		boolean requiresSave = false;
 		
-		try(FileReader r = new FileReader(target)){
-			GlobalConfig g = gson.fromJson(r, GlobalConfig.class);
-			configCache = g == null ? generateDefault() : g;
-			return configCache;
-		} catch (JsonIOException e){
-			LOG.fatal("JsonIOException occurred while reading the global config.");
-			e.printStackTrace();
-		} catch (JsonSyntaxException e){
-			LOG.fatal("Global config contains invalid JSON syntax. Double check your changes.");
-			e.printStackTrace();
+		try(JsonReader file = new JsonReader(new FileReader(target))){
+			JsonObject result = null;
+			JsonElement parsed = p.parse(file);
+			if(parsed.isJsonNull()) return generateDefault();
+			if(parsed.isJsonObject()){
+				result = parsed.getAsJsonObject();
+				Gson gson = new Gson();
+				for(Map.Entry<Pair<String, Object>, Method> e : GlobalConfig.keyMap.entrySet()){
+					JsonElement v = result.get(e.getKey().getKey());
+					Method m = e.getValue();
+					Class<?> required = m.getParameterTypes()[0];
+					try {
+						if(v == null || v.isJsonNull()) {
+							requiresSave = true;
+							m.invoke(g, e.getKey().getValue());
+						}else
+							m.invoke(g, gson.fromJson(v, required));
+					} catch (JsonSyntaxException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e1) {
+						LOG.fatal("Exception while parsing global config on token " + e.getKey() + ".");
+						e1.printStackTrace();
+					}
+				}
+			}
 		}
-		return null;
+		
+		if(requiresSave) saveGlobalConfig(g);
+		else configCache = g;
+		
+		return g;
 	}
 	
 	/**
-	 * Generates a default configuration file and saves it to
-	 * JSON format.
+	 * Generates a default configuration file and serializes it to JSON.
 	 * 
-	 * @return The GlobalConfig object with default assigned values which has been saved.
-	 * @throws IOException If the target file could not be created.
+	 * @return The GlobalConfig object with default assigned values which was serialized.
+	 * @throws IOException If the target file was not found/could not be created.
 	 */
 	private static GlobalConfig generateDefault() throws IOException{
 		GlobalConfig def = new GlobalConfig("NULL", "Developed by Dan", "#0f579d");

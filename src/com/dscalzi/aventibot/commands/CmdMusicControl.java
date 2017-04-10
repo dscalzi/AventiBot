@@ -70,7 +70,7 @@ public class CmdMusicControl implements CommandExecutor{
 		if(e.getGuild() != null){
 			String cname = e.getChannel().getName().toLowerCase();
 			if(!e.getChannel().getId().equals("229380785646469127") && !cname.contains("music") && !cname.contains("debug")){
-				e.getChannel().sendMessage("Don't be an asshole, use this command in " + e.getGuild().getTextChannelById("229380785646469127").getAsMention() + ".").queue((m) -> {
+				e.getChannel().sendMessage("Don't be an asshole, use this command in music.").queue((m) -> {
 					new Timer().schedule(new TimerTask() {
 						public void run(){
 							if(m != null)

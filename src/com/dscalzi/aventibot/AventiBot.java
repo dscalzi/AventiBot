@@ -113,7 +113,7 @@ public class AventiBot {
 		try {
 			GlobalConfig g = SettingsManager.loadGlobalConfig();
 			jda = new JDABuilder(AccountType.BOT)
-					.setToken(g.getAPIKey())
+					.setToken(g.getToken())
 					.setGame(new GameImpl(g.getCurrentGame(), "TBD", GameType.DEFAULT))
 					.buildBlocking();
 			jda.setAutoReconnect(true);
