@@ -31,8 +31,7 @@ import com.dscalzi.aventibot.settings.SettingsManager;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
-import net.dv8tion.jda.core.entities.Game.GameType;
-import net.dv8tion.jda.core.entities.impl.GameImpl;
+import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import net.dv8tion.jda.core.utils.SimpleLog;
@@ -112,7 +111,7 @@ public class AventiBot {
 			JDABuilder jdaBuilder = new JDABuilder(AccountType.BOT)
 					.setToken(g.getToken());
 			if(!g.getCurrentGame().isEmpty()) 
-				jdaBuilder.setGame(new GameImpl(g.getCurrentGame(), "TBD", GameType.DEFAULT));
+				jdaBuilder.setGame(Game.of(g.getCurrentGame()));
 			jda = jdaBuilder.buildBlocking();
 			jda.setAutoReconnect(true);
 			status = BotStatus.CONNECTED;
