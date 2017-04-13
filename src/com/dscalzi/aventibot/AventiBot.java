@@ -76,7 +76,8 @@ public class AventiBot {
 		registerListeners();
 		LavaWrapper.initialize();
 		this.console = ConsoleUser.build(jda);
-		((JDAImpl)jda).getPrivateChannelMap().put("consolepm", console.getPrivateChannel());
+		//((JDAImpl)jda).getPrivateChannelMap().put("consolepm", console.getPrivateChannel());
+		((JDAImpl)jda).getPrivateChannelMap().put(console.getIdLong(), console.getPrivateChannel());
 	}
 	
 	private void registerCommands(){

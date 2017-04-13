@@ -18,14 +18,14 @@ import net.dv8tion.jda.core.utils.SimpleLog;
 
 public class ConsolePrivateChannel implements PrivateChannel{
 	
-    private final String id;
+    private final long id;
     private final User user;
     private final JDA api;
 
     protected ConsolePrivateChannel(User user, JDA api) {
         this.user = user;
         this.api = api;
-        this.id = user.getId();
+        this.id = user.getIdLong();
     }
 	
     @Override
@@ -48,7 +48,7 @@ public class ConsolePrivateChannel implements PrivateChannel{
 
 	@Override
 	public String getId() {
-		return this.id;
+		return user.getId();
 	}
 
 	@Override
@@ -105,6 +105,17 @@ public class ConsolePrivateChannel implements PrivateChannel{
 	public boolean hasLatestMessage() {
 		// Not supported
 		return false;
+	}
+
+	@Override
+	public long getLatestMessageIdLong() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public long getIdLong() {
+		return id;
 	}
 
 }

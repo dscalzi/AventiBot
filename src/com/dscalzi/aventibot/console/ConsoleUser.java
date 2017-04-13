@@ -11,7 +11,7 @@ import net.dv8tion.jda.core.entities.impl.UserImpl;
 
 public class ConsoleUser extends UserImpl {
 
-	private static final String _id;
+	private static final long _id;
 	private static final String _username;
 	private static final String _discriminator;
 	private static final String _avatarId;
@@ -20,9 +20,9 @@ public class ConsoleUser extends UserImpl {
 	private static boolean limit;
 	
 	static {
-		_id = "AventiBot_Console";
+		_id = -1L;
 		_username = "AventiBot_Console";
-		_discriminator = "AventiBot_Console#-1";
+		_discriminator = "-1";
 		_avatarId = null;
 		_isBot = false;
 		

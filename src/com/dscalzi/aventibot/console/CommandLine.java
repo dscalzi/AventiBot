@@ -40,7 +40,7 @@ public class CommandLine {
 					
 					LOG.info(node.getText());
 					
-					MessageImpl m = new MessageImpl("console", ((JDAImpl)api).getPrivateChannelById("consolepm"), false);
+					MessageImpl m = new MessageImpl(-1L, ((JDAImpl)api).getPrivateChannelById(-1L), false);
 					m.setContent(node.getText());
 					m.setAuthor(console);
 					MessageReceivedEvent mre = new MessageReceivedEvent(api, -1, m);
