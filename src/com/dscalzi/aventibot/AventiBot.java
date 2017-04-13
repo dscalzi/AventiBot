@@ -139,6 +139,11 @@ public class AventiBot {
 		return AventiBot.status;
 	}
 	
+	public static void setCurrentGame(String name){
+		if(AventiBot.getStatus() == BotStatus.CONNECTED && getInstance() != null)
+			getInstance().getJDA().getPresence().setGame(name != null && !name.isEmpty() ? Game.of(name) : null);
+	}
+	
 	
 	public CommandRegistry getCommandRegistry(){
 		return this.registry;

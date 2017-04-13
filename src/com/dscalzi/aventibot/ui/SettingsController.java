@@ -90,6 +90,7 @@ public class SettingsController implements Initializable, ChangeListener<String>
 				color_settings_field.getText(),
 				commandprefix_settings_field.getText());
 		try {
+			AventiBot.setCurrentGame(currentgame_settings_field.getText());
 			SettingsManager.saveGlobalConfig(g);
 			current = g;
 			status_text.setText("Status: Saved");

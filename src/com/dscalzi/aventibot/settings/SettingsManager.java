@@ -315,7 +315,7 @@ public class SettingsManager {
 	 * 
 	 * @param id Guild to load the settings for.
 	 * 
-	 * @return The GlobalConfig data directly from JSON.
+	 * @return The GuildConfig data directly from JSON.
 	 * @throws IOException If the target file was not found/could not be created.
 	 */
 	public static GuildConfig loadGuildConfig(Guild id) throws IOException{
