@@ -25,9 +25,9 @@ public class InputUtils {
 	private static final Pattern ROLE_EXCESS = Pattern.compile("[<@&>]");
 	
 	public static TextChannel parseChannel(Message m, String reference){
-		TextChannel chnl = AventiBot.getInstance().getJDA().getTextChannelById(reference);
-		if(chnl != null)
-			return chnl;
+		TextChannel chnl = null;
+		try { chnl = AventiBot.getInstance().getJDA().getTextChannelById(reference); } catch (NumberFormatException e){ chnl = null; }
+		if(chnl != null) return chnl;
 		List<TextChannel> channels = m.getMentionedChannels();
 		for(TextChannel tc : channels){
 			if(tc.getName().equals(reference.replace("#", ""))){
@@ -38,9 +38,9 @@ public class InputUtils {
 	}
 	
 	public static User parseUser(Message m, String reference){
-		User usr = AventiBot.getInstance().getJDA().getUserById(reference);
-		if(usr != null)
-			return usr;
+		User usr = null;
+		try { usr = AventiBot.getInstance().getJDA().getUserById(reference); } catch (NumberFormatException e) { usr = null; }
+		if(usr != null) return usr;
 		List<User> users = m.getMentionedUsers();
 		for(User u : users){
 			if(u.getAsMention().equals(reference.replace("!", ""))){
@@ -74,11 +74,12 @@ public class InputUtils {
 	 * <code>Guild</code> g, otherwise null.
 	 */
 	public static Role parseRole(String reference, Guild g){
-		Role r = g.getRoleById(reference);
+		Role r = null;
+		try{ r = g.getRoleById(reference); } catch (NumberFormatException e) { r = null; }
 		if(r != null) return r;
 		if(RAW_ROLE.matcher(reference).matches()){
 			String id = ROLE_EXCESS.matcher(reference).replaceAll("");
-			r = g.getRoleById(id);
+			try{ r = g.getRoleById(id); } catch (NumberFormatException e) { r = null; }
 			if(r != null) return r;
 		}
 		List<Role> roles = g.getRolesByName(reference, true);
@@ -166,7 +167,8 @@ public class InputUtils {
 			String s = rawArgs[i];
 			if(RAW_ROLE.matcher(s).matches()){
 				String id = ROLE_EXCESS.matcher(s).replaceAll("");
-				Role r = g.getRoleById(id);
+				Role r = null;
+				try{ r = g.getRoleById(id); } catch (NumberFormatException e) { r = null; }
 				if(r != null) fRoles.add(r);
 			} else {
 				String arg;
@@ -179,7 +181,8 @@ public class InputUtils {
 				}
 				List<Role> result = g.getRolesByName(arg, true);
 				if(result.size() == 0) {
-					Role r = g.getRoleById(arg);
+					Role r = null;
+					try{ r = g.getRoleById(arg); } catch (NumberFormatException e) { r = null; }
 					if(r == null) failedTerms.add(arg);
 					else fRoles.add(r);
 				} else fRoles.addAll(result);

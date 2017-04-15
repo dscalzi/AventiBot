@@ -3,6 +3,16 @@
 	-fx-spacing: 4px;
 }
 
+.dialog-pane:header .header-panel {
+    -fx-background: #072c50;
+    -fx-background-color: -fx-box-border, linear-gradient(-fx-background, derive(-fx-background, 30%));
+    -fx-background-insets: 0, 0 0 1 0;
+}
+
+.dialog-pane {
+	-fx-background-color: #262626;
+}
+
 #root {
 	-fx-background-color: #0f579d;
 }

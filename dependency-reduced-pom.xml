@@ -50,6 +50,7 @@
               <goal>shade</goal>
             </goals>
             <configuration>
+              <minimizeJar>true</minimizeJar>
               <transformers>
                 <transformer>
                   <mainClass>com.dscalzi.aventibot.ui.TerminalExecutor</mainClass>

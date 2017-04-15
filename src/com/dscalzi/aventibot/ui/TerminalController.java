@@ -11,6 +11,7 @@ import java.io.PrintStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.net.URL;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 import com.dscalzi.aventibot.BotStatus;
@@ -24,7 +25,11 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonBar.ButtonData;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
@@ -74,6 +79,36 @@ public class TerminalController implements Initializable {
 		}
 		
 		Stage stage = new Stage();
+		
+		stage.setOnCloseRequest(event -> {
+			SettingsController c = loader.<SettingsController>getController();
+			
+			if(c.getState() == SettingsController.SettingsState.NOT_SAVED){
+				Alert alert = new Alert(AlertType.WARNING);
+	            alert.setTitle("Settings Not Saved");
+	            alert.setHeaderText("Your changes have not been saved.");
+	            alert.setContentText("You have not saved the changes made to the bot settings. Are you sure about this?");
+	            
+	            alert.initOwner(stage);
+	            
+	            ButtonType saveCloseButton = new ButtonType("Save and Close");
+	            ButtonType closeButton = new ButtonType("Close Without Saving");
+	            ButtonType cancelButton = new ButtonType("Cancel", ButtonData.CANCEL_CLOSE);
+
+	            alert.getButtonTypes().setAll(saveCloseButton, closeButton, cancelButton);
+
+	            Optional<ButtonType> result = alert.showAndWait();
+	            if(result.get() == saveCloseButton){
+	            	c.getSaveButton().fire();
+	            } else if(result.get() == closeButton){
+	                //do nothing
+	            } else if(result.get() == cancelButton){
+	            	event.consume();
+	            }
+			}
+			
+		});
+		
 		stage.getIcons().add(new Image(getClass().getResourceAsStream("styles/avatar.png")));
 		stage.initOwner(launch_button.getScene().getWindow());
 		stage.initModality(Modality.APPLICATION_MODAL);

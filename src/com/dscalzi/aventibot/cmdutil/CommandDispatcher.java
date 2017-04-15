@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.dscalzi.aventibot.AventiBot;
+import com.dscalzi.aventibot.console.ConsoleUser;
 import com.dscalzi.aventibot.settings.SettingsManager;
 
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
@@ -40,7 +41,13 @@ public class CommandDispatcher {
 			
 			SimpleLog.getLog("CommandDispatcher").info("User " + e.getAuthor().getName() + " (" + e.getAuthor().getId() + ") has just run the command '" + cmdPrefix + cmd + (fullArgs.length() > 0 ? " " : "") + fullArgs + "'");
 			
-			cmdEx.onCommand(e, cmd, args, rawArgs);
+			boolean result = cmdEx.onCommand(e, cmd, args, rawArgs);
+			
+			if(!result){
+				if(!(e.getAuthor() instanceof ConsoleUser)){
+					e.getMessage().addReaction("\u274C").queue();
+				}
+			}
 		}
 	}
 	

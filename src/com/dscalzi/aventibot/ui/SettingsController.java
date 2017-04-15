@@ -27,6 +27,7 @@ public class SettingsController implements Initializable, ChangeListener<String>
 	private static final int COLOR_MAX_LENGTH = 7;
 	private static final SimpleLog LOG = SimpleLog.getLog("Launcher");
 	private GlobalConfig current;
+	private SettingsState state;
 	
 	@FXML private Label status_text;
 	@FXML private Button save_button;
@@ -54,18 +55,23 @@ public class SettingsController implements Initializable, ChangeListener<String>
 				TerminalController.markSoftShutdown = true;
 		}
 		bindTextFields();
+		setState(SettingsState.SAVED);
 	}
 	
 	private void bindTextFields(){
 		if(AventiBot.getStatus() == BotStatus.CONNECTED){
 			apikey_settings_field.setDisable(true);
 		}
+		//Bind token
 		apikey_settings_field.textProperty().addListener(this);
 		apikey_settings_field.setText(current.getToken());
+		//Bind current game
 		currentgame_settings_field.textProperty().addListener(this);
 		currentgame_settings_field.setText(current.getCurrentGame());
+		//Bind command prefix
 		commandprefix_settings_field.textProperty().addListener(this);
 		commandprefix_settings_field.setText(current.getCommandPrefix());
+		//Bind color
 		color_settings_field.textProperty().addListener(this);
 		color_settings_field.lengthProperty().addListener((o, oV, nV) -> {
 			if(nV.intValue() > oV.intValue() && nV.intValue() > COLOR_MAX_LENGTH)
@@ -93,7 +99,7 @@ public class SettingsController implements Initializable, ChangeListener<String>
 			AventiBot.setCurrentGame(currentgame_settings_field.getText());
 			SettingsManager.saveGlobalConfig(g);
 			current = g;
-			status_text.setText("Status: Saved");
+			setState(SettingsState.SAVED);
 		} catch (IOException e1) {
 			LOG.fatal("Failed to save global configuration settings..");
 			e1.printStackTrace();
@@ -102,23 +108,40 @@ public class SettingsController implements Initializable, ChangeListener<String>
 	
 	@Override
 	public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-		StringProperty textProperty = (StringProperty) observable ;
-		TextField source = (TextField) textProperty.getBean();
-		final String notsaved = "Status: Not Saved!";
-		if(source == apikey_settings_field && !newValue.equals(current.getToken())){
-			status_text.setText(notsaved);
-			return;
+		TextField source = (TextField) ((StringProperty) observable).getBean();
+		if((source == apikey_settings_field && !newValue.equals(current.getToken())) ||
+		   (source == currentgame_settings_field && !newValue.equals(current.getCurrentGame())) ||
+		   (source == color_settings_field && !newValue.equals(current.getDefaultColorHex())))
+			setState(SettingsState.NOT_SAVED);
+		else
+			setState(SettingsState.SAVED);
+	}
+	
+	private void setState(SettingsState state){
+		switch(state){
+		case SAVED:
+			status_text.setText("Status: Saved");
+			break;
+		case NOT_SAVED:
+			status_text.setText("Status: Not Saved!");
+			break;
 		}
-		if(source == currentgame_settings_field && !newValue.equals(current.getCurrentGame())){
-			status_text.setText(notsaved);
-			return;
-		}
-		if(source == color_settings_field && !newValue.equals(current.getDefaultColorHex())){
-			status_text.setText(notsaved);
-			return;
-		}
+		this.state = state;
+	}
+	
+	public SettingsState getState(){
+		return this.state;
+	}
+	
+	public Button getSaveButton(){
+		return this.save_button;
+	}
+	
+	public static enum SettingsState{
 		
-		status_text.setText("Status: Saved");
+		SAVED(),
+		NOT_SAVED();
+		
 	}
 
 }
