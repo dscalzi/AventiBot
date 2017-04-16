@@ -10,6 +10,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.dscalzi.aventibot.cmdutil.CommandExecutor;
+import com.dscalzi.aventibot.cmdutil.CommandResult;
 import com.dscalzi.aventibot.cmdutil.PermissionNode;
 import com.dscalzi.aventibot.cmdutil.PermissionUtil;
 import com.dscalzi.aventibot.cmdutil.PermissionNode.NodeType;
@@ -35,13 +36,13 @@ public class CmdSay implements CommandExecutor{
 	}
 	
 	@Override
-	public boolean onCommand(MessageReceivedEvent e, String cmd, String[] args, String[] rawArgs) {
+	public CommandResult onCommand(MessageReceivedEvent e, String cmd, String[] args, String[] rawArgs) {
 		
-		if(!PermissionUtil.hasPermission(e.getAuthor(), permSay, e.getGuild())) return false;
+		if(!PermissionUtil.hasPermission(e.getAuthor(), permSay, e.getGuild())) return CommandResult.NO_PERMISSION;
 		
 		if(args.length == 0){
 			e.getChannel().sendMessage("Why are you trying to get me to say nothing.. lol").queue();
-			return false;
+			return CommandResult.ERROR;
 		}
 		
 		MessageChannel ch = (args.length > 0) ? InputUtils.parseChannel(e.getMessage(), args[0]) : null;
@@ -49,7 +50,7 @@ public class CmdSay implements CommandExecutor{
 		if(ch != null && e.getGuild() != null){
 			if(!e.getGuild().getTextChannels().contains(ch)){
 				e.getChannel().sendMessage("I cannot message other guilds for you, sorry!").queue();
-				return false;
+				return CommandResult.ERROR;
 			}
 		}
 		
@@ -60,7 +61,7 @@ public class CmdSay implements CommandExecutor{
 		if(ch == null) {
 			if(e.getAuthor() instanceof ConsoleUser){
 				e.getChannel().sendMessage("Please specify a valid channel!").queue();
-				return false;
+				return CommandResult.ERROR;
 			} else if(e.isFromType(ChannelType.PRIVATE))
 				ch = e.getPrivateChannel();
 			else
@@ -72,7 +73,7 @@ public class CmdSay implements CommandExecutor{
 		
 		ch.sendMessage(message).queue();
 		
-		return true;
+		return CommandResult.SUCCESS;
 	}
 
 	@Override

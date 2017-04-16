@@ -12,7 +12,9 @@ import java.util.Iterator;
 import java.util.Set;
 
 import com.dscalzi.aventibot.AventiBot;
+import com.dscalzi.aventibot.cmdutil.CommandDispatcher;
 import com.dscalzi.aventibot.cmdutil.CommandExecutor;
+import com.dscalzi.aventibot.cmdutil.CommandResult;
 import com.dscalzi.aventibot.cmdutil.PermissionNode;
 import com.dscalzi.aventibot.cmdutil.PermissionUtil;
 import com.dscalzi.aventibot.settings.SettingsManager;
@@ -45,39 +47,37 @@ public class CmdPermissionsControl implements CommandExecutor{
 	}
 	
 	@Override
-	public boolean onCommand(MessageReceivedEvent e, String cmd, String[] args, String[] rawArgs) {
+	public CommandResult onCommand(MessageReceivedEvent e, String cmd, String[] args, String[] rawArgs) {
 		
 		if(args.length == 0){
 			e.getChannel().sendMessage("Please choose a subcommand.").queue();
-			return false;
+			return CommandResult.ERROR;
 		}
 		
 		switch(args[0]){
 		case "remove":
-			this.cmdRemove(e, rawArgs);
-			break;
+			return this.cmdRemove(e, rawArgs);
 		case "add":
-			this.cmdAdd(e, rawArgs);
-			break;
+			return this.cmdAdd(e, rawArgs);
 		case "revoke":
-			this.cmdRevoke(e, rawArgs);
-			break;
+			return this.cmdRevoke(e, rawArgs);
 		case "grant":
-			this.cmdGrant(e, rawArgs);
-			break;
+			return this.cmdGrant(e, rawArgs);
 		}
 		
-		return false;
+		e.getChannel().sendMessage("Unknown subcommand: *args[0]*").queue();
+		return CommandResult.ERROR;
 	}
 	
-	private void cmdAdd(MessageReceivedEvent e, String[] rawArgs){
-		if(!validate(e, permAdd)) return;
+	private CommandResult cmdAdd(MessageReceivedEvent e, String[] rawArgs){
+		CommandResult check;
+		if((check = validate(e, permAdd)) != CommandResult.SUCCESS) return check;
 		
 		if(rawArgs.length > 2){
 			PermissionNode node = PermissionNode.get(rawArgs[1]);
 			if(!AventiBot.getInstance().getCommandRegistry().getAllRegisteredNodes().contains(node)){
 				e.getChannel().sendMessage("Unknown node, `" + node.toString() + "`, operation canceled.").queue();
-				return;
+				return CommandResult.ERROR;
 			}
 			String[] terms = new String[rawArgs.length-2];
 			for(int i=0; i<terms.length; ++i) terms[i] = rawArgs[i+2];
@@ -96,6 +96,7 @@ public class CmdPermissionsControl implements CommandExecutor{
 						
 						if(fails == null) {
 							e.getChannel().sendMessage("Node does not require permission, operation canceled.").queue();
+							CommandDispatcher.displayResult(CommandResult.ERROR, e.getMessage());
 							return;
 						}
 						
@@ -107,29 +108,34 @@ public class CmdPermissionsControl implements CommandExecutor{
 					} catch (IOException e1) {
 						e.getChannel().sendMessage("Unexpected error, operation failed").queue();
 						e1.printStackTrace();
+						CommandDispatcher.displayResult(CommandResult.ERROR, e.getMessage());
 						return;
 					}
 				}
 				if(result.getValue().size() > 0) eb.addField(new Field("Failed Term(s)", result.getValue().toString(), true));
 				
 				MessageEmbed em = eb.build();
-				if(em.getFields().size() > 0) e.getChannel().sendMessage(em).queue();
+				if(em.getFields().size() > 0){ 
+					e.getChannel().sendMessage(em).queue();
+					CommandDispatcher.displayResult(CommandResult.SUCCESS, e.getMessage());
+				}
 				return;
 			});
-			return;
+			return CommandResult.IGNORE;
 		}
 		e.getChannel().sendMessage("Proper usage: " + SettingsManager.getCommandPrefix(e.getGuild()) + "permissions add <node> <ranks>").queue();
+		return CommandResult.ERROR;
 	}
 	
-	private void cmdRemove(MessageReceivedEvent e, String[] rawArgs){
-		
-		if(!validate(e, permRemove)) return;
+	private CommandResult cmdRemove(MessageReceivedEvent e, String[] rawArgs){
+		CommandResult check;
+		if((check = validate(e, permRemove)) != CommandResult.SUCCESS) return check;
 		
 		if(rawArgs.length > 2){
 			PermissionNode node = PermissionNode.get(rawArgs[1]);
 			if(!AventiBot.getInstance().getCommandRegistry().getAllRegisteredNodes().contains(node)){
 				e.getChannel().sendMessage("Unknown node, `" + node.toString() + "`, operation canceled.").queue();
-				return;
+				return CommandResult.ERROR;
 			}
 			String[] terms = new String[rawArgs.length-2];
 			for(int i=0; i<terms.length; ++i) terms[i] = rawArgs[i+2];
@@ -147,6 +153,7 @@ public class CmdPermissionsControl implements CommandExecutor{
 						
 						if(fails == null) {
 							e.getChannel().sendMessage("Node does not require permission, operation canceled.").queue();
+							CommandDispatcher.displayResult(CommandResult.ERROR, e.getMessage());
 							return;
 						}
 						
@@ -158,6 +165,7 @@ public class CmdPermissionsControl implements CommandExecutor{
 					} catch (IOException e1) {
 						e.getChannel().sendMessage("Unexpected error, operation failed").queue();
 						e1.printStackTrace();
+						CommandDispatcher.displayResult(CommandResult.ERROR, e.getMessage());
 						return;
 					}
 				}
@@ -166,17 +174,21 @@ public class CmdPermissionsControl implements CommandExecutor{
 					eb.addField(new Field("Failed Term(s)", result.getValue().toString(), true));
 				
 				MessageEmbed em = eb.build();
-				if(em.getFields().size() > 0) e.getChannel().sendMessage(em).queue();
+				if(em.getFields().size() > 0){
+					e.getChannel().sendMessage(em).queue();
+					CommandDispatcher.displayResult(CommandResult.SUCCESS, e.getMessage());
+				}
 				return;
 			});
-			return;
+			return CommandResult.IGNORE;
 		}
 		e.getChannel().sendMessage("Proper usage: " + SettingsManager.getCommandPrefix(e.getGuild()) + "permissions remove <node> <ranks>").queue();
-		
+		return CommandResult.ERROR;
 	}
 	
-	private void cmdGrant(MessageReceivedEvent e, String[] rawArgs){
-		if(!validate(e, permGrant)) return;
+	private CommandResult cmdGrant(MessageReceivedEvent e, String[] rawArgs){
+		CommandResult check;
+		if((check = validate(e, permGrant)) != CommandResult.SUCCESS) return check;
 		
 		if(rawArgs.length > 1){
 			int termStart = 2;
@@ -190,7 +202,7 @@ public class CmdPermissionsControl implements CommandExecutor{
 			Role r = InputUtils.parseRole(roleTerm, e.getGuild());
 			if(r == null){
 				e.getChannel().sendMessage("Unable to find a role matching `" + roleTerm + "`.");
-				return;
+				return CommandResult.ERROR;
 			}
 			if(rawArgs.length > termStart){
 				Set<PermissionNode> nodes = new HashSet<PermissionNode>();
@@ -224,6 +236,7 @@ public class CmdPermissionsControl implements CommandExecutor{
 						} catch (IOException e1) {
 							e.getChannel().sendMessage("Unexpected error, operation failed").queue();
 							e1.printStackTrace();
+							CommandDispatcher.displayResult(CommandResult.ERROR, e.getMessage());
 							return;
 						}
 					} 
@@ -231,17 +244,22 @@ public class CmdPermissionsControl implements CommandExecutor{
 					if(invalids.size() > 0)	eb.addField(new Field("Invalid Node(s)", invalids.toString(), true));
 					
 					MessageEmbed em = eb.build();
-					if(em.getFields().size() > 0) e.getChannel().sendMessage(em).queue();
+					if(em.getFields().size() > 0){
+						e.getChannel().sendMessage(em).queue();
+						CommandDispatcher.displayResult(CommandResult.SUCCESS, e.getMessage());
+					}
 					return;
 				});
-				return;
+				return CommandResult.IGNORE;
 			}
 		}
 		e.getChannel().sendMessage("Proper usage: " + SettingsManager.getCommandPrefix(e.getGuild()) + "permissions grant <node> <ranks>").queue();
+		return CommandResult.ERROR;
 	}
 	
-	private void cmdRevoke(MessageReceivedEvent e, String[] rawArgs){
-		if(!validate(e, permRevoke)) return;
+	private CommandResult cmdRevoke(MessageReceivedEvent e, String[] rawArgs){
+		CommandResult check;
+		if((check = validate(e, permRevoke)) != CommandResult.SUCCESS) return check;
 		
 		if(rawArgs.length > 1){
 			int termStart = 2;
@@ -255,7 +273,7 @@ public class CmdPermissionsControl implements CommandExecutor{
 			Role r = InputUtils.parseRole(roleTerm, e.getGuild());
 			if(r == null){
 				e.getChannel().sendMessage("Unable to find a role matching `" + roleTerm + "`.");
-				return;
+				return CommandResult.ERROR;
 			}
 			if(rawArgs.length > termStart){
 				Set<PermissionNode> nodes = new HashSet<PermissionNode>();
@@ -289,6 +307,7 @@ public class CmdPermissionsControl implements CommandExecutor{
 						} catch (IOException e1) {
 							e.getChannel().sendMessage("Unexpected error, operation failed").queue();
 							e1.printStackTrace();
+							CommandDispatcher.displayResult(CommandResult.ERROR, e.getMessage());
 							return;
 						}
 					} 
@@ -296,20 +315,24 @@ public class CmdPermissionsControl implements CommandExecutor{
 					if(invalids.size() > 0)	eb.addField(new Field("Invalid Node(s)", invalids.toString(), true));
 					
 					MessageEmbed em = eb.build();
-					if(em.getFields().size() > 0) e.getChannel().sendMessage(em).queue();
+					if(em.getFields().size() > 0){
+						e.getChannel().sendMessage(em).queue();
+						CommandDispatcher.displayResult(CommandResult.SUCCESS, e.getMessage());
+					}
 					return;
 				});
-				return;
+				return CommandResult.IGNORE;
 			}
 		}
 		e.getChannel().sendMessage("Proper usage: " + SettingsManager.getCommandPrefix(e.getGuild()) + "permissions revoke <node> <ranks>").queue();
+		return CommandResult.ERROR;
 	}
 	
-	private boolean validate(MessageReceivedEvent e, PermissionNode permission){
+	private CommandResult validate(MessageReceivedEvent e, PermissionNode permission){
 		
-		if(!PermissionUtil.hasPermission(e.getAuthor(), permission, e.getGuild())) return false;
+		if(!PermissionUtil.hasPermission(e.getAuthor(), permission, e.getGuild())) return CommandResult.NO_PERMISSION;
 		
-		return true;
+		return CommandResult.SUCCESS;
 	}
 	
 	private Set<String> convertRolesToMentions(Set<Role> roles){

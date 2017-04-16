@@ -16,7 +16,9 @@ import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import com.dscalzi.aventibot.cmdutil.CommandDispatcher;
 import com.dscalzi.aventibot.cmdutil.CommandExecutor;
+import com.dscalzi.aventibot.cmdutil.CommandResult;
 import com.dscalzi.aventibot.cmdutil.PermissionNode;
 import com.dscalzi.aventibot.cmdutil.PermissionUtil;
 import com.dscalzi.aventibot.cmdutil.PermissionNode.NodeType;
@@ -59,11 +61,11 @@ public class CmdMusicControl implements CommandExecutor{
 	}
 	
 	@Override
-	public boolean onCommand(MessageReceivedEvent e, String cmd, String[] args, String[] rawArgs) {
+	public CommandResult onCommand(MessageReceivedEvent e, String cmd, String[] args, String[] rawArgs) {
 		
 		if(e.getChannelType() == ChannelType.PRIVATE){
 			e.getChannel().sendMessage("You must use this command in a guild.").queue();
-			return false;
+			return CommandResult.ERROR;
 		}
 		
 		if(e.getGuild() != null){
@@ -79,7 +81,7 @@ public class CmdMusicControl implements CommandExecutor{
 						}
 					}, 5000);
 				});
-				return false;
+				return CommandResult.ERROR;
 			}
 		}
 		
@@ -88,43 +90,38 @@ public class CmdMusicControl implements CommandExecutor{
 		
 		switch(cmd.toLowerCase()){
 		case "play":
-			this.cmdPlay(e, player, scheduler, args);
-			break;
+			return this.cmdPlay(e, player, scheduler, args);
 		case "playlist":
-			this.cmdPlaylist(e, player, scheduler, args);
-			break;
+			return this.cmdPlaylist(e, player, scheduler, args);
 		case "pause":
-			this.cmdPause(e, player, scheduler);
-			break;
+			return this.cmdPause(e, player, scheduler);
 		case "resume":
-			this.cmdResume(e, player, scheduler);
-			break;
+			return this.cmdResume(e, player, scheduler);
 		case "forceskip":
-			this.cmdForceSkip(e, player, scheduler);
-			break;
+			return this.cmdForceSkip(e, player, scheduler);
 		case "skip":
-			this.cmdSkip(e, player, scheduler);
-			break;
+			return this.cmdSkip(e, player, scheduler);
 		case "stop":
-			this.cmdStop(e, player, scheduler);
-			break;
+			return this.cmdStop(e, player, scheduler);
 		}
 		
-		return false;
+		e.getChannel().sendMessage("Unknown subcommand: *args[0]*").queue();
+		
+		return CommandResult.ERROR;
 	}
 	
 	private final PermissionNode permPlay = PermissionNode.get(NodeType.COMMAND, "play");
-	private void cmdPlay(MessageReceivedEvent e, AudioPlayer player, TrackScheduler scheduler, String[] args){
-		if(!PermissionUtil.hasPermission(e.getAuthor(), permPlay, e.getGuild())) return;
+	private CommandResult cmdPlay(MessageReceivedEvent e, AudioPlayer player, TrackScheduler scheduler, String[] args){
+		if(!PermissionUtil.hasPermission(e.getAuthor(), permPlay, e.getGuild())) return CommandResult.NO_PERMISSION;
 		
 		if(args.length == 0) {
 			e.getChannel().sendMessage("Play what..? Don't waste my time.").queue();
-			return;
+			return CommandResult.ERROR;
 		}
 		
 		if(connectWithUser(e.getGuild().getMember(e.getAuthor()), e.getGuild()) == null) {
 			e.getChannel().sendMessage("You currently aren't in a channel, sorry!").queue();
-			return;
+			return CommandResult.ERROR;
 		}
 		
 		if(args.length > 0 && !args[0].equals("ytsearch:")){
@@ -145,6 +142,7 @@ public class CmdMusicControl implements CommandExecutor{
 			@Override
 			public void trackLoaded(AudioTrack track) {
 				scheduler.queue(new TrackMeta(track, e.getAuthor(), e.getChannel()));
+				CommandDispatcher.displayResult(CommandResult.SUCCESS, e.getMessage());
 			}
 
 			@Override
@@ -159,32 +157,40 @@ public class CmdMusicControl implements CommandExecutor{
 				} else {
 					scheduler.queuePlaylist(playlist, e.getAuthor(), e.getChannel());
 				}
+				CommandDispatcher.displayResult(CommandResult.SUCCESS, e.getMessage());
 			}
 
 			@Override
 			public void noMatches() {
 				e.getChannel().sendMessage("No matches :(").queue();
-				
+				if(scheduler.getQueue().isEmpty())
+					e.getGuild().getAudioManager().closeAudioConnection();
+				CommandDispatcher.displayResult(CommandResult.ERROR, e.getMessage());
 			}
 
 			@Override
 			public void loadFailed(FriendlyException exception) {
 				e.getChannel().sendMessage("Load failed :(").queue();
+				if(scheduler.getQueue().isEmpty())
+					e.getGuild().getAudioManager().closeAudioConnection();
+				CommandDispatcher.displayResult(CommandResult.ERROR, e.getMessage());
 				throw exception;
-				
 			}
 			
 		});
+		
+		return CommandResult.IGNORE;
+		
 	}
 	
 	private final PermissionNode permPlaylist = PermissionNode.get(NodeType.COMMAND, "playlist");
-	private void cmdPlaylist(MessageReceivedEvent e, AudioPlayer player, TrackScheduler scheduler, String[] args){
-		if(!PermissionUtil.hasPermission(e.getAuthor(), permPlaylist, e.getGuild())) return;
+	private CommandResult cmdPlaylist(MessageReceivedEvent e, AudioPlayer player, TrackScheduler scheduler, String[] args){
+		if(!PermissionUtil.hasPermission(e.getAuthor(), permPlaylist, e.getGuild())) return CommandResult.NO_PERMISSION;
 		
 		Queue<TrackMeta> q = scheduler.getQueue();
 		if(q.isEmpty()){
 			e.getChannel().sendMessage("Nothing is queued.").queue();
-			return;
+			return CommandResult.ERROR;
 		}
 		
 		e.getChannel().sendTyping().queue((v) -> {
@@ -200,6 +206,7 @@ public class CmdMusicControl implements CommandExecutor{
 			}
 			if((page > tracks.size()-1 && tracks.size() != 0) || page < 0){
 				e.getChannel().sendMessage("Page not found, sorry.").queue();
+				CommandDispatcher.displayResult(CommandResult.ERROR, e.getMessage());
 				return;
 			}
 			
@@ -218,21 +225,25 @@ public class CmdMusicControl implements CommandExecutor{
 			
 			
 			e.getChannel().sendMessage(new MessageBuilder().setEmbed(eb.build()).build()).queue();
+			
+			CommandDispatcher.displayResult(CommandResult.SUCCESS, e.getMessage());
 		});
+		
+		return CommandResult.IGNORE;
 		
 	}
 	
 	private final PermissionNode permPause = PermissionNode.get(NodeType.COMMAND, "pause");
-	private void cmdPause(MessageReceivedEvent e, AudioPlayer player, TrackScheduler scheduler){
+	private CommandResult cmdPause(MessageReceivedEvent e, AudioPlayer player, TrackScheduler scheduler){
 		
-		if(!PermissionUtil.hasPermission(e.getAuthor(), permPause, e.getGuild())) return;
+		if(!PermissionUtil.hasPermission(e.getAuthor(), permPause, e.getGuild())) return CommandResult.NO_PERMISSION;
 		
 		Optional<TrackMeta> otm = scheduler.getCurrent();
 		if(otm.isPresent()){
 			TrackMeta tm = otm.get();
 			if(player.isPaused()){
 				e.getChannel().sendMessage("The player is already paused.").queue();
-				return;
+				return CommandResult.ERROR;
 			}
 			e.getChannel().sendTyping().queue((v) -> {
 				EmbedBuilder eb = new EmbedBuilder().setTitle("Paused " + tm.getTrack().getInfo().title, null).setColor(SettingsManager.getColor(e.getGuild()));
@@ -240,19 +251,23 @@ public class CmdMusicControl implements CommandExecutor{
 				eb.setFooter("Use " + SettingsManager.getCommandPrefix(e.getGuild()) + "resume to unpause.", "http://i.imgur.com/ccX8Pvi.png");
 				e.getChannel().sendMessage(new MessageBuilder().setEmbed(eb.build()).build()).queue();
 				player.setPaused(true);
+				CommandDispatcher.displayResult(CommandResult.SUCCESS, e.getMessage());
 			});
-		} else
+		} else {
 			e.getChannel().sendMessage("Nothing is currently playing.").queue();
+			return CommandResult.ERROR;
+		}
+		return CommandResult.IGNORE;
 	}
 	
 	private final PermissionNode permResume = PermissionNode.get(NodeType.COMMAND, "resume");
-	private void cmdResume(MessageReceivedEvent e, AudioPlayer player, TrackScheduler scheduler){
+	private CommandResult cmdResume(MessageReceivedEvent e, AudioPlayer player, TrackScheduler scheduler){
 		
-		if(!PermissionUtil.hasPermission(e.getAuthor(), permResume, e.getGuild())) return;
+		if(!PermissionUtil.hasPermission(e.getAuthor(), permResume, e.getGuild())) return CommandResult.NO_PERMISSION;
 		
 		if(!player.isPaused()){
 			e.getChannel().sendMessage("The player is not paused.").queue();
-			return;
+			return CommandResult.ERROR;
 		}
 		Optional<TrackMeta> otm = scheduler.getCurrent();
 		if(otm.isPresent()){
@@ -263,47 +278,58 @@ public class CmdMusicControl implements CommandExecutor{
 				eb.setFooter("Use " + SettingsManager.getCommandPrefix(e.getGuild()) + "pause to pause.", "http://i.imgur.com/ccX8Pvi.png");
 				e.getChannel().sendMessage(new MessageBuilder().setEmbed(eb.build()).build()).queue();
 				player.setPaused(false);
+				CommandDispatcher.displayResult(CommandResult.SUCCESS, e.getMessage());
 			});
 		} else {
 			e.getChannel().sendMessage("Player resumed.").queue();
 			player.setPaused(false);
+			return CommandResult.SUCCESS;
 		}
+		return CommandResult.IGNORE;
 	}
 	
 	private final PermissionNode permForceSkip = PermissionNode.get(NodeType.COMMAND, "forceskip");
-	private void cmdForceSkip(MessageReceivedEvent e, AudioPlayer player, TrackScheduler scheduler){
+	private CommandResult cmdForceSkip(MessageReceivedEvent e, AudioPlayer player, TrackScheduler scheduler){
 		
-		if(!PermissionUtil.hasPermission(e.getAuthor(), permForceSkip, e.getGuild())) return;
+		if(!PermissionUtil.hasPermission(e.getAuthor(), permForceSkip, e.getGuild())) return CommandResult.NO_PERMISSION;
 		
 		Optional<TrackMeta> otm = scheduler.getCurrent();
 		if(otm.isPresent()){
 			TrackMeta tm = otm.get();
 			e.getChannel().sendMessage("Skipped " + tm.getTrack().getInfo().title);
 			player.stopTrack();
-		} else
+			return CommandResult.SUCCESS;
+		} else {
 			e.getChannel().sendMessage("Nothing to skip.").queue();
+			return CommandResult.ERROR;
+		}
 	}
 	
 	private final PermissionNode permSkip = PermissionNode.get(NodeType.COMMAND, "skip");
-	private void cmdSkip(MessageReceivedEvent e, AudioPlayer player, TrackScheduler scheduler){
+	private CommandResult cmdSkip(MessageReceivedEvent e, AudioPlayer player, TrackScheduler scheduler){
+		if(!PermissionUtil.hasPermission(e.getAuthor(), permSkip, e.getGuild())) return CommandResult.NO_PERMISSION;
+		
 		e.getChannel().sendMessage("Command coming soon, for now you can use forceskip.").queue();
+		return CommandResult.IGNORE;
 	}
 	
 	private final PermissionNode permStop = PermissionNode.get(NodeType.COMMAND, "stop");
-	private void cmdStop(MessageReceivedEvent e, AudioPlayer player, TrackScheduler scheduler){
+	private CommandResult cmdStop(MessageReceivedEvent e, AudioPlayer player, TrackScheduler scheduler){
 		
-		if(!PermissionUtil.hasPermission(e.getAuthor(), permStop, e.getGuild())) return;
+		if(!PermissionUtil.hasPermission(e.getAuthor(), permStop, e.getGuild())) return CommandResult.NO_PERMISSION;
 		
 		AudioManager am = e.getGuild().getAudioManager();
 		if(!am.isConnected()){
 			e.getChannel().sendMessage("Already stopped.").queue();
-			return;
+			return CommandResult.ERROR;
 		}
 		e.getChannel().sendTyping().queue((v) -> {
 			scheduler.clearQueue();
 			am.closeAudioConnection();
 			e.getChannel().sendMessage("Stopped playing.").queue();
+			CommandDispatcher.displayResult(CommandResult.SUCCESS, e.getMessage());
 		});
+		return CommandResult.IGNORE;
 	}
 	
 	private VoiceChannel connectWithUser(Member member, Guild g){

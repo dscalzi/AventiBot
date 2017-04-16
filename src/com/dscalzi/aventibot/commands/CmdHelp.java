@@ -10,6 +10,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.dscalzi.aventibot.cmdutil.CommandExecutor;
+import com.dscalzi.aventibot.cmdutil.CommandResult;
 import com.dscalzi.aventibot.cmdutil.PermissionNode;
 import com.dscalzi.aventibot.cmdutil.PermissionUtil;
 import com.dscalzi.aventibot.cmdutil.PermissionNode.NodeType;
@@ -29,15 +30,15 @@ public class CmdHelp implements CommandExecutor{
 	}
 	
 	@Override
-	public boolean onCommand(MessageReceivedEvent e, String cmd, String[] args, String[] rawArgs) {
+	public CommandResult onCommand(MessageReceivedEvent e, String cmd, String[] args, String[] rawArgs) {
 		
-		if(!PermissionUtil.hasPermission(e.getAuthor(), permHelp, e.getGuild(), true)) return false;
+		if(!PermissionUtil.hasPermission(e.getAuthor(), permHelp, e.getGuild(), true)) return CommandResult.NO_PERMISSION;
 		
 		String msg = "Help message coming soon!";
 		
 		e.getAuthor().openPrivateChannel().queue((pc) -> pc.sendMessage(msg).queue());
 		
-		return true;
+		return CommandResult.SUCCESS;
 	}
 
 	@Override

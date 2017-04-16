@@ -12,6 +12,7 @@ import java.util.Set;
 import com.dscalzi.aventibot.BotStatus;
 import com.dscalzi.aventibot.AventiBot;
 import com.dscalzi.aventibot.cmdutil.CommandExecutor;
+import com.dscalzi.aventibot.cmdutil.CommandResult;
 import com.dscalzi.aventibot.cmdutil.PermissionNode;
 import com.dscalzi.aventibot.cmdutil.PermissionUtil;
 import com.dscalzi.aventibot.cmdutil.PermissionNode.NodeType;
@@ -31,9 +32,9 @@ public class CmdShutdown implements CommandExecutor{
 	}
 	
 	@Override
-	public boolean onCommand(MessageReceivedEvent e, String cmd, String[] args, String[] rawArgs) {
+	public CommandResult onCommand(MessageReceivedEvent e, String cmd, String[] args, String[] rawArgs) {
 		
-		if(!PermissionUtil.hasPermission(e.getAuthor(), permShutdown, e.getGuild())) return false;
+		if(!PermissionUtil.hasPermission(e.getAuthor(), permShutdown, e.getGuild())) return CommandResult.NO_PERMISSION;
 		
 		e.getChannel().sendMessage("Shutting down.. :(").queue();
 		
@@ -46,7 +47,7 @@ public class CmdShutdown implements CommandExecutor{
 			Runtime.getRuntime().exit(0);
 		}
 		
-		return true;
+		return CommandResult.SUCCESS;
 	}
 
 	@Override

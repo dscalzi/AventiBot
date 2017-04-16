@@ -12,6 +12,7 @@ import java.util.Set;
 
 import com.dscalzi.aventibot.AventiBot;
 import com.dscalzi.aventibot.cmdutil.CommandExecutor;
+import com.dscalzi.aventibot.cmdutil.CommandResult;
 import com.dscalzi.aventibot.cmdutil.PermissionNode;
 import com.dscalzi.aventibot.cmdutil.PermissionUtil;
 import com.dscalzi.aventibot.cmdutil.PermissionNode.NodeType;
@@ -36,70 +37,75 @@ public class CmdBlacklist implements CommandExecutor{
 	}
 	
 	@Override
-	public boolean onCommand(MessageReceivedEvent e, String cmd, String[] args, String[] rawArgs){
+	public CommandResult onCommand(MessageReceivedEvent e, String cmd, String[] args, String[] rawArgs){
 		
 		User u = args.length > 0 ? InputUtils.parseUser(e.getMessage(), rawArgs[0]) : null;
 		
 		switch(cmd.toLowerCase()){
 		case "blacklist":
-			this.cmdBlacklist(e, u, args);
-			break;
+			return this.cmdBlacklist(e, u, args);
 		case "unblacklist":
-			this.cmdUnBlacklist(e, u, args);
-			break;
+			return this.cmdUnBlacklist(e, u, args);
 		}
 		
-		return false;
+		e.getChannel().sendMessage("Unknown subcommand: *"+ args[0] +"*").queue();
+		return CommandResult.ERROR;
 	}
 	
-	private void cmdBlacklist(MessageReceivedEvent e, User u, String[] args){
+	private CommandResult cmdBlacklist(MessageReceivedEvent e, User u, String[] args){
 		
-		if(!validate(e, u, args, permBlacklist)) return;
+		CommandResult check;
+		if((check = validate(e, u, args, permBlacklist)) != CommandResult.SUCCESS) return check;
 		
 		try {
 			boolean result = PermissionUtil.blacklistUser(u, PermissionNode.get(args[1]), e.getGuild());
 			e.getChannel().sendMessage(result ? "Successfully blacklisted " + u.getAsMention() + " from `" + args[1] + "`." 
 					: "User is already blacklisted from `" + args[1] + "`.").queue();
+			return result ? CommandResult.SUCCESS : CommandResult.ERROR;
 		} catch (IOException e1){
 			e.getChannel().sendMessage("Unexpected error occurred, operation failed.").queue();
 			e1.printStackTrace();
+			return CommandResult.ERROR;
 		}
 	}
 	
-	private void cmdUnBlacklist(MessageReceivedEvent e, User u, String[] args){
+	private CommandResult cmdUnBlacklist(MessageReceivedEvent e, User u, String[] args){
 		
-		if(!validate(e, u, args, permUnBlacklist)) return;
+		CommandResult check;
+		if((check = validate(e, u, args, permUnBlacklist)) != CommandResult.SUCCESS) return check;
 		
 		try {
 			boolean result = PermissionUtil.unBlacklistUser(u, PermissionNode.get(args[1]), e.getGuild());
 			e.getChannel().sendMessage(result ? "Successfully unblacklisted " + u.getAsMention() + " from `" + args[1] + "`." 
 					: "User not blacklisted from `" + args[1] + "`.").queue();
+			return result ? CommandResult.SUCCESS : CommandResult.ERROR;
 		} catch (IOException e1) {
 			e.getChannel().sendMessage("Unexpected error occurred, operation failed.").queue();
 			e1.printStackTrace();
+			return CommandResult.ERROR;
 		}
 	}
 	
-	private boolean validate(MessageReceivedEvent e, User u, String[] args, PermissionNode permission){
+	private CommandResult validate(MessageReceivedEvent e, User u, String[] args, PermissionNode permission){
 		
-		if(!PermissionUtil.hasPermission(e.getAuthor(), permission, e.getGuild())) return false;
+		if(!PermissionUtil.hasPermission(e.getAuthor(), permission, e.getGuild())) return CommandResult.NO_PERMISSION;
 		
 		if(args.length < 2){
 			e.getChannel().sendMessage("Proper usage is " + SettingsManager.getCommandPrefix(e.getGuild()) + "blacklist <user> <permission>").queue();
-			return false;
+			return CommandResult.ERROR;
 		}
 		
 		if(u == null){
 			e.getChannel().sendMessage("Could not find that user!").queue();
-			return false;
+			return CommandResult.ERROR;
 		}
 		
 		if(!AventiBot.getInstance().getCommandRegistry().getAllRegisteredNodes().contains(PermissionNode.get(args[1]))){
 			e.getChannel().sendMessage("Invalid node: " + PermissionNode.get(args[1]).toString()).queue();
-			return false;
+			return CommandResult.ERROR;
 		}
 		
-		return true;
+		return CommandResult.SUCCESS;
 	}
 	
 	@Override

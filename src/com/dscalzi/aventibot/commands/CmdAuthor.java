@@ -12,6 +12,7 @@ import java.util.Set;
 
 import com.dscalzi.aventibot.AventiBot;
 import com.dscalzi.aventibot.cmdutil.CommandExecutor;
+import com.dscalzi.aventibot.cmdutil.CommandResult;
 import com.dscalzi.aventibot.cmdutil.PermissionNode;
 import com.dscalzi.aventibot.cmdutil.PermissionUtil;
 import com.dscalzi.aventibot.cmdutil.PermissionNode.NodeType;
@@ -34,9 +35,9 @@ public class CmdAuthor implements CommandExecutor {
 	}
 	
 	@Override
-	public boolean onCommand(MessageReceivedEvent e, String cmd, String[] args, String[] rawArgs) {
+	public CommandResult onCommand(MessageReceivedEvent e, String cmd, String[] args, String[] rawArgs) {
 		
-		if(!PermissionUtil.hasPermission(e.getAuthor(), permAuthor, e.getGuild(), true)) return false;
+		if(!PermissionUtil.hasPermission(e.getAuthor(), permAuthor, e.getGuild(), true)) return CommandResult.NO_PERMISSION;
 		
 		User author = AventiBot.getInstance().getJDA().getUserById("169197209630277642");
 		String avatar = author.getAvatarUrl();
@@ -49,7 +50,7 @@ public class CmdAuthor implements CommandExecutor {
 		
 		e.getChannel().sendMessage(b.build()).queue();
 		
-		return true;
+		return CommandResult.SUCCESS;
 	}
 
 	@Override

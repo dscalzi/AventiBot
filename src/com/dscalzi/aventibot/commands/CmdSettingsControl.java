@@ -1,3 +1,8 @@
+/*
+ * AventiBot
+ * Copyright (C) 2016-2017 Daniel D. Scalzi
+ * See LICENSE.txt for license information.
+ */
 package com.dscalzi.aventibot.commands;
 
 import java.awt.Color;
@@ -7,6 +12,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.dscalzi.aventibot.cmdutil.CommandExecutor;
+import com.dscalzi.aventibot.cmdutil.CommandResult;
 import com.dscalzi.aventibot.cmdutil.PermissionNode;
 import com.dscalzi.aventibot.cmdutil.PermissionNode.NodeType;
 import com.dscalzi.aventibot.settings.GuildConfig;
@@ -27,7 +33,7 @@ public class CmdSettingsControl implements CommandExecutor{
 	}
 	
 	@Override
-	public boolean onCommand(MessageReceivedEvent e, String cmd, String[] args, String[] rawArgs) {
+	public CommandResult onCommand(MessageReceivedEvent e, String cmd, String[] args, String[] rawArgs) {
 		
 		if(args.length > 0){
 			
@@ -35,11 +41,10 @@ public class CmdSettingsControl implements CommandExecutor{
 				String prop = args[1].toLowerCase();
 				switch(prop){
 				case "color":
-					cmdUpdateColor(e, args);
-					return true;
+					return cmdUpdateColor(e, args);
 				default:
 					e.getChannel().sendMessage("Unknown settings property: `" + prop + "`.").queue();
-					return false;
+					return CommandResult.ERROR;
 				}
 			}
 			
@@ -47,26 +52,27 @@ public class CmdSettingsControl implements CommandExecutor{
 		}
 		
 		
-		return false;
+		return CommandResult.ERROR;
 	}
 	
-	private void cmdUpdateColor(MessageReceivedEvent e, String[] args){
+	private CommandResult cmdUpdateColor(MessageReceivedEvent e, String[] args){
 		GuildConfig g = SettingsManager.getGuildConfig(e.getGuild());
 		if(args.length < 3){
 			e.getChannel().sendMessage("Proper usage is " + g.getCommandPrefix() + "settings update color [hex value]").queue();
-			return;
+			return CommandResult.ERROR;
 		}
 		try {
 			Color.decode(args[2]);
 			g.setColor(args[2]);
 			SettingsManager.saveGuildConfig(e.getGuild(), g);
+			return CommandResult.SUCCESS;
 		} catch (NumberFormatException e1){
 			e.getChannel().sendMessage("Invalid color, must be a valid hex color code.").queue();
-			return;
+			return CommandResult.ERROR;
 		} catch (IOException e1) {
 			e.getChannel().sendMessage("Unable to complete request, could not update configuration file.").queue();
 			e1.printStackTrace();
-			return;
+			return CommandResult.ERROR;
 		}
 	}
 	

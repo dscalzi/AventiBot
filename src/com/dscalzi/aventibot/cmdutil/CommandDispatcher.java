@@ -11,9 +11,9 @@ import java.util.List;
 import java.util.Optional;
 
 import com.dscalzi.aventibot.AventiBot;
-import com.dscalzi.aventibot.console.ConsoleUser;
 import com.dscalzi.aventibot.settings.SettingsManager;
 
+import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.utils.SimpleLog;
 
@@ -23,6 +23,7 @@ public class CommandDispatcher {
 		Optional<CommandExecutor> exec = AventiBot.getInstance().getCommandRegistry().getExecutor(cmd);
 		
 		if(exec.isPresent()){
+			
 			CommandExecutor cmdEx = exec.get();
 			
 			String msg = e.getMessage().getContent();
@@ -41,13 +42,9 @@ public class CommandDispatcher {
 			
 			SimpleLog.getLog("CommandDispatcher").info("User " + e.getAuthor().getName() + " (" + e.getAuthor().getId() + ") has just run the command '" + cmdPrefix + cmd + (fullArgs.length() > 0 ? " " : "") + fullArgs + "'");
 			
-			boolean result = cmdEx.onCommand(e, cmd, args, rawArgs);
+			CommandResult result = cmdEx.onCommand(e, cmd, args, rawArgs);
 			
-			if(!result){
-				if(!(e.getAuthor() instanceof ConsoleUser)){
-					e.getMessage().addReaction("\u274C").queue();
-				}
-			}
+			displayResult(result, e.getMessage());
 		}
 	}
 	
@@ -69,6 +66,20 @@ public class CommandDispatcher {
 			return c.substring(0, (c.indexOf(" ") > -1 ? c.indexOf(" ") : c.length()));
 		} catch (Exception ex){
 			return null;
+		}
+	}
+	
+	/**
+	 * Utility method that allows async commands to display their result.
+	 * 
+	 * @param result The result of the command operation.
+	 * @param m The message to display the result on.
+	 */
+	public static void displayResult(CommandResult result, Message m){
+		if(result != CommandResult.IGNORE){
+			if(m.getIdLong() > 0){
+				m.addReaction(result.getEmote()).queue();
+			}
 		}
 	}
 	

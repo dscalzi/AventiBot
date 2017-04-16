@@ -10,6 +10,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.dscalzi.aventibot.cmdutil.CommandExecutor;
+import com.dscalzi.aventibot.cmdutil.CommandResult;
 import com.dscalzi.aventibot.cmdutil.PermissionNode;
 import com.dscalzi.aventibot.cmdutil.PermissionUtil;
 import com.dscalzi.aventibot.cmdutil.PermissionNode.NodeType;
@@ -36,18 +37,18 @@ public class CmdRoleId implements CommandExecutor{
 	}
 	
 	@Override
-	public boolean onCommand(MessageReceivedEvent e, String cmd, String[] args, String[] rawArgs) {
+	public CommandResult onCommand(MessageReceivedEvent e, String cmd, String[] args, String[] rawArgs) {
 		
-		if(!PermissionUtil.hasPermission(e.getAuthor(), permRoleId, e.getGuild())) return false;
+		if(!PermissionUtil.hasPermission(e.getAuthor(), permRoleId, e.getGuild())) return CommandResult.NO_PERMISSION;
 		
 		if(e.getChannelType().equals(ChannelType.PRIVATE)){
 			e.getPrivateChannel().sendMessage("You must use this command in a guild.").queue();
-			return false;
+			return CommandResult.ERROR;
 		}
 		
 		if(args.length == 0){
 			e.getChannel().sendMessage("Please give me one or more ranks to look up.").queue();
-			return false;
+			return CommandResult.ERROR;
 		}
 		
 		Pair<Set<Role>, Set<String>> results = InputUtils.parseBulkRoles(rawArgs, e.getGuild());
@@ -56,10 +57,10 @@ public class CmdRoleId implements CommandExecutor{
 		
 		if(failedTerms.size() > 0){
 			e.getChannel().sendMessage("No results for the term" + (failedTerms.size() == 1 ? "" : "s") + " " + failedTerms).queue();
-			return false;
+			if(roles.size() == 0) return CommandResult.ERROR;
 		}
 		
-		
+		//TODO make console friendly, first arg must be guild id
 		if(e.getAuthor() instanceof ConsoleUser){
 			for(Role r : roles){
 				e.getChannel().sendMessage(r.getName() + " --> " + r.getId()).queue();
@@ -75,7 +76,7 @@ public class CmdRoleId implements CommandExecutor{
 			e.getChannel().sendMessage(eb.build()).queue();
 		}
 		
-		return false;
+		return CommandResult.SUCCESS;
 	}
 
 	@Override

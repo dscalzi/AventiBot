@@ -16,6 +16,7 @@ import java.util.Locale;
 import java.util.Set;
 
 import com.dscalzi.aventibot.cmdutil.CommandExecutor;
+import com.dscalzi.aventibot.cmdutil.CommandResult;
 import com.dscalzi.aventibot.cmdutil.PermissionNode;
 import com.dscalzi.aventibot.cmdutil.PermissionUtil;
 import com.dscalzi.aventibot.cmdutil.PermissionNode.NodeType;
@@ -45,20 +46,20 @@ public class CmdClear implements CommandExecutor{
 	}
 	
 	@Override
-	public boolean onCommand(MessageReceivedEvent e, String cmd, String[] args, String[] rawArgs) {
+	public CommandResult onCommand(MessageReceivedEvent e, String cmd, String[] args, String[] rawArgs) {
 		
-		if(!PermissionUtil.hasPermission(e.getAuthor(), permClear, e.getGuild())) return false;
+		if(!PermissionUtil.hasPermission(e.getAuthor(), permClear, e.getGuild())) return CommandResult.NO_PERMISSION;
 		
 		if(processing){
 			e.getChannel().sendMessage("I'm currently clearing out a channel, try again later!").queue();
-			return false;
+			return CommandResult.ERROR;
 		}
 		
 		long timeLeft = System.currentTimeMillis() - lastRun;
 		if(timeLeft < 10000){
 			timeLeft =  10 - (timeLeft/1000L);
 			e.getChannel().sendMessage("This command is currently in cooldown, please try again in " + timeLeft + " seconds.").queue();
-			return false;
+			return CommandResult.ERROR;
 		}
 		
 		//The default text channel is the one the command was sent from.
@@ -77,26 +78,26 @@ public class CmdClear implements CommandExecutor{
 						limit = Integer.parseInt(args[i+1]);
 					} catch (NumberFormatException ex){
 						e.getChannel().sendMessage("Sorry, but you didn't give me an integer for the amount parameter (-a).").queue();
-						return false;
+						return CommandResult.ERROR;
 					}
 					if(limit > 100) limit = 100;
 					if(limit < 1){
 						e.getChannel().sendMessage("I cannot delete less than one message, sorry.").queue();
-						return false;
+						return CommandResult.ERROR;
 					}
 					++i;
 				} else if(args[i].equalsIgnoreCase("-u")){
 					target = InputUtils.parseUser(e.getMessage(), rawArgs[i+1]);
 					if(target == null){
 						e.getChannel().sendMessage("Sorry, but I couldn't find the user you specified.").queue();
-						return false;
+						return CommandResult.ERROR;
 					}
 					++i;
 				} else if(args[i].equalsIgnoreCase("-c")){
 					channel = InputUtils.parseChannel(e.getMessage(), args[i+1]);
 					if(channel == null){
 						e.getChannel().sendMessage("Sorry, I could not find the channel you specified.").queue();
-						return false;
+						return CommandResult.ERROR;
 					}
 					++i;
 				} else if(args[i].equalsIgnoreCase("-t")){
@@ -104,7 +105,7 @@ public class CmdClear implements CommandExecutor{
 						threshold = TimeUtils.parseDateDiff(args[i+1], false);
 					} catch (Exception e1) {
 						e.getChannel().sendMessage("Invalid date format.").queue();
-						return false;
+						return CommandResult.ERROR;
 					}
 					++i;
 				}
@@ -113,11 +114,11 @@ public class CmdClear implements CommandExecutor{
 		
 		if(channel == null){
 			e.getChannel().sendMessage("You must specify a channel.").queue();
-			return false;
+			return CommandResult.ERROR;
 		}
 		if(!e.getGuild().getTextChannels().contains(channel)){
 			e.getChannel().sendMessage("I cannot clear messages in other guilds for you, sorry!").queue();
-			return false;
+			return CommandResult.ERROR;
 		}
 		
 		if(e.getChannel().equals(channel))
@@ -125,7 +126,7 @@ public class CmdClear implements CommandExecutor{
 		
 		this.clear(limit, threshold, channel, target, e.getChannel());
 		
-		return false;
+		return CommandResult.SUCCESS;
 	}
 	
 	private void clear(int limit, long threshold, TextChannel channel, User target, MessageChannel origin){
