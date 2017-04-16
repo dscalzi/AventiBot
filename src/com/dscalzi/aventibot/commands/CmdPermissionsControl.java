@@ -83,7 +83,7 @@ public class CmdPermissionsControl implements CommandExecutor{
 			for(int i=0; i<terms.length; ++i) terms[i] = rawArgs[i+2];
 			Pair<Set<Role>,Set<String>> result = InputUtils.parseBulkRoles(terms, e.getGuild());
 			e.getChannel().sendTyping().queue((v) -> {
-				EmbedBuilder eb = new EmbedBuilder().setAuthor("Permission Add Results", null, "http://i.imgur.com/7OfFSFx.png").setDescription("Target node `" + node + "`").setColor(SettingsManager.getColor(e.getGuild()));
+				EmbedBuilder eb = new EmbedBuilder().setAuthor("Permission Add Results", null, "http://i.imgur.com/7OfFSFx.png").setDescription("Target node `" + node + "`").setColor(SettingsManager.getColorAWT(e.getGuild()));
 				if(result.getKey().size() != 0){	
 					try {
 						
@@ -141,7 +141,7 @@ public class CmdPermissionsControl implements CommandExecutor{
 			for(int i=0; i<terms.length; ++i) terms[i] = rawArgs[i+2];
 			Pair<Set<Role>,Set<String>> result = InputUtils.parseBulkRoles(terms, e.getGuild());
 			e.getChannel().sendTyping().queue((v) -> {
-				EmbedBuilder eb = new EmbedBuilder().setAuthor("Permission Remove Results", null, "http://i.imgur.com/voGutMQ.png").setDescription("Target node `" + node + "`").setColor(SettingsManager.getColor(e.getGuild()));
+				EmbedBuilder eb = new EmbedBuilder().setAuthor("Permission Remove Results", null, "http://i.imgur.com/voGutMQ.png").setDescription("Target node `" + node + "`").setColor(SettingsManager.getColorAWT(e.getGuild()));
 				if(result.getKey().size() != 0){
 					try {
 						Set<Role> fails;
@@ -218,7 +218,7 @@ public class CmdPermissionsControl implements CommandExecutor{
 					}
 				}
 				e.getChannel().sendTyping().queue((v) -> {
-					EmbedBuilder eb = new EmbedBuilder().setAuthor("Permission Grant Results", null, "http://i.imgur.com/7OfFSFx.png").setDescription("Target Role " + r.getAsMention()).setColor(SettingsManager.getColor(e.getGuild()));
+					EmbedBuilder eb = new EmbedBuilder().setAuthor("Permission Grant Results", null, "http://i.imgur.com/7OfFSFx.png").setDescription("Target Role " + r.getAsMention()).setColor(SettingsManager.getColorAWT(e.getGuild()));
 					if(nodes.size() > 0){
 						try {
 							Set<PermissionNode> fails;
@@ -289,7 +289,7 @@ public class CmdPermissionsControl implements CommandExecutor{
 					}
 				}
 				e.getChannel().sendTyping().queue((v) -> {
-					EmbedBuilder eb = new EmbedBuilder().setAuthor("Permission Revoke Results", null, "http://i.imgur.com/voGutMQ.png").setDescription("Target Role " + r.getAsMention()).setColor(SettingsManager.getColor(e.getGuild()));
+					EmbedBuilder eb = new EmbedBuilder().setAuthor("Permission Revoke Results", null, "http://i.imgur.com/voGutMQ.png").setDescription("Target Role " + r.getAsMention()).setColor(SettingsManager.getColorAWT(e.getGuild()));
 					if(nodes.size() > 0){
 						try {
 							Set<PermissionNode> fails;

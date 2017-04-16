@@ -60,7 +60,7 @@ public class TrackScheduler extends AudioEventAdapter{
 				}
 				
 				EmbedBuilder eb = new EmbedBuilder().setTitle("Added " + meta.getTrack().getInfo().title + " to the Queue.", null);
-				eb.setColor(SettingsManager.getColor(associatedGuild));
+				eb.setColor(SettingsManager.getColorAWT(associatedGuild));
 				eb.setDescription("Runtime: " + TimeUtils.formatTrackDuration(meta.getTrack().getDuration()));
 				eb.setFooter("Estimated Wait Time: " + TimeUtils.formatTrackDuration(waitTime), "http://i.imgur.com/Y3rbhFt.png");
 				meta.getRequestedIn().sendMessage(new MessageBuilder().setEmbed(eb.build()).build()).queue();
@@ -93,7 +93,7 @@ public class TrackScheduler extends AudioEventAdapter{
 			}
 			
 			EmbedBuilder eb = new EmbedBuilder().setTitle("Added Playlist " + playlist.getName() + " to the Queue.", null);
-			eb.setColor(SettingsManager.getColor(associatedGuild));
+			eb.setColor(SettingsManager.getColorAWT(associatedGuild));
 			eb.setDescription("Collective length: " + TimeUtils.formatTrackDuration(playlistLength));
 			if(waitTime > 0) eb.setFooter("Estimated Wait Time: " + TimeUtils.formatTrackDuration(waitTime), "http://i.imgur.com/Y3rbhFt.png");
 			requestedIn.sendMessage(new MessageBuilder().setEmbed(eb.build()).build()).queue();
@@ -110,7 +110,7 @@ public class TrackScheduler extends AudioEventAdapter{
 		TrackMeta current = queue.element();
 		current.getRequestedIn().sendTyping().queue((v) -> {
 			EmbedBuilder eb = new EmbedBuilder();
-			eb.setColor(SettingsManager.getColor(associatedGuild));
+			eb.setColor(SettingsManager.getColorAWT(associatedGuild));
 			eb.setTitle("Now playing " + current.getTrack().getInfo().title, null);
 			Iterator<TrackMeta> it = queue.iterator();
 			it.next();

@@ -26,6 +26,7 @@ public class GuildConfig {
 	}
 	
 	private transient Color colorAWT;
+	private transient javafx.scene.paint.Color colorJFX;
 	private String colorHex;
 	private String commandPrefix;
 	
@@ -37,9 +38,14 @@ public class GuildConfig {
 		setColor(colorHex);
 	}
 	
-	public Color getColor(){
+	public Color getColorAWT(){
 		if(colorAWT == null) setColor(getColorHex());
 		return colorAWT;
+	}
+	
+	public javafx.scene.paint.Color getColorJFX(){
+		if(colorJFX == null) setColor(getColorHex());
+		return colorJFX;
 	}
 	
 	public String getColorHex(){
@@ -50,7 +56,8 @@ public class GuildConfig {
 		try {
 			colorHex = defaultColor;
 			this.colorAWT = Color.decode(colorHex);
-		} catch (NumberFormatException | NullPointerException e){
+			this.colorJFX = javafx.scene.paint.Color.web(colorHex);
+		} catch (IllegalArgumentException | NullPointerException e){
 			//Assign default
 			colorHex = "#0f579d";
 			this.colorAWT = Color.decode(colorHex);

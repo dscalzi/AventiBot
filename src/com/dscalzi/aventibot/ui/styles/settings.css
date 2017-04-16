@@ -11,6 +11,45 @@
 
 .dialog-pane {
 	-fx-background-color: #262626;
+	-fx-border-radius: 0em;
+}
+
+.color-picker {
+	-fx-background-color: #3d3d3d;
+	-fx-background-radius: 0em;
+	-fx-border-color: black;
+}
+
+.color-palette {
+	-fx-color: #262626;
+    -fx-spacing: 15px;
+    -fx-background-color:
+        derive(-fx-color,-40%),
+        derive(-fx-color,100%),
+        linear-gradient(to bottom,
+        derive(-fx-color,100%) 0%,
+        derive(-fx-color,50%) 12%,
+        derive(-fx-color,65%) 88%,
+        derive(-fx-color,23%) 100%);
+    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 8, 0.0 , 0 , 0 );
+}
+
+.color-palette > .color-picker-grid {
+    -fx-background-color: #3d3d3d;
+}
+
+.custom-color-dialog {
+	-fx-background-color: #262626;
+}
+
+.custom-color-dialog > .color-rect-pane {
+	-fx-background-color: #3d3d3d;
+}
+
+.custom-color-dialog .controls-pane .toggle-button {
+	-fx-background-color: #3d3d3d;
+	-fx-text-fill: white;
+	-fx-border-color: black;
 }
 
 #root {
@@ -19,6 +58,7 @@
 
 #button_tray {
 	-fx-padding: 5px;
+	-fx-spacing: 2px;
 }
 
 #color_settings_container {

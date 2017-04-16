@@ -394,13 +394,13 @@ public class SettingsManager {
 		else return getGuildConfig(g).getCommandPrefix();
 	}
 	
-	public static Color getColor(){
-		return getColor(null);
+	public static Color getColorAWT(){
+		return getColorAWT(null);
 	}
 	
-	public static Color getColor(Guild g){
-		if(g == null) return getGlobalConfig().getDefaultColor();
-		else return getGuildConfig(g).getColor();
+	public static Color getColorAWT(Guild g){
+		if(g == null) return getGlobalConfig().getDefaultColorAWT();
+		else return getGuildConfig(g).getColorAWT();
 	}
 	
 }

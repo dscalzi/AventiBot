@@ -31,6 +31,7 @@ public class GlobalConfig {
 	private String currentGame;
 	private String defaultColorHex;
 	private transient Color defaultColorAWT;
+	private transient javafx.scene.paint.Color defaultColorJFX;
 	private String defaultCommandPrefix;
 	
 	public GlobalConfig(){ /* For deserialization. */ }
@@ -58,9 +59,14 @@ public class GlobalConfig {
 		this.currentGame = currentGame;
 	}
 	
-	public Color getDefaultColor(){
+	public Color getDefaultColorAWT(){
 		if(defaultColorAWT == null) setDefaultColor(getDefaultColorHex());
 		return defaultColorAWT;
+	}
+	
+	public javafx.scene.paint.Color getDefaultColorJFX(){
+		if(defaultColorJFX == null) setDefaultColor(getDefaultColorHex());
+		return defaultColorJFX;
 	}
 	
 	public String getDefaultColorHex(){
@@ -71,7 +77,8 @@ public class GlobalConfig {
 		try {
 			defaultColorHex = defaultColor;
 			this.defaultColorAWT = Color.decode(defaultColorHex);
-		} catch (NumberFormatException | NullPointerException e){
+			this.defaultColorJFX = javafx.scene.paint.Color.web(defaultColor);
+		} catch (IllegalArgumentException | NullPointerException e){
 			//Assign default
 			defaultColorHex = "#0f579d";
 			this.defaultColorAWT = Color.decode(defaultColorHex);

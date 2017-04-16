@@ -67,7 +67,7 @@ public class CmdRoleId implements CommandExecutor{
 			}
 		} else {
 			EmbedBuilder eb = new EmbedBuilder();
-			eb.setColor(roles.size() == 1 ? roles.iterator().next().getColor() : SettingsManager.getColor(e.getGuild()));
+			eb.setColor(roles.size() == 1 ? roles.iterator().next().getColor() : SettingsManager.getColorAWT(e.getGuild()));
 			String desc = "";
 			for(Role r : roles){
 				desc += r.getAsMention() + "\n`" + r.getId() + "`\n";

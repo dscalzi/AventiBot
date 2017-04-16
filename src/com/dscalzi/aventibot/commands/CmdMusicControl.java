@@ -210,7 +210,7 @@ public class CmdMusicControl implements CommandExecutor{
 				return;
 			}
 			
-			EmbedBuilder eb = new EmbedBuilder().setColor(SettingsManager.getColor(e.getGuild()));
+			EmbedBuilder eb = new EmbedBuilder().setColor(SettingsManager.getColorAWT(e.getGuild()));
 			eb.addField(new Field("Currently Playing:", current.getTrack().getInfo().title + " (" + TimeUtils.formatTrackDuration(current.getTrack().getPosition()) + "/" + TimeUtils.formatTrackDuration(current.getTrack().getDuration()) + ")", false));
 			String desc = "";
 			
@@ -246,7 +246,7 @@ public class CmdMusicControl implements CommandExecutor{
 				return CommandResult.ERROR;
 			}
 			e.getChannel().sendTyping().queue((v) -> {
-				EmbedBuilder eb = new EmbedBuilder().setTitle("Paused " + tm.getTrack().getInfo().title, null).setColor(SettingsManager.getColor(e.getGuild()));
+				EmbedBuilder eb = new EmbedBuilder().setTitle("Paused " + tm.getTrack().getInfo().title, null).setColor(SettingsManager.getColorAWT(e.getGuild()));
 				eb.setDescription("Song Duration: (" + TimeUtils.formatTrackDuration(tm.getTrack().getPosition()) + "/" + TimeUtils.formatTrackDuration(tm.getTrack().getDuration()) + ")");
 				eb.setFooter("Use " + SettingsManager.getCommandPrefix(e.getGuild()) + "resume to unpause.", "http://i.imgur.com/ccX8Pvi.png");
 				e.getChannel().sendMessage(new MessageBuilder().setEmbed(eb.build()).build()).queue();
@@ -273,7 +273,7 @@ public class CmdMusicControl implements CommandExecutor{
 		if(otm.isPresent()){
 			TrackMeta tm = otm.get();
 			e.getChannel().sendTyping().queue((v) -> {
-				EmbedBuilder eb = new EmbedBuilder().setTitle("Resumed " + tm.getTrack().getInfo().title, null).setColor(SettingsManager.getColor(e.getGuild()));
+				EmbedBuilder eb = new EmbedBuilder().setTitle("Resumed " + tm.getTrack().getInfo().title, null).setColor(SettingsManager.getColorAWT(e.getGuild()));
 				eb.setDescription("Song Duration: (" + TimeUtils.formatTrackDuration(tm.getTrack().getPosition()) + "/" + TimeUtils.formatTrackDuration(tm.getTrack().getDuration()) + ")");
 				eb.setFooter("Use " + SettingsManager.getCommandPrefix(e.getGuild()) + "pause to pause.", "http://i.imgur.com/ccX8Pvi.png");
 				e.getChannel().sendMessage(new MessageBuilder().setEmbed(eb.build()).build()).queue();

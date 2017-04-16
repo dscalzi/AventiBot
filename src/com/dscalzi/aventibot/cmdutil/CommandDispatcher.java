@@ -76,7 +76,7 @@ public class CommandDispatcher {
 	 * @param m The message to display the result on.
 	 */
 	public static void displayResult(CommandResult result, Message m){
-		if(result != CommandResult.IGNORE){
+		if(result != null && result != CommandResult.IGNORE){
 			if(m.getIdLong() > 0){
 				m.addReaction(result.getEmote()).queue();
 			}

@@ -110,11 +110,11 @@ public class AventiBot {
 		try {
 			GlobalConfig g = SettingsManager.loadGlobalConfig();
 			JDABuilder jdaBuilder = new JDABuilder(AccountType.BOT)
+					.setAutoReconnect(true)
 					.setToken(g.getToken());
 			if(!g.getCurrentGame().isEmpty()) 
 				jdaBuilder.setGame(Game.of(g.getCurrentGame()));
 			jda = jdaBuilder.buildBlocking();
-			jda.setAutoReconnect(true);
 			status = BotStatus.CONNECTED;
 			postConntectionSetup();
 		} catch (LoginException | IllegalArgumentException | InterruptedException | HTTPException | RateLimitedException | IOException e) {

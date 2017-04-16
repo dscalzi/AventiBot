@@ -16,15 +16,14 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
+import javafx.scene.control.ColorPicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 import net.dv8tion.jda.core.utils.SimpleLog;
 
 public class SettingsController implements Initializable, ChangeListener<String>{
 
-	private static final int COLOR_MAX_LENGTH = 7;
 	private static final SimpleLog LOG = SimpleLog.getLog("Launcher");
 	private GlobalConfig current;
 	private SettingsState state;
@@ -34,10 +33,8 @@ public class SettingsController implements Initializable, ChangeListener<String>
 	
 	@FXML private TextField apikey_settings_field;
 	@FXML private TextField currentgame_settings_field;
-	@FXML private TextField color_settings_field;
+	@FXML private ColorPicker color_settings_picker;
 	@FXML private TextField commandprefix_settings_field;
-	
-	@FXML private Rectangle color_settings_display;
 	
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -72,28 +69,21 @@ public class SettingsController implements Initializable, ChangeListener<String>
 		commandprefix_settings_field.textProperty().addListener(this);
 		commandprefix_settings_field.setText(current.getCommandPrefix());
 		//Bind color
-		color_settings_field.textProperty().addListener(this);
-		color_settings_field.lengthProperty().addListener((o, oV, nV) -> {
-			if(nV.intValue() > oV.intValue() && nV.intValue() > COLOR_MAX_LENGTH)
-				color_settings_field.setText(color_settings_field.getText(0, COLOR_MAX_LENGTH));
-			if(color_settings_field.getText().length() == COLOR_MAX_LENGTH){
-				try {
-					Color p = Color.web(color_settings_field.getText());
-					color_settings_display.setFill(p);
-					color_settings_field.getStyleClass().remove("textfieldinvalid");
-				} catch (IllegalArgumentException e){
-					color_settings_field.getStyleClass().add(0, "textfieldinvalid");
-				}
-			}
+		//color_settings_picker.setValue(Color.web("#0f579d"));
+		color_settings_picker.setValue(Color.web(current.getDefaultColorHex()));
+		color_settings_picker.valueProperty().addListener((o, oV, nV) -> {
+			if(!nV.equals(current.getDefaultColorJFX()))
+				setState(SettingsState.NOT_SAVED);
+			else
+				setState(SettingsState.SAVED);
 		});
-		color_settings_field.setText(current.getDefaultColorHex());
 	}
 
 	@FXML
 	private void handleSaveButton(ActionEvent e){
 		GlobalConfig g = new GlobalConfig(apikey_settings_field.getText(),
 				currentgame_settings_field.getText(),
-				color_settings_field.getText(),
+				"#" + Integer.toHexString(color_settings_picker.getValue().hashCode()),
 				commandprefix_settings_field.getText());
 		try {
 			AventiBot.setCurrentGame(currentgame_settings_field.getText());
@@ -106,12 +96,21 @@ public class SettingsController implements Initializable, ChangeListener<String>
 		}
 	}
 	
+	@FXML
+	private void handleShowFileButton(ActionEvent e){
+		try {
+			Runtime.getRuntime().exec("explorer.exe /select," + SettingsManager.getGlobalConfigurationFile().getAbsolutePath());
+		} catch (IOException e1) {
+			LOG.warn("Error while opening file explorer:");
+			e1.printStackTrace();
+		}
+	}
+	
 	@Override
 	public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
 		TextField source = (TextField) ((StringProperty) observable).getBean();
 		if((source == apikey_settings_field && !newValue.equals(current.getToken())) ||
-		   (source == currentgame_settings_field && !newValue.equals(current.getCurrentGame())) ||
-		   (source == color_settings_field && !newValue.equals(current.getDefaultColorHex())))
+		   (source == currentgame_settings_field && !newValue.equals(current.getCurrentGame())))
 			setState(SettingsState.NOT_SAVED);
 		else
 			setState(SettingsState.SAVED);

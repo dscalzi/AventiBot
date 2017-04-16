@@ -36,18 +36,19 @@ public class CmdShutdown implements CommandExecutor{
 		
 		if(!PermissionUtil.hasPermission(e.getAuthor(), permShutdown, e.getGuild())) return CommandResult.NO_PERMISSION;
 		
-		e.getChannel().sendMessage("Shutting down.. :(").queue();
-		
-		try {
-			if(AventiBot.getStatus() == BotStatus.CONNECTED){
-				AventiBot.getInstance().shutdown();
+		e.getChannel().sendMessage("Shutting down.. :(").queue(v -> {
+			try {
+				if(AventiBot.getStatus() == BotStatus.CONNECTED){
+					AventiBot.getInstance().shutdown();
+				}
+			} catch (Exception ex){
+				//Shutdown
+				Runtime.getRuntime().exit(0);
 			}
-		} catch (Exception ex){
-			//Shutdown
-			Runtime.getRuntime().exit(0);
-		}
+		});
 		
-		return CommandResult.SUCCESS;
+		//The JDA should be shutdown, so the result is null.
+		return null;
 	}
 
 	@Override

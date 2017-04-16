@@ -7,6 +7,8 @@
 
 <?import java.net.URL?>
 <?import javafx.scene.Scene?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
@@ -24,7 +26,16 @@
 					<Text id="author" text="Created by Daniel Scalzi &#10; AGPL License"  textAlignment="center"/>
 				</VBox>
 			</StackPane>
-			<Button id="settings_button" text="Settings" prefWidth="110" onAction="#handleSettingsButton"/>
+			<HBox>
+				<Button id="settings_button" text="Settings" prefWidth="90" onAction="#handleSettingsButton"/>
+				<Button id="directory_button" prefWidth="20" onAction="#handleDirectoryButton">
+					<graphic>
+						<ImageView fitHeight="20" fitWidth="20" pickOnBounds="true" preserveRatio="true">
+							<Image url="@/com/dscalzi/aventibot/ui/styles/explorer.png" />
+						</ImageView>
+					</graphic>
+				</Button>
+			</HBox>
 			<StackPane id="spacer" VBox.vgrow="ALWAYS"/>
 			<VBox id="leftpaneButtom" alignment="bottom_center">
 				<Button fx:id="launch_button" text="Launch AventiBot" onAction="#handleLaunchButton"/>

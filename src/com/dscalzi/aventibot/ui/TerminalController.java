@@ -91,8 +91,8 @@ public class TerminalController implements Initializable {
 	            
 	            alert.initOwner(stage);
 	            
-	            ButtonType saveCloseButton = new ButtonType("Save and Close");
-	            ButtonType closeButton = new ButtonType("Close Without Saving");
+	            ButtonType saveCloseButton = new ButtonType("Save");
+	            ButtonType closeButton = new ButtonType("Don't Save");
 	            ButtonType cancelButton = new ButtonType("Cancel", ButtonData.CANCEL_CLOSE);
 
 	            alert.getButtonTypes().setAll(saveCloseButton, closeButton, cancelButton);
@@ -165,6 +165,17 @@ public class TerminalController implements Initializable {
 	private void handleTerminateButton(ActionEvent e){
 		AventiBot.getInstance().shutdown();
 		terminate_button.setDisable(true);
+	}
+	
+	@FXML
+	private void handleDirectoryButton(ActionEvent e){
+		try {
+			//Runtime.getRuntime().exec("explorer.exe /select," + AventiBot.getDataPath(false) + File.separator);
+			Runtime.getRuntime().exec("explorer.exe " + AventiBot.getDataPath());
+		} catch (IOException e1) {
+			LOG.warn("Error while opening file explorer:");
+			e1.printStackTrace();
+		}
 	}
 	
 	private void setupTerminal(){

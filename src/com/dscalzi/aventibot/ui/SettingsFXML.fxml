@@ -10,6 +10,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ColorPicker?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TextField?>
@@ -54,7 +55,7 @@
 			</Label>
 			<Separator />
 			<VBox id="commandprefix_setting" styleClass="setting_field">
-				<Label id="commandprefix_setting_text" text="Global Default Command Prefix (?)" styleClass="text">
+				<Label id="commandprefix_setting_text" text="Command Prefix (?)" styleClass="text">
 					<tooltip>
 	                	<Tooltip text="This will be the command prefix of the bot used &#10; where per-guild settings cannot apply. In order &#10; to have the command prefix be a mention to the bot, &#10; use the value @MENTION" />
 	           		</tooltip>
@@ -64,20 +65,20 @@
 				</HBox>
 			</VBox>
 			<VBox id="color_setting" styleClass="setting_field">
-				<Label id="color_setting_text" text="Global Default Color (?)" styleClass="text">
+				<Label id="color_setting_text" text="Color (?)" styleClass="text">
 					<tooltip>
 	                	<Tooltip text="This color will take effect where per-guild &#10; settings cannot apply. The default color is #0f579d. &#10; The value must be a 7 character hex code including &#10; the hash #&lt;color&gt;" />
 	           		</tooltip>
 				</Label>
 				<HBox id="color_settings_container">
-					<TextField fx:id="color_settings_field" maxWidth="75"/>
-					<Rectangle fx:id="color_settings_display" fill="#0f579d" width="25" height="25" />
+					<ColorPicker fx:id="color_settings_picker"/>
 				</HBox>
 			</VBox>
 			<StackPane id="spacer" VBox.vgrow="ALWAYS" />
 			<HBox id="button_tray" HBox.hgrow="ALWAYS" alignment="bottom_right">
 				<Label fx:id="status_text" text="Status: Saved" styleClass="text"/>
 				<StackPane id="spacer" HBox.hgrow="ALWAYS" />
+				<Button id="show_file_button" text="Open File Location" onAction="#handleShowFileButton" />
 				<Button fx:id="save_button" text="Save" onAction="#handleSaveButton" />
 			</HBox>
 		</VBox>
