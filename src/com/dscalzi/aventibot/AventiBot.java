@@ -22,6 +22,7 @@ import com.dscalzi.aventibot.commands.CmdMusicControl;
 import com.dscalzi.aventibot.commands.CmdPermissionsControl;
 import com.dscalzi.aventibot.commands.CmdRoleId;
 import com.dscalzi.aventibot.commands.CmdSay;
+import com.dscalzi.aventibot.commands.CmdSettingsControl;
 import com.dscalzi.aventibot.commands.CmdShutdown;
 import com.dscalzi.aventibot.console.ConsoleUser;
 import com.dscalzi.aventibot.music.LavaWrapper;
@@ -99,6 +100,7 @@ public class AventiBot {
 		this.registry.register("blacklist", cbl);
 		this.registry.register("unblacklist", cbl);
 		this.registry.register("permissions", new CmdPermissionsControl());
+		this.registry.register("settings", new CmdSettingsControl());
 	}
 	
 	private void registerListeners(){
