@@ -21,6 +21,7 @@ public class CommandRegistry {
 	}
 	
 	public boolean register(String cmd, CommandExecutor executor){
+		cmd = cmd.toLowerCase();
 		if(registry.containsKey(cmd)) return false;
 		
 		registry.put(cmd, executor);
@@ -28,6 +29,7 @@ public class CommandRegistry {
 	}
 	
 	public Optional<CommandExecutor> getExecutor(String cmd){
+		cmd = cmd.toLowerCase();
 		return registry.containsKey(cmd) ? Optional.of(registry.get(cmd)) : Optional.empty();
 	}
 	
@@ -45,6 +47,7 @@ public class CommandRegistry {
 	}
 	
 	public boolean isCommandRegistered(String cmd){
+		cmd = cmd.toLowerCase();
 		return registry.containsKey(cmd);
 	}
 	

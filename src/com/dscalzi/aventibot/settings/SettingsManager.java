@@ -42,6 +42,15 @@ public class SettingsManager {
 	private static GlobalConfig configCache = null;
 	private static Map<String, GuildConfig> gConfigCache = new HashMap<String, GuildConfig>();
 	
+	public static void reload(){
+		configCache = null;
+		gConfigCache.clear();
+	}
+	
+	public static void reload(Guild g){
+		gConfigCache.remove(g.getId());
+	}
+	
 	/* * * * *
 	 * 
 	 * Retrieval Methods
@@ -199,6 +208,7 @@ public class SettingsManager {
 		}
 		configCache = g;
 	}
+	
 	
 	/**
 	 * Deserializes the GlobalConfig object from JSON.

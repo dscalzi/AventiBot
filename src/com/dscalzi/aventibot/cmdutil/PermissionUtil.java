@@ -57,6 +57,14 @@ public final class PermissionUtil {
 		return initialized.get(g) == null ? false : initialized.get(g);
 	}
 	
+	public static void reload(Guild g){
+		initialized.remove(g);
+	}
+	
+	public static void reload(){
+		initialized.clear();
+	}
+	
 	/**
 	 * The following is equivalent to calling {@link #hasPermission(User, PermissionNode, Guild, boolean) PermissionUtil.hasPermission(user, node, g, false)}
 	 */

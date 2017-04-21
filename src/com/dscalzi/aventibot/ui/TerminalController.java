@@ -170,7 +170,6 @@ public class TerminalController implements Initializable {
 	@FXML
 	private void handleDirectoryButton(ActionEvent e){
 		try {
-			//Runtime.getRuntime().exec("explorer.exe /select," + AventiBot.getDataPath(false) + File.separator);
 			Runtime.getRuntime().exec("explorer.exe " + AventiBot.getDataPath());
 		} catch (IOException e1) {
 			LOG.warn("Error while opening file explorer:");

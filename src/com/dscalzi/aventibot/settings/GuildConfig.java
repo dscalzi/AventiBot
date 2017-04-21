@@ -10,7 +10,7 @@ import com.dscalzi.aventibot.BotStatus;
 
 import javafx.util.Pair;
 
-public class GuildConfig {
+public class GuildConfig{
 
 	public static final  Map<Pair<String, Object>, Method> keyMap;
 	
@@ -67,8 +67,16 @@ public class GuildConfig {
 	public String getCommandPrefix(){
 		
 		if(commandPrefix.equalsIgnoreCase("@MENTION") && AventiBot.getStatus() == BotStatus.CONNECTED)
-			return AventiBot.getInstance().getJDA().getSelfUser().getAsMention();
+			return AventiBot.getInstance().getJDA().getSelfUser().getAsMention() + " ";
 		
+		return this.commandPrefix;
+	}
+	
+	/**
+	 * Returns raw command prefix specified in the configuration
+	 * without any modifications. 
+	 */
+	public String getRawCommandPrefix(){
 		return this.commandPrefix;
 	}
 	

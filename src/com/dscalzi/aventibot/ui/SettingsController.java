@@ -67,7 +67,7 @@ public class SettingsController implements Initializable, ChangeListener<String>
 		currentgame_settings_field.setText(current.getCurrentGame());
 		//Bind command prefix
 		commandprefix_settings_field.textProperty().addListener(this);
-		commandprefix_settings_field.setText(current.getCommandPrefix());
+		commandprefix_settings_field.setText(current.getRawCommandPrefix());
 		//Bind color
 		//color_settings_picker.setValue(Color.web("#0f579d"));
 		color_settings_picker.setValue(Color.web(current.getDefaultColorHex()));

@@ -13,6 +13,8 @@ import java.util.Optional;
 import com.dscalzi.aventibot.AventiBot;
 import com.dscalzi.aventibot.settings.SettingsManager;
 
+import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.utils.SimpleLog;
@@ -26,8 +28,13 @@ public class CommandDispatcher {
 			
 			CommandExecutor cmdEx = exec.get();
 			
+			String fakeCmd = cmd;
 			String msg = e.getMessage().getContent();
-			String argStr = msg.substring(msg.indexOf(cmd) + cmd.length()).trim();
+			if(cmd.equals(AventiBot.getInstance().getJDA().getSelfUser().getAsMention()) &&
+				msg.startsWith(getDisplayedMention(e.getGuild()))){
+				fakeCmd = getDisplayedMention(e.getGuild());
+			}
+			String argStr = msg.substring(msg.indexOf(fakeCmd) + fakeCmd.length()).trim();
 			String[] args = cleanArgsArray((argStr.length() > 0) ? argStr.split("\\s") : new String[0]);
 			
 			String rawMsg = e.getMessage().getRawContent();
@@ -57,7 +64,7 @@ public class CommandDispatcher {
 	
 	public static String parseMessage(MessageReceivedEvent e){
 		String c = e.getMessage().getRawContent();
-		String prefix = SettingsManager.getCommandPrefix(e.getGuild());
+		String prefix = SettingsManager.getCommandPrefix(e.getGuild()).trim();
 		c = c.substring(prefix.length());
 		if(prefix.equals(AventiBot.getInstance().getJDA().getSelfUser().getAsMention()))
 			c = c.trim();
@@ -81,6 +88,15 @@ public class CommandDispatcher {
 				m.addReaction(result.getEmote()).queue();
 			}
 		}
+	}
+	
+	public static String getDisplayedMention(Guild g){
+		if(g != null){
+			Member m = g.getMemberById(AventiBot.getInstance().getJDA().getSelfUser().getId());
+			if(m != null)
+				return "@" + g.getMemberById(AventiBot.getInstance().getJDA().getSelfUser().getId()).getNickname();
+		}
+		return "@" + AventiBot.getInstance().getJDA().getSelfUser().getName();
 	}
 	
 }

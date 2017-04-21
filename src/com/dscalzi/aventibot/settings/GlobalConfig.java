@@ -10,7 +10,7 @@ import com.dscalzi.aventibot.BotStatus;
 
 import javafx.util.Pair;
 
-public class GlobalConfig {
+public class GlobalConfig{
 	
 	public static final Map<Pair<String, Object>, Method> keyMap;
 	
@@ -89,6 +89,14 @@ public class GlobalConfig {
 		if(defaultCommandPrefix.equalsIgnoreCase("@MENTION") && AventiBot.getStatus() == BotStatus.CONNECTED)
 			return AventiBot.getInstance().getJDA().getSelfUser().getAsMention();
 		
+		return this.defaultCommandPrefix;
+	}
+	
+	/**
+	 * Returns raw command prefix specified in the configuration
+	 * without any modifications. 
+	 */
+	public String getRawCommandPrefix(){
 		return this.defaultCommandPrefix;
 	}
 	
