@@ -510,6 +510,7 @@ public final class PermissionUtil {
 					container.add(PermissionUtil.ALLOWEDKEY, new JsonArray());
 					container.add(PermissionUtil.BLACKLISTKEY, new JsonArray());
 					result.add(pn.toString(), container);
+					if(pn.isOp()) permissionMap.put(String.join(":", pn.toString(), g.getId()), new ArrayList<String>());
 				}
 				try(JsonWriter writer = gson.newJsonWriter(new FileWriter(target))){
 					gson.toJson(result, writer);

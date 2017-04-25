@@ -94,7 +94,7 @@ public class CommandDispatcher {
 		if(g != null){
 			Member m = g.getMemberById(AventiBot.getInstance().getJDA().getSelfUser().getId());
 			if(m != null)
-				return "@" + g.getMemberById(AventiBot.getInstance().getJDA().getSelfUser().getId()).getNickname();
+				return "@" + g.getMemberById(AventiBot.getInstance().getJDA().getSelfUser().getId()).getEffectiveName();
 		}
 		return "@" + AventiBot.getInstance().getJDA().getSelfUser().getName();
 	}

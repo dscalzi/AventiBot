@@ -15,6 +15,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import com.dscalzi.aventibot.AventiBot;
+import com.dscalzi.aventibot.cmdutil.CommandDispatcher;
 import com.dscalzi.aventibot.cmdutil.CommandExecutor;
 import com.dscalzi.aventibot.cmdutil.CommandResult;
 import com.dscalzi.aventibot.cmdutil.PermissionNode;
@@ -30,14 +32,14 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 public class CmdSettingsControl implements CommandExecutor{
 
 	private final PermissionNode permUpdate = PermissionNode.get(NodeType.SUBCOMMAND, "settings", "update");
-	private final PermissionNode permValue = PermissionNode.get(NodeType.SUBCOMMAND, "settings", "value");
+	private final PermissionNode permInfo = PermissionNode.get(NodeType.SUBCOMMAND, "settings", "info");
 	
 	public final Set<PermissionNode> nodes;
 	
 	public CmdSettingsControl(){
 		nodes = new HashSet<PermissionNode>(Arrays.asList(
 					permUpdate,
-					permValue
+					permInfo
 				));
 	}
 	
@@ -74,22 +76,21 @@ public class CmdSettingsControl implements CommandExecutor{
 				return CommandResult.IGNORE;
 			}
 			
-			if(args[0].equalsIgnoreCase("value")){
-				if(!PermissionUtil.hasPermission(e.getAuthor(), permValue, e.getGuild())){
+			if(args[0].equalsIgnoreCase("info")){
+				if(!PermissionUtil.hasPermission(e.getAuthor(), permInfo, e.getGuild())){
 					return CommandResult.NO_PERMISSION;
 				}
 				if(args.length > 1){
 					String prop = args[1].toLowerCase();
 					for(Map.Entry<Pair<String, Object>, Method> entry : GuildConfig.keyMap.entrySet()){
 						if(entry.getKey().getKey().toLowerCase().equals(prop)){
-							return cmdValue(e, entry.getKey().getKey(), entry.getKey().getValue(), args);
+							return cmdInfo(e, entry.getKey().getKey(), entry.getKey().getValue());
 						}
 					}
 					e.getChannel().sendMessage("Unknown settings key: `" + prop + "`.").queue();
 					return CommandResult.ERROR;
 				}
-				e.getChannel().sendMessage("Proper usage is `" + current.getCommandPrefix() + "settings value <key>`").queue();
-				return CommandResult.IGNORE;
+				return this.cmdInfoFull(e);
 			}
 			
 			e.getChannel().sendMessage("Unknown subcommand: `" + args[0] + "`.").queue();
@@ -150,32 +151,63 @@ public class CmdSettingsControl implements CommandExecutor{
 		}
 	}
 	
-	private CommandResult cmdValue(MessageReceivedEvent e, String key, Object def, String[] args){
+	private CommandResult cmdInfo(MessageReceivedEvent e, String key, Object def){
 		GuildConfig current = SettingsManager.getGuildConfig(e.getGuild());
-		Object val = null;
-		try {
-			for(Field f : current.getClass().getDeclaredFields()){
-				if(f.getName().equalsIgnoreCase(key)){
-					f.setAccessible(true);
-					val = f.get(current);
-					f.setAccessible(false);
-				}
-			}
-		}  catch (SecurityException | IllegalArgumentException | IllegalAccessException e1) {
+		Object val = getFieldValue(current, key);
+		if(val == null){
 			e.getChannel().sendMessage("Internal error while retrieving the settings value.").queue();
-			e1.printStackTrace();
 			return CommandResult.ERROR;
 		}
 		
 		EmbedBuilder eb = new EmbedBuilder();
 		eb.setTitle("Value of `" + key + "`", null);
-		eb.setDescription("Current: `" + val + "`.\n"
-				+ "Default: `" + def + "`.");
+		eb.setDescription("`" + val + "` | [def `" + def + "`]");
 		eb.setColor(current.getColorAWT());
 		
 		e.getChannel().sendMessage(eb.build()).queue();
 		
 		return CommandResult.SUCCESS;
+	}
+	
+	private CommandResult cmdInfoFull(MessageReceivedEvent e){
+		GuildConfig current = SettingsManager.getGuildConfig(e.getGuild());
+		EmbedBuilder eb = new EmbedBuilder();
+		eb.setTitle("Configuration for " + e.getGuild().getName(), null);
+		eb.setColor(current.getColorAWT());
+		String proper = SettingsManager.getCommandPrefix(e.getGuild());
+		if(proper.trim().equals(AventiBot.getInstance().getJDA().getSelfUser().getAsMention())){
+			proper = CommandDispatcher.getDisplayedMention(e.getGuild()) + " ";
+		}
+		eb.setFooter("Narrow Search | " + proper + "settings info <key>.", "http://i.imgur.com/ccX8Pvi.png");
+		
+		
+		for(Pair<String, Object> keys : GuildConfig.keyMap.keySet()){
+			Object val = getFieldValue(current, keys.getKey());
+			if(val == null) val = "ERROR";
+			eb.appendDescription("**" + keys.getKey() + "**\n"
+					+ "`" + val + "` | [def `" + keys.getValue() + "`]\n");
+		}
+		
+		e.getChannel().sendMessage(eb.build()).queue();
+		
+		return CommandResult.SUCCESS;
+	}
+	
+	private Object getFieldValue(GuildConfig src, String key){
+		Object val = null;
+		try {
+			for(Field f : src.getClass().getDeclaredFields()){
+				if(f.getName().equalsIgnoreCase(key)){
+					f.setAccessible(true);
+					val = f.get(src);
+					f.setAccessible(false);
+				}
+			}
+		}  catch (SecurityException | IllegalArgumentException | IllegalAccessException e1) {
+			e1.printStackTrace();
+			return null;
+		}
+		return val == null ? "null" : val;
 	}
 	
 

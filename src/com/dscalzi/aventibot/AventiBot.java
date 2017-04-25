@@ -7,6 +7,7 @@ package com.dscalzi.aventibot;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 
 import javax.security.auth.login.LoginException;
 import javax.xml.ws.http.HTTPException;
@@ -167,7 +168,14 @@ public class AventiBot {
 	}
 	
 	public static String getDataPath(){
-		String pth = AventiBot.class.getProtectionDomain().getCodeSource().getLocation().getPath().replace("/", File.separator);
+		String pth;
+		try {
+			pth = AventiBot.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath().replace("/", File.separator);
+		} catch (URISyntaxException e) {
+			SimpleLog.getLog("AventiBot").fatal("The paths on your machine cannot be converted to URIs, I am speechless.");
+			e.printStackTrace();
+			return null;
+		}
 		return pth.substring(1, pth.lastIndexOf(File.separator));
 	}
 	
