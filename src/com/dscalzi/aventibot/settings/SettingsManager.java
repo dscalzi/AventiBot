@@ -401,7 +401,7 @@ public class SettingsManager {
 	
 	public static String getCommandPrefix(Guild g){
 		if(g == null) return getGlobalConfig().getCommandPrefix();
-		else return getGuildConfig(g).getCommandPrefix();
+		else return getGuildConfig(g).getCommandPrefix(g);
 	}
 	
 	public static Color getColorAWT(){

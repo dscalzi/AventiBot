@@ -9,6 +9,7 @@ import com.dscalzi.aventibot.AventiBot;
 import com.dscalzi.aventibot.BotStatus;
 
 import javafx.util.Pair;
+import net.dv8tion.jda.core.entities.Guild;
 
 public class GuildConfig{
 
@@ -64,10 +65,10 @@ public class GuildConfig{
 		}
 	}
 	
-	public String getCommandPrefix(){
+	public String getCommandPrefix(Guild g){
 		
 		if(commandPrefix.equalsIgnoreCase("@MENTION") && AventiBot.getStatus() == BotStatus.CONNECTED)
-			return AventiBot.getInstance().getJDA().getSelfUser().getAsMention() + " ";
+			return g.getMember(AventiBot.getInstance().getJDA().getSelfUser()).getAsMention() + " ";
 		
 		return this.commandPrefix;
 	}

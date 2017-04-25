@@ -49,7 +49,6 @@ public class CmdSettingsControl implements CommandExecutor{
 			e.getChannel().sendMessage("This command may only be used in guilds!").queue();
 			return CommandResult.NO_PERMISSION;
 		}
-		GuildConfig current = SettingsManager.getGuildConfig(e.getGuild());
 		
 		if(args.length > 0){
 			
@@ -72,7 +71,7 @@ public class CmdSettingsControl implements CommandExecutor{
 					e.getChannel().sendMessage("Unknown settings key: `" + prop + "`.").queue();
 					return CommandResult.ERROR;
 				}
-				e.getChannel().sendMessage("Proper usage is `" + current.getCommandPrefix() + "settings update <key> <value>`").queue();
+				e.getChannel().sendMessage("Proper usage is `" + SettingsManager.getCommandPrefix(e.getGuild()) + "settings update <key> <value>`").queue();
 				return CommandResult.IGNORE;
 			}
 			
@@ -106,7 +105,7 @@ public class CmdSettingsControl implements CommandExecutor{
 		GuildConfig current = SettingsManager.getGuildConfig(e.getGuild());
 		
 		if(args.length < 3){
-			e.getChannel().sendMessage("Proper usage is " + current.getCommandPrefix() + "settings update " + key.toLowerCase() + " <value>").queue();
+			e.getChannel().sendMessage("Proper usage is " + SettingsManager.getCommandPrefix(e.getGuild()) + "settings update " + key.toLowerCase() + " <value>").queue();
 			return CommandResult.ERROR;
 		}
 		try {
@@ -133,7 +132,7 @@ public class CmdSettingsControl implements CommandExecutor{
 	private CommandResult cmdUpdateColor(MessageReceivedEvent e, String[] args){
 		GuildConfig g = SettingsManager.getGuildConfig(e.getGuild());
 		if(args.length < 3){
-			e.getChannel().sendMessage("Proper usage is " + g.getCommandPrefix() + "settings update color [hex value]").queue();
+			e.getChannel().sendMessage("Proper usage is " + SettingsManager.getCommandPrefix(e.getGuild()) + "settings update color [hex value]").queue();
 			return CommandResult.ERROR;
 		}
 		try {

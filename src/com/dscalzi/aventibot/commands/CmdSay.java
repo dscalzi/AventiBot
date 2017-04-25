@@ -72,7 +72,7 @@ public class CmdSay implements CommandExecutor{
 		
 		ch.sendMessage(message).queue();
 		
-		return CommandResult.SUCCESS;
+		return CommandResult.IGNORE;
 	}
 
 	@Override

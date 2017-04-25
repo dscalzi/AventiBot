@@ -66,7 +66,7 @@ public class CommandDispatcher {
 		String c = e.getMessage().getRawContent();
 		String prefix = SettingsManager.getCommandPrefix(e.getGuild()).trim();
 		c = c.substring(prefix.length());
-		if(prefix.equals(AventiBot.getInstance().getJDA().getSelfUser().getAsMention()))
+		if(prefix.equals(e.getGuild() == null ? AventiBot.getInstance().getJDA().getSelfUser().getAsMention() : e.getGuild().getMember(AventiBot.getInstance().getJDA().getSelfUser()).getAsMention()))
 			c = c.trim();
 		
 		try{
