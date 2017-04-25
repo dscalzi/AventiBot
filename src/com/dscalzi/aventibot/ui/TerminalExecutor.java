@@ -6,6 +6,7 @@
 package com.dscalzi.aventibot.ui;
 
 import java.io.InputStream;
+import java.util.List;
 
 import com.dscalzi.aventibot.BotStatus;
 import com.dscalzi.aventibot.AventiBot;
@@ -19,6 +20,8 @@ import net.dv8tion.jda.core.utils.SimpleLog;
 
 public class TerminalExecutor extends Application {
 
+	protected static List<String> parameters;
+	
 	public static void main(String[] args){
 		launch(args);
 	}
@@ -27,6 +30,7 @@ public class TerminalExecutor extends Application {
 	
 	@Override
 	public void start(Stage primaryStage) throws Exception {
+		parameters = this.getParameters().getRaw();		
 		FXMLLoader loader = new FXMLLoader();
 		
 		Scene root;

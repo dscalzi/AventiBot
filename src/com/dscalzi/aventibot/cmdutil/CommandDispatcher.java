@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 import com.dscalzi.aventibot.AventiBot;
 import com.dscalzi.aventibot.settings.SettingsManager;
@@ -83,9 +84,22 @@ public class CommandDispatcher {
 	 * @param m The message to display the result on.
 	 */
 	public static void displayResult(CommandResult result, Message m){
+		displayResult(result, m, null);
+	}
+	
+	/**
+	 * Utility method that allows async commands to display their result.
+	 * 
+	 * @param result The result of the command operation.
+	 * @param m The message to display the result on.
+	 * @param success The callback on this action.
+	 */
+	public static void displayResult(CommandResult result, Message m, Consumer<Void> success){
 		if(result != null && result != CommandResult.IGNORE){
 			if(m.getIdLong() > 0){
-				m.addReaction(result.getEmote()).queue();
+				m.addReaction(result.getEmote()).queue(success);
+			} else {
+				success.accept(null);
 			}
 		}
 	}

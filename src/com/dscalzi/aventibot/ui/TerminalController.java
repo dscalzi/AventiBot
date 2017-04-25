@@ -59,6 +59,8 @@ public class TerminalController implements Initializable {
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
 		this.setupTerminal();
+		if(TerminalExecutor.parameters.contains("--abNow"))
+			launch_button.fire();
 	}
 	
 	@FXML

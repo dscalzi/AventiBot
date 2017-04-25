@@ -34,7 +34,7 @@ public class CmdShutdown implements CommandExecutor{
 	@Override
 	public CommandResult onCommand(MessageReceivedEvent e, String cmd, String[] args, String[] rawArgs) {
 		
-		if(!PermissionUtil.hasPermission(e.getAuthor(), permShutdown, e.getGuild())) return CommandResult.NO_PERMISSION;
+		if(!PermissionUtil.hasPermission(e.getAuthor(), permShutdown, e.getGuild(), false)) return CommandResult.NO_PERMISSION;
 		
 		e.getChannel().sendMessage("Shutting down.. :(").queue(v -> {
 			try {

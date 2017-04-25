@@ -17,6 +17,7 @@ import com.dscalzi.aventibot.cmdutil.CommandRegistry;
 import com.dscalzi.aventibot.commands.CmdAuthor;
 import com.dscalzi.aventibot.commands.CmdBlacklist;
 import com.dscalzi.aventibot.commands.CmdClear;
+import com.dscalzi.aventibot.commands.CmdHardRestart;
 import com.dscalzi.aventibot.commands.CmdHelloWorld;
 import com.dscalzi.aventibot.commands.CmdHelp;
 import com.dscalzi.aventibot.commands.CmdMusicControl;
@@ -104,6 +105,7 @@ public class AventiBot {
 		this.registry.register("permissions", new CmdPermissionsControl());
 		this.registry.register("settings", new CmdSettingsControl());
 		this.registry.register("softreload", new CmdSoftReload());
+		this.registry.register("hardrestart", new CmdHardRestart());
 	}
 	
 	private void registerListeners(){
