@@ -97,9 +97,13 @@ public class CommandDispatcher {
 	public static void displayResult(CommandResult result, Message m, Consumer<Void> success){
 		if(result != null && result != CommandResult.IGNORE){
 			if(m.getIdLong() > 0){
-				m.addReaction(result.getEmote()).queue(success);
+				if(success != null)
+					m.addReaction(result.getEmote()).queue(success);
+				else
+					m.addReaction(result.getEmote()).queue();
 			} else {
-				success.accept(null);
+				if(success != null)
+					success.accept(null);
 			}
 		}
 	}
