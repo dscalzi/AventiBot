@@ -56,6 +56,7 @@ public class CmdMusicControl implements CommandExecutor{
 					permPlaylist,
 					permResume,
 					permSkip,
+					permCancelSkip,
 					permStop
 				));
 	}
@@ -70,8 +71,8 @@ public class CmdMusicControl implements CommandExecutor{
 		
 		if(e.getGuild() != null){
 			String cname = e.getChannel().getName().toLowerCase();
-			if(!e.getChannel().getId().equals("229380785646469127") && !cname.contains("music") && !cname.contains("debug")){
-				e.getChannel().sendMessage("Don't be an asshole, use this command in music.").queue((m) -> {
+			if(!cname.contains("music") && !cname.contains("debug")){
+				e.getChannel().sendMessage("Please use this command in the music channel.").queue((m) -> {
 					new Timer().schedule(new TimerTask() {
 						public void run(){
 							if(m != null)
@@ -100,7 +101,9 @@ public class CmdMusicControl implements CommandExecutor{
 		case "forceskip":
 			return this.cmdForceSkip(e, player, scheduler);
 		case "skip":
-			return this.cmdSkip(e, player, scheduler);
+			return this.cmdSkip(e, scheduler);
+		case "cancelskip":
+			return this.cmdCancelSkip(e, scheduler);
 		case "stop":
 			return this.cmdStop(e, player, scheduler);
 		}
@@ -211,7 +214,9 @@ public class CmdMusicControl implements CommandExecutor{
 			}
 			
 			EmbedBuilder eb = new EmbedBuilder().setColor(SettingsManager.getColorAWT(e.getGuild()));
-			eb.addField(new Field("Currently Playing:", current.getTrack().getInfo().title + " (" + TimeUtils.formatTrackDuration(current.getTrack().getPosition()) + "/" + TimeUtils.formatTrackDuration(current.getTrack().getDuration()) + ")", false));
+			int skips = current.getNumSkips();
+			int usrs = scheduler.getCurrentChannel().getMembers().size()-1;
+			eb.addField(new Field("Currently Playing:", current.getTrack().getInfo().title + " (" + TimeUtils.formatTrackDuration(current.getTrack().getPosition()) + "/" + TimeUtils.formatTrackDuration(current.getTrack().getDuration()) + ")" + (skips > 0 ? (" | Votes " + skips + "/" + usrs + " (" + (int)(((double)skips/usrs)*100) + "%)") : ""), false));
 			String desc = "";
 			
 			if(tracks.size() != 0)
@@ -296,7 +301,7 @@ public class CmdMusicControl implements CommandExecutor{
 		Optional<TrackMeta> otm = scheduler.getCurrent();
 		if(otm.isPresent()){
 			TrackMeta tm = otm.get();
-			e.getChannel().sendMessage("Skipped " + tm.getTrack().getInfo().title);
+			e.getChannel().sendMessage("Force Skipped " + tm.getTrack().getInfo().title);
 			player.stopTrack();
 			return CommandResult.SUCCESS;
 		} else {
@@ -306,11 +311,62 @@ public class CmdMusicControl implements CommandExecutor{
 	}
 	
 	private final PermissionNode permSkip = PermissionNode.get(NodeType.COMMAND, "skip");
-	private CommandResult cmdSkip(MessageReceivedEvent e, AudioPlayer player, TrackScheduler scheduler){
+	private CommandResult cmdSkip(MessageReceivedEvent e, TrackScheduler scheduler){
 		if(!PermissionUtil.hasPermission(e.getAuthor(), permSkip, e.getGuild())) return CommandResult.NO_PERMISSION;
 		
-		e.getChannel().sendMessage("Command coming soon, for now you can use forceskip.").queue();
-		return CommandResult.IGNORE;
+		int result = scheduler.voteSkipCurrent(e.getAuthor());
+		if(result == 0){
+			//Vote placed, haven't skipped.
+			TrackMeta tm = scheduler.getCurrent().get();
+			e.getChannel().sendTyping().queue(v -> {
+				EmbedBuilder eb = new EmbedBuilder();
+				eb.setColor(SettingsManager.getColorAWT(e.getGuild()));
+				eb.setTitle(e.getAuthor().getAsMention() + " voted to skip " + tm.getTrack().getInfo().title, null);
+				int skips = tm.getNumSkips();
+				int usrs = scheduler.getCurrentChannel().getMembers().size()-1;
+				eb.setFooter("Current Votes - " + skips + "/" + usrs
+						+ " (" + (int)(((double)skips/usrs)*100) + "%)", "http://i.imgur.com/saXkgYz.png");
+				e.getChannel().sendMessage(eb.build()).queue();
+			});
+			return CommandResult.SUCCESS;
+		} else if(result == 1){
+			e.getChannel().sendMessage("You have already voted to skip this song!").queue();
+			return CommandResult.ERROR;
+		} else if(result == 2){
+			//No response is needed by this function.
+			return CommandResult.SUCCESS;
+		} else {
+			e.getChannel().sendMessage("Nothing to skip.").queue();
+			return CommandResult.ERROR;
+		}
+	}
+	
+	private final PermissionNode permCancelSkip = PermissionNode.get(NodeType.COMMAND, "cancelskip");
+	private CommandResult cmdCancelSkip(MessageReceivedEvent e, TrackScheduler scheduler){
+		if(!PermissionUtil.hasPermission(e.getAuthor(), permCancelSkip, e.getGuild())) return CommandResult.NO_PERMISSION;
+		
+		int result = scheduler.cancelVoteSkip(e.getAuthor());
+		
+		if(result == 0){
+			TrackMeta tm = scheduler.getCurrent().get();
+			e.getChannel().sendTyping().queue(v -> {
+				EmbedBuilder eb = new EmbedBuilder();
+				eb.setColor(SettingsManager.getColorAWT(e.getGuild()));
+				eb.setTitle(e.getAuthor().getAsMention() + " cancelled vote to skip " + tm.getTrack().getInfo().title, null);
+				int skips = tm.getNumSkips();
+				int usrs = scheduler.getCurrentChannel().getMembers().size()-1;
+				eb.setFooter("Current Votes - " + skips + "/" + usrs
+						+ " (" + (int)(((double)skips/usrs)*100) + "%)", "http://i.imgur.com/saXkgYz.png");
+				e.getChannel().sendMessage(eb.build()).queue();
+			});
+			return CommandResult.SUCCESS;
+		} else if(result == 1){
+			e.getChannel().sendMessage("You have not voted to skip this song!").queue();
+			return CommandResult.ERROR;
+		} else {
+			e.getChannel().sendMessage("Nothing to skip.").queue();
+			return CommandResult.ERROR;
+		}
 	}
 	
 	private final PermissionNode permStop = PermissionNode.get(NodeType.COMMAND, "stop");
@@ -334,13 +390,9 @@ public class CmdMusicControl implements CommandExecutor{
 	
 	private VoiceChannel connectWithUser(Member member, Guild g){
 		AudioManager am = g.getAudioManager();
-		for(VoiceChannel vc : g.getVoiceChannels()){
-			if(vc.getMembers().contains(member)){
-				if(am.isConnected() && am.getConnectedChannel().equals(vc)) return vc;
-				else {am.openAudioConnection(vc); return vc; }
-			}
-		}
-		return null;
+		VoiceChannel vc = member.getVoiceState().getChannel();
+		if(vc != null && (!am.isConnected() || !am.getConnectedChannel().equals(vc))) am.openAudioConnection(vc);
+		return vc;
 	}
 
 	@Override

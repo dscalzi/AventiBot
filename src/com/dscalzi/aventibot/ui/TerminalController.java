@@ -18,6 +18,7 @@ import com.dscalzi.aventibot.BotStatus;
 import com.dscalzi.aventibot.AventiBot;
 import com.dscalzi.aventibot.console.CommandLine;
 import com.dscalzi.aventibot.console.CommandLog;
+import com.dscalzi.aventibot.util.OSUtil;
 
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -172,7 +173,12 @@ public class TerminalController implements Initializable {
 	@FXML
 	private void handleDirectoryButton(ActionEvent e){
 		try {
-			Runtime.getRuntime().exec("explorer.exe " + AventiBot.getDataPath());
+			if(OSUtil.isWindows())
+				Runtime.getRuntime().exec("explorer.exe " + AventiBot.getDataPath());
+			else if(OSUtil.isMac())
+				Runtime.getRuntime().exec("open " + AventiBot.getDataPath());
+			else 
+				LOG.fatal("Cannot open the data directory, unsupported OS. Path is " + AventiBot.getDataPath());
 		} catch (IOException e1) {
 			LOG.warn("Error while opening file explorer:");
 			e1.printStackTrace();

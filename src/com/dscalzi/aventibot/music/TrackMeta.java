@@ -5,26 +5,27 @@
  */
 package com.dscalzi.aventibot.music;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
+
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.User;
 
-public class TrackMeta {
+public class TrackMeta{
 
 	private final AudioTrack track;
 	private final User requester;
 	private final MessageChannel requestedIn;
 	
-	private final List<User> requestedSkips;
+	private final Map<User, Integer> requestedSkips;
 	
 	public TrackMeta(AudioTrack track, User requester, MessageChannel requestedIn){
 		this.track = track;
 		this.requester = requester;
 		this.requestedIn = requestedIn;
-		this.requestedSkips = new ArrayList<User>();
+		this.requestedSkips = new HashMap<User, Integer>();
 	}
 
 	public AudioTrack getTrack() {
@@ -40,12 +41,37 @@ public class TrackMeta {
 	}
 	
 	public boolean addSkip(User user){
-		if(requestedSkips.contains(user)) return false;
-		return requestedSkips.add(user);
+		return addSkip(user, 1);
 	}
 	
-	public int getSkips(){
-		return requestedSkips.size();
+	public boolean addSkip(User user, Integer weight){
+		if(requestedSkips.containsKey(user)) return false;
+		requestedSkips.put(user, weight);
+		return true;
+	}
+	
+	public boolean revokeSkip(User user){
+		return requestedSkips.remove(user) != null;
+	}
+	
+	public boolean modifySkip(User user, Integer newWeight){
+		if(!requestedSkips.containsKey(user)) return false;
+		requestedSkips.put(user, newWeight);
+		return true;
+	}
+	
+	public boolean hasVoted(User user){
+		return requestedSkips.containsKey(user);
+	}
+	
+	public int getNumSkips(){
+		int sks = 0;
+		for(Integer i : requestedSkips.values()) sks += i.intValue();
+		return sks;
+	}
+	
+	public Map<User, Integer> getSkipMap(){
+		return requestedSkips;
 	}
 	
 }

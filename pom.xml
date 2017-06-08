@@ -91,18 +91,12 @@
     <dependency>
       <groupId>net.dv8tion</groupId>
       <artifactId>JDA</artifactId>
-      <version>3.0.0_186</version>
-      <exclusions>
-          <exclusion>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-          </exclusion>
-      </exclusions>
+      <version>3.1.1_212</version>
     </dependency>
   	<dependency>
    		<groupId>com.sedmelluq</groupId>
    		<artifactId>lavaplayer</artifactId>
-    	<version>1.2.36</version>
+    	<version>1.2.40</version>
   	</dependency>
   	<dependency>
     	<groupId>com.google.code.gson</groupId>

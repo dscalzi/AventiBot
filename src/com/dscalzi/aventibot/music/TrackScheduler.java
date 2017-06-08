@@ -10,6 +10,7 @@ import java.util.Optional;
 import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import com.dscalzi.aventibot.AventiBot;
 import com.dscalzi.aventibot.settings.SettingsManager;
 import com.dscalzi.aventibot.util.TimeUtils;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
@@ -19,13 +20,17 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 
 import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.core.entities.VoiceChannel;
+import net.dv8tion.jda.core.events.Event;
+import net.dv8tion.jda.core.events.guild.voice.GuildVoiceJoinEvent;
+import net.dv8tion.jda.core.events.guild.voice.GuildVoiceLeaveEvent;
+import net.dv8tion.jda.core.hooks.EventListener;
 import net.dv8tion.jda.core.managers.AudioManager;
 
-public class TrackScheduler extends AudioEventAdapter{
+public class TrackScheduler extends AudioEventAdapter implements EventListener{
 
 	private static final int PLAYLIST_LIMIT = 200;
 	
@@ -38,6 +43,7 @@ public class TrackScheduler extends AudioEventAdapter{
 		this.queue = new LinkedBlockingQueue<TrackMeta>();
 		this.player = player;
 		this.associatedGuild = associatedGuild;
+		AventiBot.getInstance().getJDA().addEventListener(this);
 	}
 	
 	public boolean queue(TrackMeta meta){
@@ -63,7 +69,7 @@ public class TrackScheduler extends AudioEventAdapter{
 				eb.setColor(SettingsManager.getColorAWT(associatedGuild));
 				eb.setDescription("Runtime: " + TimeUtils.formatTrackDuration(meta.getTrack().getDuration()));
 				eb.setFooter("Estimated Wait Time: " + TimeUtils.formatTrackDuration(waitTime), "http://i.imgur.com/Y3rbhFt.png");
-				meta.getRequestedIn().sendMessage(new MessageBuilder().setEmbed(eb.build()).build()).queue();
+				meta.getRequestedIn().sendMessage(eb.build()).queue();
 			});
 		}
 		return true;
@@ -96,7 +102,7 @@ public class TrackScheduler extends AudioEventAdapter{
 			eb.setColor(SettingsManager.getColorAWT(associatedGuild));
 			eb.setDescription("Collective length: " + TimeUtils.formatTrackDuration(playlistLength));
 			if(waitTime > 0) eb.setFooter("Estimated Wait Time: " + TimeUtils.formatTrackDuration(waitTime), "http://i.imgur.com/Y3rbhFt.png");
-			requestedIn.sendMessage(new MessageBuilder().setEmbed(eb.build()).build()).queue();
+			requestedIn.sendMessage(eb.build()).queue();
 			
 			if(player.getPlayingTrack() == null) player.playTrack(queue.element().getTrack());
 			
@@ -118,7 +124,7 @@ public class TrackScheduler extends AudioEventAdapter{
 				eb.setFooter("Up next: " + it.next().getTrack().getInfo().title, "http://i.imgur.com/nEw5Gsk.png");
 			eb.setDescription("Requested by " + current.getRequester().getAsMention() + "\n" +
 				"| Runtime " + TimeUtils.formatTrackDuration(current.getTrack().getDuration()));
-			current.getRequestedIn().sendMessage(new MessageBuilder().setEmbed(eb.build()).build()).queue();
+			current.getRequestedIn().sendMessage(eb.build()).queue();
 		});
 		
 	}
@@ -141,6 +147,21 @@ public class TrackScheduler extends AudioEventAdapter{
 		}
 	}
 	
+	@Override
+	public void onEvent(Event event){
+		if(event instanceof GuildVoiceLeaveEvent){
+			GuildVoiceLeaveEvent e = (GuildVoiceLeaveEvent)event;
+			if(e.getGuild().equals(associatedGuild) && e.getChannelLeft().equals(getCurrentChannel())){
+				modifyVoteWeight(e.getMember().getUser(), 0);
+			}
+		} else if(event instanceof GuildVoiceJoinEvent){
+			GuildVoiceJoinEvent e = (GuildVoiceJoinEvent)event;
+			if(e.getGuild().equals(associatedGuild) && e.getChannelJoined().equals(getCurrentChannel())){
+				modifyVoteWeight(e.getMember().getUser(), 1);
+			}
+		}
+	}
+	
 	public Queue<TrackMeta> getQueue(){
 		return this.queue;
 	}
@@ -156,8 +177,65 @@ public class TrackScheduler extends AudioEventAdapter{
 		return Optional.of(queue.element());
 	}
 	
-	public void voteSkipCurrent(User u){
-		queue.element().addSkip(u);
+	public int voteSkipCurrent(User u){
+		//Return key, 0 = success; 1 = already voted; 2 = voted and skipped; -1 = nothing playing.
+		Optional<TrackMeta> otm = getCurrent();
+		if(otm.isPresent()){
+			boolean ret;
+			//Requester of the song does not need to vote.
+			if(u.equals(otm.get().getRequester()))
+				ret = otm.get().addSkip(u, getCurrentChannel().getMembers().size());
+			else 
+				ret = otm.get().addSkip(u);
+			if(ret) {
+				boolean ret2 = attemptVoteSkip(otm.get());
+				if(ret2) return 2;
+			}
+			return ret ? 0 : 1;
+		}
+		return -1;
+	}
+	
+	public int cancelVoteSkip(User u){
+		//Return key, 0 = success; 1 = hasn't voted; -1 = nothing playing.
+		Optional<TrackMeta> otm = getCurrent();
+		if(otm.isPresent()){
+			boolean ret = otm.get().revokeSkip(u);
+			return ret ? 0 : 1;
+		}
+		return -1;
+	}
+	
+	public int modifyVoteWeight(User u, Integer weight){
+		//Return key, 0 = modified; 1 = not modified; 2 = modified and skipped; -1 = nothing playing.
+		Optional<TrackMeta> otm = getCurrent();
+		if(otm.isPresent()){
+			boolean ret = otm.get().modifySkip(u, weight);
+			if(ret) {
+				boolean ret2 = attemptVoteSkip(otm.get());
+				if(ret2) return 2;
+			}
+			return ret ? 0 : 1;
+		}
+		return -1;
+	}
+	
+	private boolean attemptVoteSkip(TrackMeta current){
+		if(current != null){
+			VoiceChannel vc = getCurrentChannel();
+			if((double)current.getNumSkips()/(vc.getMembers().size()-1) >= .5){
+				current.getRequestedIn().sendTyping().queue(v -> {
+					current.getRequestedIn().sendMessage("Skipped " + current.getTrack().getInfo().title).queue();
+				});
+				player.stopTrack();
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public VoiceChannel getCurrentChannel(){
+		return associatedGuild.getMember(AventiBot.getInstance().getJDA().getSelfUser()).getVoiceState().getChannel();
 	}
 	
 	public long getPlaylistDuration(){

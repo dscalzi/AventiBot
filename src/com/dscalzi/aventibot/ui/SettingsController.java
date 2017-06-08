@@ -8,6 +8,7 @@ import com.dscalzi.aventibot.AventiBot;
 import com.dscalzi.aventibot.BotStatus;
 import com.dscalzi.aventibot.settings.GlobalConfig;
 import com.dscalzi.aventibot.settings.SettingsManager;
+import com.dscalzi.aventibot.util.OSUtil;
 
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
@@ -99,7 +100,12 @@ public class SettingsController implements Initializable, ChangeListener<String>
 	@FXML
 	private void handleShowFileButton(ActionEvent e){
 		try {
-			Runtime.getRuntime().exec("explorer.exe /select," + SettingsManager.getGlobalConfigurationFile().getAbsolutePath());
+			if(OSUtil.isWindows())
+				Runtime.getRuntime().exec("explorer.exe /select," + SettingsManager.getGlobalConfigurationFile().getAbsolutePath());
+			else if(OSUtil.isMac())
+				Runtime.getRuntime().exec("open " + SettingsManager.getGlobalConfigurationFile().getAbsolutePath());
+			else 
+				LOG.fatal("Cannot open the configuration file location, unsupported OS. Path is " + SettingsManager.getGlobalConfigurationFile().getAbsolutePath());
 		} catch (IOException e1) {
 			LOG.warn("Error while opening file explorer:");
 			e1.printStackTrace();

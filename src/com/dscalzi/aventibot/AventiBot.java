@@ -46,8 +46,6 @@ public class AventiBot {
 	private static AventiBot instance;
 	
 	static {
-		//OLDtoken = "MjMxOTA2OTY2MzA0MTk0NTYx.CtjFKQ.Y5nPGpJwQy5kVSLfra-01dvD-_A";
-		//OCtoken = "MjMxOTA2OTY2MzA0MTk0NTYx.C5FcMQ.AnCpNadk33r9eGczmOV6SX5QfOw";
 		status = BotStatus.NULL;
 	}
 	
@@ -80,7 +78,6 @@ public class AventiBot {
 		registerListeners();
 		LavaWrapper.initialize();
 		this.console = ConsoleUser.build(jda);
-		//((JDAImpl)jda).getPrivateChannelMap().put("consolepm", console.getPrivateChannel());
 		((JDAImpl)jda).getPrivateChannelMap().put(console.getIdLong(), console.getPrivateChannel());
 	}
 	
@@ -89,6 +86,8 @@ public class AventiBot {
 		CmdBlacklist cbl = new CmdBlacklist();
 		this.registry.register("play", mcc);
 		this.registry.register("playlist", mcc);
+		this.registry.register("skip", mcc);
+		this.registry.register("cancelskip", mcc);
 		this.registry.register("forceskip", mcc);
 		this.registry.register("pause", mcc);
 		this.registry.register("stop", mcc);
@@ -163,10 +162,6 @@ public class AventiBot {
 	
 	public JDA getJDA(){
 		return this.jda;
-	}
-	
-	public String getId(){
-		return this.jda.getSelfUser().getId();
 	}
 	
 	public static String getDataPath(){

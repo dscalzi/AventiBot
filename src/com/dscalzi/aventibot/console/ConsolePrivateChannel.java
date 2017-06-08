@@ -31,19 +31,19 @@ public class ConsolePrivateChannel implements PrivateChannel{
     @Override
 	public RestAction<Message> sendMessage(String text) {
     	SimpleLog.getLog("??? -> Me").info(text);
-    	return new RestAction.EmptyRestAction<Message>(new MessageBuilder().append(text).build());
+    	return new RestAction.EmptyRestAction<Message>(api, new MessageBuilder().append(text).build());
 	}
 
 	@Override
 	public RestAction<Message> sendMessage(Message msg) {
 		SimpleLog.getLog(msg.getAuthor().getDiscriminator() + " -> Me").info(msg.getRawContent());
-		return new RestAction.EmptyRestAction<Message>(msg);
+		return new RestAction.EmptyRestAction<Message>(api, msg);
 	}
 	
 	@Override
 	public RestAction<Message> sendMessage(MessageEmbed embed) {
 		// Not supported
-		return new RestAction.EmptyRestAction<Message>(new MessageBuilder().setEmbed(embed).build());
+		return new RestAction.EmptyRestAction<Message>(api, new MessageBuilder().setEmbed(embed).build());
 	}
 
 	@Override
@@ -74,7 +74,7 @@ public class ConsolePrivateChannel implements PrivateChannel{
 	@Override
 	public RestAction<Void> close() {
 		// Not Supported
-		return new RestAction.EmptyRestAction<Void>(null);
+		return new RestAction.EmptyRestAction<Void>(api, null);
 	}
 
 	@Override

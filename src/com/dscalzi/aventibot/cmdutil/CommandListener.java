@@ -29,7 +29,7 @@ public class CommandListener extends ListenerAdapter {
 						return;
 					}
 				}
-			if(!e.getAuthor().getId().equals(AventiBot.getInstance().getId())){
+			if(!e.getAuthor().getId().equals(AventiBot.getInstance().getJDA().getSelfUser().getId())){
 				CommandDispatcher.dispatchCommand(e, CommandDispatcher.parseMessage(e));
 			}
 		}
