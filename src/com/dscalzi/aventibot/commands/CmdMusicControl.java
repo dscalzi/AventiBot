@@ -300,8 +300,8 @@ public class CmdMusicControl implements CommandExecutor{
 		
 		Optional<TrackMeta> otm = scheduler.getCurrent();
 		if(otm.isPresent()){
-			TrackMeta tm = otm.get();
-			e.getChannel().sendMessage("Force Skipped " + tm.getTrack().getInfo().title);
+			//TrackMeta tm = otm.get();
+			//e.getChannel().sendMessage("Force Skipped " + tm.getTrack().getInfo().title).queue();
 			player.stopTrack();
 			return CommandResult.SUCCESS;
 		} else {
@@ -321,10 +321,10 @@ public class CmdMusicControl implements CommandExecutor{
 			e.getChannel().sendTyping().queue(v -> {
 				EmbedBuilder eb = new EmbedBuilder();
 				eb.setColor(SettingsManager.getColorAWT(e.getGuild()));
-				eb.setTitle(e.getAuthor().getAsMention() + " voted to skip " + tm.getTrack().getInfo().title, null);
+				eb.setTitle("Voted to skip " + tm.getTrack().getInfo().title, null);
 				int skips = tm.getNumSkips();
 				int usrs = scheduler.getCurrentChannel().getMembers().size()-1;
-				eb.setFooter("Current Votes - " + skips + "/" + usrs
+				eb.setFooter("Votes - " + skips + "/" + usrs
 						+ " (" + (int)(((double)skips/usrs)*100) + "%)", "http://i.imgur.com/saXkgYz.png");
 				e.getChannel().sendMessage(eb.build()).queue();
 			});
@@ -352,10 +352,10 @@ public class CmdMusicControl implements CommandExecutor{
 			e.getChannel().sendTyping().queue(v -> {
 				EmbedBuilder eb = new EmbedBuilder();
 				eb.setColor(SettingsManager.getColorAWT(e.getGuild()));
-				eb.setTitle(e.getAuthor().getAsMention() + " cancelled vote to skip " + tm.getTrack().getInfo().title, null);
+				eb.setTitle("Cancelled vote to skip " + tm.getTrack().getInfo().title, null);
 				int skips = tm.getNumSkips();
 				int usrs = scheduler.getCurrentChannel().getMembers().size()-1;
-				eb.setFooter("Current Votes - " + skips + "/" + usrs
+				eb.setFooter("Votes - " + skips + "/" + usrs
 						+ " (" + (int)(((double)skips/usrs)*100) + "%)", "http://i.imgur.com/saXkgYz.png");
 				e.getChannel().sendMessage(eb.build()).queue();
 			});

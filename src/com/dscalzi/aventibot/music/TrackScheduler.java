@@ -224,9 +224,9 @@ public class TrackScheduler extends AudioEventAdapter implements EventListener{
 		if(current != null){
 			VoiceChannel vc = getCurrentChannel();
 			if((double)current.getNumSkips()/(vc.getMembers().size()-1) >= .5){
-				current.getRequestedIn().sendTyping().queue(v -> {
-					current.getRequestedIn().sendMessage("Skipped " + current.getTrack().getInfo().title).queue();
-				});
+				//current.getRequestedIn().sendTyping().queue(v -> {
+					//current.getRequestedIn().sendMessage("Skipped " + current.getTrack().getInfo().title).queue();
+				//});
 				player.stopTrack();
 				return true;
 			}
