@@ -113,262 +113,87 @@ public final class PermissionUtil {
 		return blacklistMap.get(g.getId()).get(node.toString());
 	}
 	
-	/**
-	 * Add the specified role to the specified Permission Node, granting permission to that role to use the command
-	 * that the node represents. 
-	 * 
-	 * @param node Permission Node to add a role to.
-	 * @param g Guild whose permissions will be changed.
-	 * @param role Role to add to the specified Permission Node.
-	 * @return True if successful, that is if the role was not previously allowed for the node and it was successfully
-	 * added. False if unsuccessful. Null if the Permission Node given is invalid or does not require permission.
-	 * @throws IOException If there was an issue writing the changes to the permission file.
-	 */
-	public static Boolean permissionAdd(PermissionNode node, Guild g, Role role) throws IOException {
-		return writePermissionChange(node, g, role, true);
-	}
-	
-	/**
-	 * Removes the specified role from the specified Permission Node, revoking permission from that role to use the 
-	 * command that the node represents. 
-	 * 
-	 * @param node Permission Node to remove a role to.
-	 * @param g Guild whose permissions will be changed.
-	 * @param role Role to remove from the specified Permission Node.
-	 * @return True if successful, that is if the role was previously allowed for the node and it was successfully
-	 * removed. False if unsuccessful. Null if the Permission Node given is invalid or does not require permission.
-	 * @throws IOException If there was an issue writing the changes to the permission file.
-	 */
-	public static Boolean permissionRemove(PermissionNode node, Guild g, Role role) throws IOException {
-		return writePermissionChange(node, g, role, false);
-	}
-	
-	/**
-	 * Not safe for use outside of PermissionUtil class.
-	 * <br>
-	 * If adding permission, see {@link #permissionAdd(PermissionNode, Guild, Role)}
-	 * <br>
-	 * If removing permission, see {@link #permissionRemove(PermissionNode, Guild, Role)}
-	 */
-	private static Boolean writePermissionChange(PermissionNode node, Guild g, Role role, boolean add) throws IOException{
-		File target = SettingsManager.getPermissionFile(g);
-		if(target == null) throw new IOException();
+	public Set<PermissionNode> getNodesForRole(Role r, Guild g){
+		Map<String, List<String>> perms = permissionMap.get(g.getId());
+		Set<PermissionNode> registered = new HashSet<PermissionNode>(AventiBot.getInstance().getCommandRegistry().getAllRegisteredNodes());
+		String id = r.getId();
 		
-		List<String> permissions = permissionMap.get(g.getId()).get(node.toString());
-		if(permissions == null) return null;
-		
-		if(add ? !permissions.contains(role.getId()) : permissions.contains(role.getId())){
-			if(add) permissions.add(role.getId());
-			else permissions.remove(role.getId());
-		} else
-			return false;
-		
-		JsonParser p = new JsonParser();
-		try(JsonReader file = new JsonReader(new FileReader(target))){
-			JsonObject result = null;
-			JsonElement parsed = p.parse(file);
-			if(parsed.isJsonObject()){
-				result = parsed.getAsJsonObject();
-				JsonObject section = result.get(node.toString()).getAsJsonObject();
-				JsonArray arr = section.get(PermissionUtil.ALLOWEDKEY).getAsJsonArray();
-				if(add)
-					arr.add(role.getId());
-				else {
-					for(int i=arr.size()-1; i>=0; --i){
-					    String val = arr.get(i).getAsString();
-					    if(val.equals(role.getId())){            
-					        arr.remove(i);
-					        break;
-					    }
-					}
+		outer:
+		for(Map.Entry<String, List<String>> entry : perms.entrySet()){
+			for(String s : entry.getValue()){
+				if(s.equals(id)){
+					continue outer;
 				}
 			}
-			
-			Gson gson = new GsonBuilder().setPrettyPrinting().create();
-			try(JsonWriter writer = gson.newJsonWriter(new FileWriter(target))){
-				gson.toJson(result, writer);
-			}
+			registered.remove(PermissionNode.get(entry.getKey()));
 		}
 		
-		return true;
+		return registered;
 	}
 	
 	/**
-	 * Adds a set of roles to the specified permission node, effectively granting permission to those roles to
-	 * use the command that the node represents. 
+	 * Update permissions.
 	 * 
-	 * @param node Permission Node to add the roles to.
-	 * @param g Guild whose permissions will be changed.
-	 * @param roles A set of roles to add to the specified node.
-	 * @return A set of roles which failed the operation. A role fails if it was already added to the specified node. 
-	 * A set of size zero indicates complete success. Returns null if the Permission Node was invalid or did not require
-	 * permission.
+	 * @param g The target guild.
+	 * @param roles A set of roles to update.
+	 * @param nodes A Set of nodes to update.
+	 * @param add If the nodes should be granted to or revoked from the roles.
+	 * @return A PermissionResult object with details about the result.
 	 * @throws IOException If there was an issue writing the changes to the permission file.
 	 */
-	public static Set<Role> bulkPermissionAdd(PermissionNode node, Guild g, Set<Role> roles) throws IOException{
-		return writeBulkPermissionChange(node, g, roles, true);
-	}
-	
-	/**
-	 * Removes a set of roles from the specified permission node, effectively revoking permission from those roles to
-	 * use the command that the node represents. 
-	 * 
-	 * @param node Permission Node to remove the roles from.
-	 * @param g Guild whose permissions will be changed.
-	 * @param roles A set of roles to remove from the specified node.
-	 * @return A set of roles which failed the operation. A role fails if it was not already added to the specified node. 
-	 * A set of size zero indicates complete success. Returns null if the Permission Node was invalid or did not require
-	 * permission.
-	 * @throws IOException If there was an issue writing the changes to the permission file.
-	 */
-	public static Set<Role> bulkPermissionRemove(PermissionNode node, Guild g, Set<Role> roles) throws IOException{
-		return writeBulkPermissionChange(node, g, roles, false);
-	}
-	
-	/**
-	 * Not safe for use outside of PermissionUtil class.
-	 * <br>
-	 * If adding permission, see {@link #bulkPermissionAdd(PermissionNode, Guild, Set)}
-	 * <br>
-	 * If removing permission, see {@link #bulkPermissionRemove(PermissionNode, Guild, Set)}
-	 */
-	private static Set<Role> writeBulkPermissionChange(PermissionNode node, Guild g, Set<Role> roles, boolean add) throws IOException{
+	public static PermissionResult writePermissionChange(Guild g, Set<Role> roles, Set<String> nodes, boolean add) throws IOException{
 		File target = SettingsManager.getPermissionFile(g);
 		if(target == null) throw new IOException();
 		
-		Set<Role> failed = new HashSet<Role>();
+		PermissionResult result = new PermissionResult(add ? PermissionResult.Type.GRANT : PermissionResult.Type.REVOKE, g);
 		
-		List<String> permissions = permissionMap.get(g.getId()).get(node.toString());
-		if(permissions == null) return null;
-		
-		Set<String> queued = new HashSet<String>();
-		
-		for(Role r : roles){
-			if(add ? !permissions.contains(r.getId()) : permissions.contains(r.getId())){
-				queued.add(r.getId());
-				if(add) permissions.add(r.getId());
-				else permissions.remove(r.getId());
-			} else {
-				failed.add(r);
+		Map<String, List<String>> perms = permissionMap.get(g.getId());
+		Map<String, List<String>> queue = new HashMap<String, List<String>>();
+		Set<PermissionNode> rN = AventiBot.getInstance().getCommandRegistry().getAllRegisteredNodes();
+		for(String s : nodes){
+			PermissionNode n = PermissionNode.get(s);
+			if(!rN.contains(n)){
+				result.addInvalidNodes(n.toString());
+				continue;
 			}
+			List<String> rP = perms.get(n.toString());
+			if(rP == null){
+				result.addFailedNode(n.toString());
+				continue;
+			}
+			List<String> q = new ArrayList<String>();
+			for(Role r : roles){
+				if((add && rP.contains(r.getId())) || (!add && !rP.contains(r.getId()))){
+					result.logResult("'ERR \"" + n.toString() + "\" already " + (add ? "granted to" : "revoked from") + " \"" + r.getName() + "\"(" + r.getId() + ").");
+					continue;
+				}
+				result.addNode(n.toString());
+				rP.add(r.getId());
+				q.add(r.getId());
+			}
+			queue.put(n.toString(), q);
 		}
 		
-		if(queued.size() == 0) return failed;
+		//Write the changes in queue map.
+		if(queue.size() == 0) return result;
 
 		JsonParser p = new JsonParser();
 		try(JsonReader file = new JsonReader(new FileReader(target))){
-			JsonObject result = null;
+			JsonObject job = null;
 			JsonElement parsed = p.parse(file);
 			if(parsed.isJsonObject()){
-				result = parsed.getAsJsonObject();
-				JsonObject section = result.get(node.toString()).getAsJsonObject();
-				JsonArray arr = section.get(PermissionUtil.ALLOWEDKEY).getAsJsonArray();
-				if(add)
-					queued.forEach(r -> arr.add(r));
-				else {
-					for(int i=arr.size()-1; i>=0; --i){
-					    String val = arr.get(i).getAsString();
-					    if(queued.contains(val)){            
-					        arr.remove(i);
-					        queued.remove(val);
-					    }
-					}
-				}
-			}
-			
-			Gson gson = new GsonBuilder().setPrettyPrinting().create();
-			try(JsonWriter writer = gson.newJsonWriter(new FileWriter(target))){
-				gson.toJson(result, writer);
-			}
-			
-		}
-		
-		return failed;
-	}
-	
-	/**
-	 * Grants a given role permission to the specified set of nodes in the specified guild. This will effectively
-	 * grant that role permission to use the commands the nodes represent.
-	 * 
-	 * @param r Role to grant permissions to.
-	 * @param g Guild whose permissions will be changed.
-	 * @param nodes A set of nodes to grant to the specified role.
-	 * @return A set of Permission Nodes that failed the operation. A node fails if the specified role already was
-	 * granted permission for it. A set of size zero indicates complete success.
-	 * @throws IOException If there was an issue writing the changes to the permission file.
-	 */
-	public static Set<PermissionNode> bulkPermissionGrant(Role r, Guild g, Set<PermissionNode> nodes) throws IOException{
-		return writeBulkNodeChange(r, g, nodes, true);
-	}
-	
-	/**
-	 * Revokes permission for the specified set of nodes for a given role in the specified guild. This will effectively
-	 * revoke permission from that role to use the commands the nodes represent.
-	 * 
-	 * @param r Role to revoke permissions from.
-	 * @param g Guild whose permissions will be changed.
-	 * @param nodes A set of nodes to revoke from the specified role.
-	 * @return A set of Permission Nodes that failed the operation. A node fails if the specified role was already not
-	 * granted permission for it. A set of size zero indicates complete success.
-	 * @throws IOException If there was an issue writing the changes to the permission file.
-	 */
-	public static Set<PermissionNode> bulkPermissionRevoke(Role r, Guild g, Set<PermissionNode> nodes) throws IOException{
-		return writeBulkNodeChange(r, g, nodes, false);
-	}
-	
-	/**
-	 * Not safe for use outside of PermissionUtil class.
-	 * <br>
-	 * If adding permission, see {@link #bulkPermissionGrant(Role, Guild, Set)}
-	 * <br>
-	 * If removing permission, see {@link #bulkPermissionRevoke(Role, Guild, Set)}
-	 */
-	private static Set<PermissionNode> writeBulkNodeChange(Role r, Guild g, Set<PermissionNode> nodes, boolean add) throws IOException{
-		
-		File target = SettingsManager.getPermissionFile(g);
-		if(target == null) throw new IOException();
-		
-		Set<PermissionNode> failed = new HashSet<PermissionNode>();
-		Set<PermissionNode> queued = new HashSet<PermissionNode>();
-		
-		
-		Map<String, List<String>> perms = permissionMap.get(g.getId());
-		for(PermissionNode n : nodes){
-			List<String> permissions = perms.get(n.toString());
-			if(permissions == null) {
-				failed.add(n);
-				continue;
-			}
-			
-			if(add ? !permissions.contains(r.getId()) : permissions.contains(r.getId())){
-				if(add)	permissions.add(r.getId());
-				else permissions.remove(r.getId());
-				queued.add(n);
-			} else {
-				failed.add(n);
-			}
-		}
-		
-		if(queued.size() == 0) return failed;
-		
-		JsonParser p = new JsonParser();
-		try(JsonReader file = new JsonReader(new FileReader(target))){
-			JsonObject result = null;
-			JsonElement parsed = p.parse(file);
-			if(parsed.isJsonObject()){
-				result = parsed.getAsJsonObject();
-				for(PermissionNode n : queued){
-					JsonObject section = result.get(n.toString()).getAsJsonObject();
+				job = parsed.getAsJsonObject();
+				for(Map.Entry<String, List<String>> entry : queue.entrySet()){
+					JsonObject section = job.get(entry.getKey()).getAsJsonObject();
 					JsonArray arr = section.get(PermissionUtil.ALLOWEDKEY).getAsJsonArray();
 					if(add)
-						arr.add(r.getId());
+						entry.getValue().forEach(r -> arr.add(r));
 					else {
-						inner:
 						for(int i=arr.size()-1; i>=0; --i){
 						    String val = arr.get(i).getAsString();
-						    if(val.equals(r.getId())){
-						    	arr.remove(i);
-						    	break inner;
+						    if(entry.getValue().contains(val)){            
+						        arr.remove(i);
+						        entry.getValue().remove(val);
 						    }
 						}
 					}
@@ -377,11 +202,12 @@ public final class PermissionUtil {
 			
 			Gson gson = new GsonBuilder().setPrettyPrinting().create();
 			try(JsonWriter writer = gson.newJsonWriter(new FileWriter(target))){
-				gson.toJson(result, writer);
+				gson.toJson(job, writer);
 			}
+			
 		}
 		
-		return failed;
+		return result;
 	}
 		
 	public static boolean blacklistUser(User u, PermissionNode node, Guild g) throws IOException{

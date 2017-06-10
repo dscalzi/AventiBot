@@ -26,6 +26,7 @@ import com.dscalzi.aventibot.music.LavaWrapper;
 import com.dscalzi.aventibot.music.TrackMeta;
 import com.dscalzi.aventibot.music.TrackScheduler;
 import com.dscalzi.aventibot.settings.SettingsManager;
+import com.dscalzi.aventibot.util.IconUtil;
 import com.dscalzi.aventibot.util.PageList;
 import com.dscalzi.aventibot.util.TimeUtils;
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
@@ -226,7 +227,7 @@ public class CmdMusicControl implements CommandExecutor{
 				}
 			
 			if(desc.length() > 0) eb.addField(new Field("Up Next:", desc, false));
-			eb.setFooter("Playlist Length " + TimeUtils.formatTrackDuration(scheduler.getPlaylistDuration()) + (tracks.size() > 0 ? " | Page " + (page+1) + " of " + tracks.size(): ""), "http://i.imgur.com/Y3rbhFt.png");
+			eb.setFooter("Playlist Length " + TimeUtils.formatTrackDuration(scheduler.getPlaylistDuration()) + (tracks.size() > 0 ? " | Page " + (page+1) + " of " + tracks.size(): ""), IconUtil.CLOCK.getURL());
 			
 			
 			e.getChannel().sendMessage(new MessageBuilder().setEmbed(eb.build()).build()).queue();
@@ -253,7 +254,7 @@ public class CmdMusicControl implements CommandExecutor{
 			e.getChannel().sendTyping().queue((v) -> {
 				EmbedBuilder eb = new EmbedBuilder().setTitle("Paused " + tm.getTrack().getInfo().title, null).setColor(SettingsManager.getColorAWT(e.getGuild()));
 				eb.setDescription("Song Duration: (" + TimeUtils.formatTrackDuration(tm.getTrack().getPosition()) + "/" + TimeUtils.formatTrackDuration(tm.getTrack().getDuration()) + ")");
-				eb.setFooter("Use " + SettingsManager.getCommandPrefix(e.getGuild()) + "resume to unpause.", "http://i.imgur.com/ccX8Pvi.png");
+				eb.setFooter("Use " + SettingsManager.getCommandPrefix(e.getGuild()) + "resume to unpause.", IconUtil.INFO.getURL());
 				e.getChannel().sendMessage(new MessageBuilder().setEmbed(eb.build()).build()).queue();
 				player.setPaused(true);
 				CommandDispatcher.displayResult(CommandResult.SUCCESS, e.getMessage());
@@ -280,7 +281,7 @@ public class CmdMusicControl implements CommandExecutor{
 			e.getChannel().sendTyping().queue((v) -> {
 				EmbedBuilder eb = new EmbedBuilder().setTitle("Resumed " + tm.getTrack().getInfo().title, null).setColor(SettingsManager.getColorAWT(e.getGuild()));
 				eb.setDescription("Song Duration: (" + TimeUtils.formatTrackDuration(tm.getTrack().getPosition()) + "/" + TimeUtils.formatTrackDuration(tm.getTrack().getDuration()) + ")");
-				eb.setFooter("Use " + SettingsManager.getCommandPrefix(e.getGuild()) + "pause to pause.", "http://i.imgur.com/ccX8Pvi.png");
+				eb.setFooter("Use " + SettingsManager.getCommandPrefix(e.getGuild()) + "pause to pause.", IconUtil.INFO.getURL());
 				e.getChannel().sendMessage(new MessageBuilder().setEmbed(eb.build()).build()).queue();
 				player.setPaused(false);
 				CommandDispatcher.displayResult(CommandResult.SUCCESS, e.getMessage());
@@ -325,7 +326,7 @@ public class CmdMusicControl implements CommandExecutor{
 				int skips = tm.getNumSkips();
 				int usrs = scheduler.getCurrentChannel().getMembers().size()-1;
 				eb.setFooter("Votes - " + skips + "/" + usrs
-						+ " (" + (int)(((double)skips/usrs)*100) + "%)", "http://i.imgur.com/saXkgYz.png");
+						+ " (" + (int)(((double)skips/usrs)*100) + "%)", IconUtil.VOTE.getURL());
 				e.getChannel().sendMessage(eb.build()).queue();
 			});
 			return CommandResult.SUCCESS;
@@ -356,7 +357,7 @@ public class CmdMusicControl implements CommandExecutor{
 				int skips = tm.getNumSkips();
 				int usrs = scheduler.getCurrentChannel().getMembers().size()-1;
 				eb.setFooter("Votes - " + skips + "/" + usrs
-						+ " (" + (int)(((double)skips/usrs)*100) + "%)", "http://i.imgur.com/saXkgYz.png");
+						+ " (" + (int)(((double)skips/usrs)*100) + "%)", IconUtil.VOTE.getURL());
 				e.getChannel().sendMessage(eb.build()).queue();
 			});
 			return CommandResult.SUCCESS;

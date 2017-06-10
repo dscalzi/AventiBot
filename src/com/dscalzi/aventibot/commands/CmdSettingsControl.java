@@ -24,6 +24,7 @@ import com.dscalzi.aventibot.cmdutil.PermissionNode.NodeType;
 import com.dscalzi.aventibot.cmdutil.PermissionUtil;
 import com.dscalzi.aventibot.settings.GuildConfig;
 import com.dscalzi.aventibot.settings.SettingsManager;
+import com.dscalzi.aventibot.util.IconUtil;
 
 import javafx.util.Pair;
 import net.dv8tion.jda.core.EmbedBuilder;
@@ -177,7 +178,7 @@ public class CmdSettingsControl implements CommandExecutor{
 		if(proper.trim().equals(AventiBot.getInstance().getJDA().getSelfUser().getAsMention())){
 			proper = CommandDispatcher.getDisplayedMention(e.getGuild()) + " ";
 		}
-		eb.setFooter("Narrow Search | " + proper + "settings info <key>.", "http://i.imgur.com/ccX8Pvi.png");
+		eb.setFooter("Narrow Search | " + proper + "settings info <key>.", IconUtil.INFO.getURL());
 		
 		
 		for(Pair<String, Object> keys : GuildConfig.keyMap.keySet()){

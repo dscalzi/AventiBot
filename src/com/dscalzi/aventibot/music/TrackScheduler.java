@@ -12,6 +12,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import com.dscalzi.aventibot.AventiBot;
 import com.dscalzi.aventibot.settings.SettingsManager;
+import com.dscalzi.aventibot.util.IconUtil;
 import com.dscalzi.aventibot.util.TimeUtils;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
@@ -68,7 +69,7 @@ public class TrackScheduler extends AudioEventAdapter implements EventListener{
 				EmbedBuilder eb = new EmbedBuilder().setTitle("Added " + meta.getTrack().getInfo().title + " to the Queue.", null);
 				eb.setColor(SettingsManager.getColorAWT(associatedGuild));
 				eb.setDescription("Runtime: " + TimeUtils.formatTrackDuration(meta.getTrack().getDuration()));
-				eb.setFooter("Estimated Wait Time: " + TimeUtils.formatTrackDuration(waitTime), "http://i.imgur.com/Y3rbhFt.png");
+				eb.setFooter("Estimated Wait Time: " + TimeUtils.formatTrackDuration(waitTime), IconUtil.CLOCK.getURL());
 				meta.getRequestedIn().sendMessage(eb.build()).queue();
 			});
 		}
@@ -101,7 +102,7 @@ public class TrackScheduler extends AudioEventAdapter implements EventListener{
 			EmbedBuilder eb = new EmbedBuilder().setTitle("Added Playlist " + playlist.getName() + " to the Queue.", null);
 			eb.setColor(SettingsManager.getColorAWT(associatedGuild));
 			eb.setDescription("Collective length: " + TimeUtils.formatTrackDuration(playlistLength));
-			if(waitTime > 0) eb.setFooter("Estimated Wait Time: " + TimeUtils.formatTrackDuration(waitTime), "http://i.imgur.com/Y3rbhFt.png");
+			if(waitTime > 0) eb.setFooter("Estimated Wait Time: " + TimeUtils.formatTrackDuration(waitTime), IconUtil.CLOCK.getURL());
 			requestedIn.sendMessage(eb.build()).queue();
 			
 			if(player.getPlayingTrack() == null) player.playTrack(queue.element().getTrack());
@@ -121,7 +122,7 @@ public class TrackScheduler extends AudioEventAdapter implements EventListener{
 			Iterator<TrackMeta> it = queue.iterator();
 			it.next();
 			if(it.hasNext())
-				eb.setFooter("Up next: " + it.next().getTrack().getInfo().title, "http://i.imgur.com/nEw5Gsk.png");
+				eb.setFooter("Up next: " + it.next().getTrack().getInfo().title, IconUtil.PLAY.getURL());
 			eb.setDescription("Requested by " + current.getRequester().getAsMention() + "\n" +
 				"| Runtime " + TimeUtils.formatTrackDuration(current.getTrack().getDuration()));
 			current.getRequestedIn().sendMessage(eb.build()).queue();
