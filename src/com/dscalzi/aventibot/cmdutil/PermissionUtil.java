@@ -186,7 +186,8 @@ public final class PermissionUtil {
 					result.logResult("'ERR \"" + n.toString() + "\" already " + (add ? "granted to" : "revoked from") + " \"" + r.getName() + "\"(" + r.getId() + ").");
 					continue;
 				}
-				rP.add(r.getId());
+				if(add) rP.add(r.getId());
+				else rP.remove(r.getId());
 				q.add(r.getId());
 			}
 			if(q.size() > 0) queue.put(n.toString(), q);
@@ -238,7 +239,7 @@ public final class PermissionUtil {
 	 * @return A PermissionResult object with details about the result.
 	 * @throws IOException If there was an issue writing the changes to the permission file.
 	 */
-	public static PermissionResult writeBlacklistChangeNew(Guild g, Set<User> users, Set<PermissionNode> nodes, boolean add) throws IOException {
+	public static PermissionResult writeBlacklistChange(Guild g, Set<User> users, Set<PermissionNode> nodes, boolean add) throws IOException {
 		File target = SettingsManager.getPermissionFile(g);
 		if(target == null) throw new IOException();
 		
@@ -257,7 +258,8 @@ public final class PermissionUtil {
 					result.logResult("'ERR \"" + n.toString() + "\" " + (add ? "already blacklists" : "does not blacklist") + " \"" + u.getName() + "#" + u.getDiscriminator() + "\"(" + id + ").");
 					continue;
 				}
-				rP.add(id);
+				if(add) rP.add(id);
+				else rP.remove(id);
 				q.add(id);
 			}
 			if(q.size() > 0) queue.put(n.toString(), q);
@@ -285,6 +287,70 @@ public final class PermissionUtil {
 						        entry.getValue().remove(val);
 						    }
 						}
+					}
+				}
+			}
+			
+			Gson gson = new GsonBuilder().setPrettyPrinting().create();
+			try(JsonWriter writer = gson.newJsonWriter(new FileWriter(target))){
+				gson.toJson(job, writer);
+			}
+			
+		}
+		
+		return result;
+	}
+	
+	/**
+	 * Update a node's permission requirement. Parameters must be validated.
+	 * 
+	 * @param g The target guild.
+	 * @param nodes A set of nodes to update.
+	 * @param enable If the node should or should not require permission.
+	 * @return A PermissionResult object with details about the result.
+	 * @throws IOException If there was an issue writing the changes to the permission file.
+	 */
+	public static PermissionResult writeNodeChange(Guild g, Set<PermissionNode> nodes, boolean enable) throws IOException{
+		File target = SettingsManager.getPermissionFile(g);
+		if(target == null) throw new IOException();
+		
+		PermissionResult result = new PermissionResult(enable ? PermissionResult.Type.NODE_ENABLE : PermissionResult.Type.NODE_DISABLE, g);
+		
+		Map<String, List<String>> perms = permissionMap.get(g.getId());
+		List<PermissionNode> queue = new ArrayList<PermissionNode>();
+		
+		for(PermissionNode n : nodes){
+			List<String> rP = perms.get(n.toString());
+			if(enable && rP == null){
+				queue.add(n);
+				result.addNode(n.toString());
+			} else if(!enable && rP != null){
+				perms.put(n.toString(), null); // Wipe from memory
+				queue.add(n);
+				result.addNode(n.toString());
+			} else
+				result.addFailedNode(n.toString());
+		}
+		
+		if(queue.size() == 0) return result;
+		
+		JsonParser p = new JsonParser();
+		try(JsonReader file = new JsonReader(new FileReader(target))){
+			JsonObject job = null;
+			JsonElement parsed = p.parse(file);
+			if(parsed.isJsonObject()){
+				job = parsed.getAsJsonObject();
+				for(PermissionNode n : queue){
+					JsonObject section = job.get(n.toString()).getAsJsonObject();
+					section.addProperty(PermissionUtil.GATEKEY, enable);
+					if(enable){
+						//We now need to read the data into memory.
+						JsonArray roles = section.get(PermissionUtil.ALLOWEDKEY).getAsJsonArray();
+						List<String> roleIds = new ArrayList<String>();
+						for(JsonElement e3 : roles){
+							roleIds.add(e3.getAsString());
+						}
+						perms.put(n.toString(), roleIds);
 					}
 				}
 			}

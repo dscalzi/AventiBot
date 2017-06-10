@@ -146,6 +146,14 @@ public class PermissionResult {
 		UNBLACKLIST("Unblacklist Results", 
 				"Processed Nodes", 
 				"", 
+				IconUtil.REMOVE.getURL()),
+		NODE_ENABLE("Node Enable Results", 
+				"Nodes Enabled", 
+				"Already Enabled", 
+				IconUtil.ADD.getURL()),
+		NODE_DISABLE("Node Disable Results", 
+				"Nodes Disabled", 
+				"Already Disabled", 
 				IconUtil.REMOVE.getURL());
 		
 		private final String title;

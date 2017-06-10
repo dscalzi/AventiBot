@@ -35,6 +35,8 @@ public class CmdPermissionsControl implements CommandExecutor{
 	private final PermissionNode permRevoke = PermissionNode.get(NodeType.SUBCOMMAND, "permissions", "revoke");
 	private final PermissionNode permBlacklist = PermissionNode.get(NodeType.SUBCOMMAND, "permissions", "blacklist");
 	private final PermissionNode permUnblacklist = PermissionNode.get(NodeType.SUBCOMMAND, "permissions", "unblacklist");
+	private final PermissionNode permEnable = PermissionNode.get(NodeType.SUBCOMMAND, "permissions", "enable");
+	private final PermissionNode permDisable = PermissionNode.get(NodeType.SUBCOMMAND, "permissions", "disable");
 	
 	public final Set<PermissionNode> nodes;
 	
@@ -43,7 +45,9 @@ public class CmdPermissionsControl implements CommandExecutor{
 				permGrant,
 				permRevoke,
 				permBlacklist,
-				permUnblacklist
+				permUnblacklist,
+				permEnable,
+				permDisable
 				));
 	}
 	
@@ -66,6 +70,10 @@ public class CmdPermissionsControl implements CommandExecutor{
 			return this.cmdWriteBlacklistChange(e, sub, true, rawArgs);
 		case "unblacklist":
 			return this.cmdWriteBlacklistChange(e, sub, false, rawArgs);
+		case "enable":
+			return this.cmdWriteNodePermissionChange(e, sub, true, rawArgs);
+		case "disable":
+			return this.cmdWriteNodePermissionChange(e, sub, false, rawArgs);
 		}
 		
 		e.getChannel().sendMessage("Unknown subcommand: *" + args[0] + "*.").queue();
@@ -126,7 +134,7 @@ public class CmdPermissionsControl implements CommandExecutor{
 		Pair<Set<PermissionNode>,Set<String>> nodes = PermissionUtil.validateNodes(new HashSet<String>(Arrays.asList(ps.getKey())));
 		
 		try {
-			PermissionResult r = PermissionUtil.writeBlacklistChangeNew(e.getGuild(), users.getKey(), nodes.getKey(), add);
+			PermissionResult r = PermissionUtil.writeBlacklistChange(e.getGuild(), users.getKey(), nodes.getKey(), add);
 			for(String s : users.getValue()) r.addInvalidUser(s);
 			for(String s : nodes.getValue()) r.addInvalidNode(s);
 			for(User u : users.getKey()) r.addMentionable(u);
@@ -168,14 +176,47 @@ public class CmdPermissionsControl implements CommandExecutor{
 		return null;
 	}
 	
+	private CommandResult cmdWriteNodePermissionChange(MessageReceivedEvent e, String label, boolean enable, String[] rawArgs){
+		if(!PermissionUtil.hasPermission(e.getAuthor(), enable ? permEnable : permDisable, e.getGuild(), false)){
+			return CommandResult.NO_PERMISSION;
+		}
+		
+		String[] terms = new String[rawArgs.length-1];
+		for(int i=0; i<terms.length; ++i) terms[i] = rawArgs[i+1];
+		if(rawArgs.length < 2){
+			e.getChannel().sendMessage("Proper format is `" + SettingsManager.getCommandPrefix(e.getGuild()) + "permissions " + label + " <node(s)>`").queue();
+			return CommandResult.ERROR;
+		}
+		
+		Pair<Set<PermissionNode>,Set<String>> nodes = PermissionUtil.validateNodes(new HashSet<String>(Arrays.asList(terms)));
+		
+		try {
+			PermissionResult r = PermissionUtil.writeNodeChange(e.getGuild(), nodes.getKey(), enable);
+			for(String s : nodes.getValue()) r.addInvalidNode(s);
+			e.getChannel().sendMessage(r.construct(true)).queue();
+			if(r.hasLog()){
+				List<String> log = r.constructLog();
+				for(String s : log) e.getChannel().sendMessage(s).queue();
+			}
+		} catch (IOException e1) {
+			e.getChannel().sendMessage("Unexpected error, operation failed").queue();
+			e1.printStackTrace();
+			return CommandResult.ERROR;
+		}
+		
+		return CommandResult.SUCCESS;
+	}
+	
 	private MessageEmbed constructSubcommandTree(Guild g){
 		EmbedBuilder eb = new EmbedBuilder();
 		
 		eb.setAuthor("Please choose a subcommand.", null, null);
 		eb.setDescription("`grant` - Grant permissions to roles.\n"
 				+ "`revoke` - Revoke permissions from roles.\n"
-				+ "`blacklist` - Add users to a permission blacklist.\n"
-				+ "`unblacklist` - Remove users from a permission blacklist.`");
+				+ "`blacklist` - Add users to a node's blacklist.\n"
+				+ "`unblacklist` - Remove users from a node's blacklist.\n"
+				+ "`enable` - Make a specific node require permission.\n"
+				+ "`disable` - Disable a node's permission requirement.");
 		eb.setFooter("Usage | " + SettingsManager.getCommandPrefix(g) + "permissions <subcommand>", IconUtil.INFO.getURL());
 		eb.setColor(SettingsManager.getColorAWT(g));
 		
