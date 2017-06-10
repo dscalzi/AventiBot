@@ -43,13 +43,12 @@ public final class PermissionUtil {
 	
 	private static final Map<Guild, Boolean> initialized;
 
-	//Key is node:guildid
-	private static final Map<String, List<String>> permissionMap;
-	private static final Map<String, List<String>> blacklistMap;
+	private static final Map<String, Map<String, List<String>>> permissionMap;
+	private static final Map<String, Map<String, List<String>>> blacklistMap;
 	
 	static {
-		permissionMap = new HashMap<String, List<String>>();
-		blacklistMap = new HashMap<String, List<String>>();
+		permissionMap = new HashMap<String, Map<String, List<String>>>();
+		blacklistMap = new HashMap<String, Map<String, List<String>>>();
 		initialized = new HashMap<Guild, Boolean>();
 	}
 	
@@ -107,11 +106,11 @@ public final class PermissionUtil {
 	}
 	
 	public static List<String> getAllowedRoles(PermissionNode node, Guild g){
-		return permissionMap.get(String.join(":", node.toString(), g.getId()));
+		return permissionMap.get(g.getId()).get(node.toString());
 	}
 	
 	public static List<String> getBlacklistedUsers(PermissionNode node, Guild g){
-		return blacklistMap.get(String.join(":", node.toString(), g.getId()));
+		return blacklistMap.get(g.getId()).get(node.toString());
 	}
 	
 	/**
@@ -155,18 +154,14 @@ public final class PermissionUtil {
 		File target = SettingsManager.getPermissionFile(g);
 		if(target == null) throw new IOException();
 		
-		String key = String.join(":", node.toString(), g.getId());
-		
-		if(permissionMap.get(key) == null) return null;
-		List<String> permissions = permissionMap.get(key);
+		List<String> permissions = permissionMap.get(g.getId()).get(node.toString());
+		if(permissions == null) return null;
 		
 		if(add ? !permissions.contains(role.getId()) : permissions.contains(role.getId())){
 			if(add) permissions.add(role.getId());
 			else permissions.remove(role.getId());
 		} else
 			return false;
-		
-		permissionMap.put(key, permissions);
 		
 		JsonParser p = new JsonParser();
 		try(JsonReader file = new JsonReader(new FileReader(target))){
@@ -243,9 +238,8 @@ public final class PermissionUtil {
 		
 		Set<Role> failed = new HashSet<Role>();
 		
-		String key = String.join(":", node.toString(), g.getId());
-		if(permissionMap.get(key) == null) return null;
-		List<String> permissions = permissionMap.get(key);
+		List<String> permissions = permissionMap.get(g.getId()).get(node.toString());
+		if(permissions == null) return null;
 		
 		Set<String> queued = new HashSet<String>();
 		
@@ -260,9 +254,6 @@ public final class PermissionUtil {
 		}
 		
 		if(queued.size() == 0) return failed;
-		
-		permissionMap.put(key, permissions);
-		
 
 		JsonParser p = new JsonParser();
 		try(JsonReader file = new JsonReader(new FileReader(target))){
@@ -340,19 +331,19 @@ public final class PermissionUtil {
 		Set<PermissionNode> failed = new HashSet<PermissionNode>();
 		Set<PermissionNode> queued = new HashSet<PermissionNode>();
 		
+		
+		Map<String, List<String>> perms = permissionMap.get(g.getId());
 		for(PermissionNode n : nodes){
-			String key = String.join(":", n.toString(), g.getId());
-			
-			if(permissionMap.get(key) == null) {
+			List<String> permissions = perms.get(n.toString());
+			if(permissions == null) {
 				failed.add(n);
 				continue;
 			}
-			List<String> permissions = permissionMap.get(key);
+			
 			if(add ? !permissions.contains(r.getId()) : permissions.contains(r.getId())){
 				if(add)	permissions.add(r.getId());
 				else permissions.remove(r.getId());
 				queued.add(n);
-				permissionMap.put(key, permissions);
 			} else {
 				failed.add(n);
 			}
@@ -407,8 +398,8 @@ public final class PermissionUtil {
 		File target = SettingsManager.getPermissionFile(g);
 		if(target == null) throw new IOException();
 		
-		String key = String.join(":", node.toString(), g.getId());
-		List<String> blacklisted = blacklistMap.get(key);
+		
+		List<String> blacklisted = blacklistMap.get(g.getId()).get(node.toString());
 		
 		if(add){
 			if(blacklisted.contains(u.getId())) return false;
@@ -417,8 +408,6 @@ public final class PermissionUtil {
 			if(!blacklisted.contains(u.getId())) return false;
 			blacklisted.remove(u.getId());
 		}
-		
-		blacklistMap.put(key, blacklisted);
 		
 		JsonParser p = new JsonParser();
 		try(JsonReader file = new JsonReader(new FileReader(target))){
@@ -456,6 +445,9 @@ public final class PermissionUtil {
 		if(target == null) throw new IOException();
 		
 		log.info("Using permission file located at " + target.getAbsolutePath() + " for guild " + g.getName() + "(" + g.getId() + ").");
+		Map<String, List<String>> perms = new HashMap<String, List<String>>();
+		Map<String, List<String>> blist = new HashMap<String, List<String>>();
+		
 		JsonParser p = new JsonParser();
 		try(JsonReader file = new JsonReader(new FileReader(target))){
 			JsonObject result = null;
@@ -471,10 +463,9 @@ public final class PermissionUtil {
 					
 					if(e.getValue().isJsonObject()){
 						boolean ignorePerms = false;
-						String key = String.join(":", e.getKey(), g.getId());
 						for(Map.Entry<String, JsonElement> e2 : e.getValue().getAsJsonObject().entrySet()){
 							if(e2.getKey().equals(PermissionUtil.GATEKEY) && !e2.getValue().getAsBoolean()) {
-								permissionMap.put(key, null);
+								perms.put(e.getKey(), null);
 								ignorePerms = true;
 								continue;
 							} else if(e2.getKey().equals(PermissionUtil.ALLOWEDKEY) && e2.getValue().isJsonArray() && !ignorePerms){
@@ -483,14 +474,14 @@ public final class PermissionUtil {
 								for(JsonElement e3 : roles){
 									roleIds.add(e3.getAsString());
 								}
-								permissionMap.put(key, roleIds);
+								perms.put(e.getKey(), roleIds);
 							} else if(e2.getKey().equals(PermissionUtil.BLACKLISTKEY) && e2.getValue().isJsonArray()){
 								JsonArray blacklist = e2.getValue().getAsJsonArray();
 								List<String> userIds = new ArrayList<String>();
 								for(JsonElement e3 : blacklist){
 									userIds.add(e3.getAsString());
 								}
-								blacklistMap.put(key, userIds);
+								blist.put(e.getKey(), userIds);
 							}
 						}
 					}
@@ -510,7 +501,7 @@ public final class PermissionUtil {
 					container.add(PermissionUtil.ALLOWEDKEY, new JsonArray());
 					container.add(PermissionUtil.BLACKLISTKEY, new JsonArray());
 					result.add(pn.toString(), container);
-					if(pn.isOp()) permissionMap.put(String.join(":", pn.toString(), g.getId()), new ArrayList<String>());
+					if(pn.isOp()) perms.put(pn.toString(), new ArrayList<String>());
 				}
 				try(JsonWriter writer = gson.newJsonWriter(new FileWriter(target))){
 					gson.toJson(result, writer);
@@ -518,6 +509,8 @@ public final class PermissionUtil {
 			}
 		}
 		
+		permissionMap.put(g.getId(), perms);
+		blacklistMap.put(g.getId(), blist);
 		initialized.put(g, true);
 		
 	}
