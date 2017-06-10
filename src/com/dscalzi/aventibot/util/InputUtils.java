@@ -14,6 +14,7 @@ import com.dscalzi.aventibot.AventiBot;
 
 import javafx.util.Pair;
 import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.entities.TextChannel;
@@ -23,6 +24,8 @@ public class InputUtils {
 
 	private static final Pattern RAW_ROLE = Pattern.compile("<@&\\d+>");
 	private static final Pattern ROLE_EXCESS = Pattern.compile("[<@&>]");
+	private static final Pattern RAW_USER = Pattern.compile("<@!?\\d+>");
+	private static final Pattern USER_EXCESS = Pattern.compile("[<@!?>]");
 	
 	public static TextChannel parseChannel(Message m, String reference){
 		TextChannel chnl = null;
@@ -48,6 +51,63 @@ public class InputUtils {
 			}
 		}
 		return null;
+	}
+	
+	/**
+	 * Too lazy to document fully so here's a brief explanation to avoid future
+	 * confusion. This can parse members out of three types of input. The first is
+	 * a snowflake id, which is the ONLY way to identify users who are not members
+	 * of the specified guild. The second is by EFFECTIVE name of the user. If it contains
+	 * spaces you can delimit it by encapsulating it with double or single quotes. Finally,
+	 * it parses members from mentions using the raw content.
+	 * <br><br>
+	 * If you do not pass raw message content this will not work properly.
+	 * <br><br>
+	 * This method behaves similarly to {@link #parseBulkRoles(String[], Guild) parseBulkRoles} method, only for users/members.
+	 * 
+	 * 
+	 * @param rawArgs Message contents converted to arguments.
+	 * @param g The guild to parse against.
+	 * @return A pair of data, the key will be a set of matching Users, the value will be a set of failed terms (no matches).
+	 */
+	public static Pair<Set<User>, Set<String>> parseBulkMembers(String[] rawArgs, Guild g){
+		if(g == null) return null;
+		if(rawArgs.length == 0) return null;
+		Set<User> fMembers = new LinkedHashSet<User>();
+		Set<String> failedTerms = new LinkedHashSet<String>();
+		for(int i=0; i<rawArgs.length; ++i){
+			String s = rawArgs[i];
+			if(RAW_USER.matcher(s).matches()){
+				String id = USER_EXCESS.matcher(s).replaceAll("");
+				Member m = null;
+				try{ m = g.getMemberById(id); } catch (NumberFormatException e) { m = null; }
+				if(m != null) fMembers.add(m.getUser());
+			} else {
+				String arg;
+				if(s.substring(0, 1).matches("['\"]")){
+					Pair<Integer, String> loopResults = InputUtils.parseFullTerm(rawArgs, i);
+					arg = loopResults.getValue();
+					i = loopResults.getKey();
+				} else {
+					arg = s;
+				}
+				List<Member> result = g.getMembersByEffectiveName(arg, true);
+				if(result.size() == 0) {
+					Member m = null;
+					try{ m = g.getMemberById(arg); } catch (NumberFormatException e) { m = null; }
+					User u = null;
+					if(m == null) 
+						try { 
+							u = AventiBot.getInstance().getJDA().getUserById(arg); 
+						} catch(NumberFormatException e) { 
+							u = null; 
+						}
+					if(u == null && m == null) failedTerms.add(arg);
+					else fMembers.add(u != null ? u : m.getUser());
+				} else result.forEach(m -> fMembers.add(m.getUser()));
+			}
+		}
+		return new Pair<Set<User>, Set<String>>(fMembers, failedTerms);
 	}
 	
 	/**

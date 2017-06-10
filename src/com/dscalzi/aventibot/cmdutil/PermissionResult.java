@@ -10,19 +10,20 @@ import com.dscalzi.aventibot.util.IconUtil;
 
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.IMentionable;
 import net.dv8tion.jda.core.entities.MessageEmbed;
-import net.dv8tion.jda.core.entities.Role;
 
 public class PermissionResult {
 
 	//Successes
-	private final Set<Role> roles;
+	private final Set<IMentionable> entities;
 	private final Set<String> nodes;
 	//Failed Nodes
 	private final Set<String> failedNodes;
 	//Invalids
 	private final Set<String> invalidNodes;
 	private final Set<String> invalidRoles;
+	private final Set<String> invalidUsers;
 	//Log
 	private final List<String> log;
 	private int pointer;
@@ -33,18 +34,19 @@ public class PermissionResult {
 	public PermissionResult(Type type, Guild g){
 		this.type = type;
 		this.g = g;
-		this.roles = new HashSet<Role>();
+		this.entities = new HashSet<IMentionable>();
 		this.nodes = new HashSet<String>();
 		this.failedNodes = new HashSet<String>();
 		this.invalidNodes = new HashSet<String>();
 		this.invalidRoles = new HashSet<String>();
+		this.invalidUsers = new HashSet<String>();
 		this.log = new ArrayList<String>();
 		log.add(0, "");
 		this.pointer = 0;
 	}
 	
-	public void addRole(Role role){
-		roles.add(role);
+	public void addMentionable(IMentionable entity){
+		entities.add(entity);
 	}
 	
 	public void addNode(String node){
@@ -55,12 +57,16 @@ public class PermissionResult {
 		failedNodes.add(node);
 	}
 	
-	public void addInvalidNodes(String s){
+	public void addInvalidNode(String s){
 		invalidNodes.add(s);
 	}
 	
 	public void addInvalidRole(String s){
 		invalidRoles.add(s);
+	}
+	
+	public void addInvalidUser(String s){
+		invalidUsers.add(s);
 	}
 	
 	public void logResult(String s){
@@ -72,16 +78,24 @@ public class PermissionResult {
 	}
 	
 	public MessageEmbed construct(){
+		return construct(false);
+	}
+	
+	public MessageEmbed construct(boolean withLogFooter){
 		EmbedBuilder eb = new EmbedBuilder();
 		
 		eb.setAuthor(type.getTitle(), null, type.getURL());
 		eb.setColor(SettingsManager.getColorAWT(g));
 		
+		if(withLogFooter && hasLog()){
+			eb.setFooter("Process returned output, pasting below.", IconUtil.INFO.getURL());
+		}
+		
 		//Construct pieces
-		if(roles.size() > 0){
-			String allRoles = "";
-			for(Role r : roles) allRoles += r.getAsMention() + " ";
-			eb.setDescription(allRoles.trim());
+		if(entities.size() > 0){
+			String allEntities = "";
+			for(IMentionable m : entities) allEntities += m.getAsMention() + " ";
+			eb.setDescription(allEntities.trim());
 		}
 		if(nodes.size() > 0){
 			List<String> nCopy = new ArrayList<String>(nodes);
@@ -99,6 +113,9 @@ public class PermissionResult {
 		if(invalidRoles.size() > 0){
 			eb.addField("Invalid Role" + (invalidRoles.size() > 1 ? "s" : ""), invalidRoles.toString(), true);
 		}
+		if(invalidUsers.size() > 0){
+			eb.addField("Invalid User" + (invalidRoles.size() > 1 ? "s" : ""), invalidUsers.toString(), true);
+		}
 		
 		return eb.build();
 	}
@@ -115,12 +132,20 @@ public class PermissionResult {
 	
 	public enum Type {
 		GRANT("Permission Grant Results", 
-				"Successfully Granted", 
+				"Processed Nodes", 
 				"Permissions Not Enabled", 
 				IconUtil.ADD.getURL()),
 		REVOKE("Permission Revoke Results", 
-				"Successfully Revoked", 
+				"Processed Nodes", 
 				"Permissions Not Enabled", 
+				IconUtil.REMOVE.getURL()),
+		BLACKLIST("Blacklist Results", 
+				"Processed Nodes", 
+				"", 
+				IconUtil.ADD.getURL()),
+		UNBLACKLIST("Unblacklist Results", 
+				"Processed Nodes", 
+				"", 
 				IconUtil.REMOVE.getURL());
 		
 		private final String title;

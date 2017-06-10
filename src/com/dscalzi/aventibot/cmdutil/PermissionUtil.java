@@ -29,6 +29,7 @@ import com.google.gson.JsonParser;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 
+import javafx.util.Pair;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.entities.User;
@@ -113,7 +114,7 @@ public final class PermissionUtil {
 		return blacklistMap.get(g.getId()).get(node.toString());
 	}
 	
-	public Set<PermissionNode> getNodesForRole(Role r, Guild g){
+	public static Set<PermissionNode> getNodesForRole(Role r, Guild g){
 		Map<String, List<String>> perms = permissionMap.get(g.getId());
 		Set<PermissionNode> registered = new HashSet<PermissionNode>(AventiBot.getInstance().getCommandRegistry().getAllRegisteredNodes());
 		String id = r.getId();
@@ -132,7 +133,30 @@ public final class PermissionUtil {
 	}
 	
 	/**
-	 * Update permissions.
+	 * Validate that a set of nodes are actually registered, valid nodes.
+	 * 
+	 * @param nodes A set of nodes to validate.
+	 * @return A pair whose key is a set of validate PermissionNodes and whose value is a set of invalid nodes.
+	 */
+	public static Pair<Set<PermissionNode>, Set<String>> validateNodes(Set<String> nodes){
+		Set<PermissionNode> valids = new HashSet<PermissionNode>();
+		Set<String> invalids = new HashSet<String>();
+		Set<PermissionNode> known = AventiBot.getInstance().getCommandRegistry().getAllRegisteredNodes();
+		
+		for(String s : nodes){
+			PermissionNode n = PermissionNode.get(s);
+			if(known.contains(n)){
+				known.remove(n);
+				valids.add(n);
+			} else {
+				invalids.add(n.toString());
+			}
+		}
+		return new Pair<Set<PermissionNode>, Set<String>>(valids, invalids);
+	}
+	
+	/**
+	 * Update permissions. Parameters must be validated.
 	 * 
 	 * @param g The target guild.
 	 * @param roles A set of roles to update.
@@ -141,7 +165,7 @@ public final class PermissionUtil {
 	 * @return A PermissionResult object with details about the result.
 	 * @throws IOException If there was an issue writing the changes to the permission file.
 	 */
-	public static PermissionResult writePermissionChange(Guild g, Set<Role> roles, Set<String> nodes, boolean add) throws IOException{
+	public static PermissionResult writePermissionChange(Guild g, Set<Role> roles, Set<PermissionNode> nodes, boolean add) throws IOException{
 		File target = SettingsManager.getPermissionFile(g);
 		if(target == null) throw new IOException();
 		
@@ -149,29 +173,23 @@ public final class PermissionUtil {
 		
 		Map<String, List<String>> perms = permissionMap.get(g.getId());
 		Map<String, List<String>> queue = new HashMap<String, List<String>>();
-		Set<PermissionNode> rN = AventiBot.getInstance().getCommandRegistry().getAllRegisteredNodes();
-		for(String s : nodes){
-			PermissionNode n = PermissionNode.get(s);
-			if(!rN.contains(n)){
-				result.addInvalidNodes(n.toString());
-				continue;
-			}
+		for(PermissionNode n : nodes){
 			List<String> rP = perms.get(n.toString());
 			if(rP == null){
-				result.addFailedNode(n.toString());
+				result.addFailedNode(n.toString()); //Node doesn't require permission.
 				continue;
 			}
+			result.addNode(n.toString()); //Record it as processed
 			List<String> q = new ArrayList<String>();
 			for(Role r : roles){
 				if((add && rP.contains(r.getId())) || (!add && !rP.contains(r.getId()))){
 					result.logResult("'ERR \"" + n.toString() + "\" already " + (add ? "granted to" : "revoked from") + " \"" + r.getName() + "\"(" + r.getId() + ").");
 					continue;
 				}
-				result.addNode(n.toString());
 				rP.add(r.getId());
 				q.add(r.getId());
 			}
-			queue.put(n.toString(), q);
+			if(q.size() > 0) queue.put(n.toString(), q);
 		}
 		
 		//Write the changes in queue map.
@@ -209,61 +227,76 @@ public final class PermissionUtil {
 		
 		return result;
 	}
-		
-	public static boolean blacklistUser(User u, PermissionNode node, Guild g) throws IOException{
-		if(g == null) throw new IllegalArgumentException();
-		return writeBlacklistChange(u, node, g, true);
-	}
 	
-	public static boolean unBlacklistUser(User u, PermissionNode node, Guild g) throws IOException{
-		if(g == null) throw new IllegalArgumentException();
-		return writeBlacklistChange(u, node, g, false);
-	}
-	
-	private static boolean writeBlacklistChange(User u, PermissionNode node, Guild g, boolean add) throws IOException{
+	/**
+	 * Update the blacklist. Parameters must be validated.
+	 * 
+	 * @param g The target guild.
+	 * @param users A set of target users.
+	 * @param nodes A set of nodes to update.
+	 * @param add If the users should be added or removed from the blacklist.
+	 * @return A PermissionResult object with details about the result.
+	 * @throws IOException If there was an issue writing the changes to the permission file.
+	 */
+	public static PermissionResult writeBlacklistChangeNew(Guild g, Set<User> users, Set<PermissionNode> nodes, boolean add) throws IOException {
 		File target = SettingsManager.getPermissionFile(g);
 		if(target == null) throw new IOException();
 		
+		PermissionResult result = new PermissionResult(add ? PermissionResult.Type.BLACKLIST : PermissionResult.Type.UNBLACKLIST, g);
 		
-		List<String> blacklisted = blacklistMap.get(g.getId()).get(node.toString());
+		Map<String, List<String>> blacklist = blacklistMap.get(g.getId());
+		Map<String, List<String>> queue = new HashMap<String, List<String>>();
 		
-		if(add){
-			if(blacklisted.contains(u.getId())) return false;
-			blacklisted.add(u.getId());
-		} else {
-			if(!blacklisted.contains(u.getId())) return false;
-			blacklisted.remove(u.getId());
+		for(PermissionNode n : nodes){
+			List<String> rP = blacklist.get(n.toString());
+			result.addNode(n.toString()); //Record it as processed
+			List<String> q = new ArrayList<String>();
+			for(User u : users){
+				String id = u.getId();
+				if((add && rP.contains(id)) || (!add && !rP.contains(id))){
+					result.logResult("'ERR \"" + n.toString() + "\" " + (add ? "already blacklists" : "does not blacklist") + " \"" + u.getName() + "#" + u.getDiscriminator() + "\"(" + id + ").");
+					continue;
+				}
+				rP.add(id);
+				q.add(id);
+			}
+			if(q.size() > 0) queue.put(n.toString(), q);
 		}
 		
+		//Write the changes in queue map.
+		if(queue.size() == 0) return result;
+
 		JsonParser p = new JsonParser();
 		try(JsonReader file = new JsonReader(new FileReader(target))){
-			JsonObject result = null;
+			JsonObject job = null;
 			JsonElement parsed = p.parse(file);
 			if(parsed.isJsonObject()){
-				result = parsed.getAsJsonObject();
-				JsonObject section = result.get(node.toString()).getAsJsonObject();
-				JsonArray arr = section.get(PermissionUtil.BLACKLISTKEY).getAsJsonArray();
-				if(add)
-					arr.add(u.getId());
-				else {
-					for(int i=0; i<arr.size(); ++i){
-					    String val = arr.get(i).getAsString();
-					    if(val.equals(u.getId())){            
-					        arr.remove(i);
-					        break;
-					    }
+				job = parsed.getAsJsonObject();
+				for(Map.Entry<String, List<String>> entry : queue.entrySet()){
+					JsonObject section = job.get(entry.getKey()).getAsJsonObject();
+					JsonArray arr = section.get(PermissionUtil.BLACKLISTKEY).getAsJsonArray();
+					if(add)
+						entry.getValue().forEach(r -> arr.add(r));
+					else {
+						for(int i=arr.size()-1; i>=0; --i){
+						    String val = arr.get(i).getAsString();
+						    if(entry.getValue().contains(val)){            
+						        arr.remove(i);
+						        entry.getValue().remove(val);
+						    }
+						}
 					}
 				}
 			}
 			
 			Gson gson = new GsonBuilder().setPrettyPrinting().create();
 			try(JsonWriter writer = gson.newJsonWriter(new FileWriter(target))){
-				gson.toJson(result, writer);
+				gson.toJson(job, writer);
 			}
 			
 		}
 		
-		return true;
+		return result;
 	}
 	
 	public static void loadJson(Guild g) throws IOException {

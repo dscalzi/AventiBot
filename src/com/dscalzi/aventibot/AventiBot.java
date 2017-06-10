@@ -15,7 +15,6 @@ import javax.xml.ws.http.HTTPException;
 import com.dscalzi.aventibot.cmdutil.CommandListener;
 import com.dscalzi.aventibot.cmdutil.CommandRegistry;
 import com.dscalzi.aventibot.commands.CmdAuthor;
-import com.dscalzi.aventibot.commands.CmdBlacklist;
 import com.dscalzi.aventibot.commands.CmdClear;
 import com.dscalzi.aventibot.commands.CmdHardRestart;
 import com.dscalzi.aventibot.commands.CmdHelloWorld;
@@ -83,7 +82,6 @@ public class AventiBot {
 	
 	private void registerCommands(){
 		CmdMusicControl mcc = new CmdMusicControl();
-		CmdBlacklist cbl = new CmdBlacklist();
 		this.registry.register("play", mcc);
 		this.registry.register("playlist", mcc);
 		this.registry.register("skip", mcc);
@@ -99,8 +97,6 @@ public class AventiBot {
 		this.registry.register("clear", new CmdClear());
 		this.registry.register("shutdown", new CmdShutdown());
 		this.registry.register("roleid", new CmdRoleId());
-		this.registry.register("blacklist", cbl);
-		this.registry.register("unblacklist", cbl);
 		this.registry.register("permissions", new CmdPermissionsControl());
 		this.registry.register("settings", new CmdSettingsControl());
 		this.registry.register("softreload", new CmdSoftReload());

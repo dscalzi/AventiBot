@@ -34,14 +34,9 @@ public class CommandRegistry {
 	}
 	
 	public Set<PermissionNode> getAllRegisteredNodes(){
-		Set<Class<? extends CommandExecutor>> clzz = new HashSet<Class<? extends CommandExecutor>>();
 		Set<PermissionNode> a = new HashSet<PermissionNode>();
 		for(CommandExecutor e : registry.values()){
-			if(!clzz.contains(e.getClass())){
-				clzz.add(e.getClass());
-				for(PermissionNode pn : e.getNodes())
-					a.add(pn);
-			}
+			for(PermissionNode pn : e.getNodes()) a.add(pn);
 		}
 		return a;
 	}
