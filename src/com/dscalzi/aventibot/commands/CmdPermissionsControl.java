@@ -31,12 +31,16 @@ import net.dv8tion.jda.core.entities.MessageEmbed;
 
 public class CmdPermissionsControl implements CommandExecutor{
 	
+	private static final char BULLET = (char)8226;
+	private static final char ANGLE = (char)8735;
+	
 	private final PermissionNode permGrant = PermissionNode.get(NodeType.SUBCOMMAND, "permissions", "grant");
 	private final PermissionNode permRevoke = PermissionNode.get(NodeType.SUBCOMMAND, "permissions", "revoke");
 	private final PermissionNode permBlacklist = PermissionNode.get(NodeType.SUBCOMMAND, "permissions", "blacklist");
 	private final PermissionNode permUnblacklist = PermissionNode.get(NodeType.SUBCOMMAND, "permissions", "unblacklist");
 	private final PermissionNode permEnable = PermissionNode.get(NodeType.SUBCOMMAND, "permissions", "enable");
 	private final PermissionNode permDisable = PermissionNode.get(NodeType.SUBCOMMAND, "permissions", "disable");
+	private final PermissionNode permInfo = PermissionNode.get(NodeType.SUBCOMMAND, "permissions", "info");
 	
 	public final Set<PermissionNode> nodes;
 	
@@ -47,7 +51,8 @@ public class CmdPermissionsControl implements CommandExecutor{
 				permBlacklist,
 				permUnblacklist,
 				permEnable,
-				permDisable
+				permDisable,
+				permInfo
 				));
 	}
 	
@@ -74,6 +79,8 @@ public class CmdPermissionsControl implements CommandExecutor{
 			return this.cmdWriteNodePermissionChange(e, sub, true, rawArgs);
 		case "disable":
 			return this.cmdWriteNodePermissionChange(e, sub, false, rawArgs);
+		case "info":
+			return this.cmdInfo(e, rawArgs);
 		}
 		
 		e.getChannel().sendMessage("Unknown subcommand: *" + args[0] + "*.").queue();
@@ -207,6 +214,53 @@ public class CmdPermissionsControl implements CommandExecutor{
 		return CommandResult.SUCCESS;
 	}
 	
+	private CommandResult cmdInfo(MessageReceivedEvent e, String[] rawArgs){
+		if(!PermissionUtil.hasPermission(e.getAuthor(), permInfo, e.getGuild(), false)){
+			return CommandResult.NO_PERMISSION;
+		}
+		
+		if(rawArgs.length < 2){
+			e.getChannel().sendMessage("Propert format is `" + SettingsManager.getCommandPrefix(e.getGuild()) + "permissions info <node>`").queue();
+			return CommandResult.ERROR;
+		}
+		
+		String node = rawArgs[1];
+		if(PermissionUtil.validateSingleNode(node)){
+			PermissionNode n = PermissionNode.get(node);
+			EmbedBuilder eb = new EmbedBuilder();
+			
+			eb.setAuthor(node, null, IconUtil.INFO.getURL());
+			eb.setColor(SettingsManager.getColorAWT(e.getGuild()));
+			
+			List<String> roles = PermissionUtil.getAllowedRoles(n, e.getGuild());
+			List<String> blacklisted = PermissionUtil.getBlacklistedUsers(n, e.getGuild());
+			
+			eb.setDescription(BULLET + " " + (roles == null ? "`Does not require`" : "`Requires`") + " permission.\n"
+					+ (roles != null ? "  " + ANGLE + " Currently `" + roles.size() + "` role" + (roles.size() == 1 ? "" : "s") + " allowed.\n" : "")
+					+ BULLET + " Currently `" + blacklisted.size() + "` blacklisted user" + (blacklisted.size() == 1 ? "" : "s") + ".");
+			
+			if(roles != null && roles.size() > 0){
+				String roleStr = "[";
+				for(String s : roles) roleStr += "<@&" + s + ">, ";
+				if(roleStr.length() >= 2) roleStr = roleStr.substring(0, roleStr.length()-2) + "]";
+				eb.addField("Allowed Roles", roleStr, true);
+			}
+			
+			if(blacklisted.size() > 0){
+				String blStr = "[";
+				for(String s : blacklisted) blStr += "<@" + s + ">, ";
+				if(blStr.length() >= 2) blStr = blStr.substring(0, blStr.length()-2) + "]";
+				eb.addField("Blacklisted Users", blStr, true);
+			}
+			
+			e.getChannel().sendMessage(eb.build()).queue();
+			return CommandResult.SUCCESS;
+		} else {
+			e.getChannel().sendMessage("Invalid permission node: `" + node + "`").queue();
+			return CommandResult.ERROR;
+		}
+	}
+	
 	private MessageEmbed constructSubcommandTree(Guild g){
 		EmbedBuilder eb = new EmbedBuilder();
 		
@@ -216,7 +270,8 @@ public class CmdPermissionsControl implements CommandExecutor{
 				+ "`blacklist` - Add users to a node's blacklist.\n"
 				+ "`unblacklist` - Remove users from a node's blacklist.\n"
 				+ "`enable` - Make a specific node require permission.\n"
-				+ "`disable` - Disable a node's permission requirement.");
+				+ "`disable` - Disable a node's permission requirement.\n"
+				+ "`info` - View information about a permission node.");
 		eb.setFooter("Usage | " + SettingsManager.getCommandPrefix(g) + "permissions <subcommand>", IconUtil.INFO.getURL());
 		eb.setColor(SettingsManager.getColorAWT(g));
 		

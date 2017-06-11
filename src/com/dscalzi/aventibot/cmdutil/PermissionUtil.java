@@ -107,11 +107,13 @@ public final class PermissionUtil {
 	}
 	
 	public static List<String> getAllowedRoles(PermissionNode node, Guild g){
-		return permissionMap.get(g.getId()).get(node.toString());
+		List<String> r = permissionMap.get(g.getId()).get(node.toString());
+		return r == null ? null : Collections.unmodifiableList(r);
 	}
 	
 	public static List<String> getBlacklistedUsers(PermissionNode node, Guild g){
-		return blacklistMap.get(g.getId()).get(node.toString());
+		List<String> r = blacklistMap.get(g.getId()).get(node.toString());
+		return r == null ? r : Collections.unmodifiableList(r);
 	}
 	
 	public static Set<PermissionNode> getNodesForRole(Role r, Guild g){
@@ -153,6 +155,10 @@ public final class PermissionUtil {
 			}
 		}
 		return new Pair<Set<PermissionNode>, Set<String>>(valids, invalids);
+	}
+	
+	public static boolean validateSingleNode(String node){
+		return AventiBot.getInstance().getCommandRegistry().getAllRegisteredNodes().contains(PermissionNode.get(node));
 	}
 	
 	/**
