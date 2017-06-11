@@ -6,6 +6,7 @@
 package com.dscalzi.aventibot.commands;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -41,6 +42,8 @@ public class CmdPermissionsControl implements CommandExecutor{
 	private final PermissionNode permEnable = PermissionNode.get(NodeType.SUBCOMMAND, "permissions", "enable");
 	private final PermissionNode permDisable = PermissionNode.get(NodeType.SUBCOMMAND, "permissions", "disable");
 	private final PermissionNode permInfo = PermissionNode.get(NodeType.SUBCOMMAND, "permissions", "info");
+	private final PermissionNode permUserInfo = PermissionNode.get(NodeType.SUBCOMMAND, "permissions", "userinfo");
+	private final PermissionNode permRoleInfo = PermissionNode.get(NodeType.SUBCOMMAND, "permissions", "roleinfo");
 	
 	public final Set<PermissionNode> nodes;
 	
@@ -52,7 +55,9 @@ public class CmdPermissionsControl implements CommandExecutor{
 				permUnblacklist,
 				permEnable,
 				permDisable,
-				permInfo
+				permInfo,
+				permUserInfo,
+				permRoleInfo
 				));
 	}
 	
@@ -81,6 +86,10 @@ public class CmdPermissionsControl implements CommandExecutor{
 			return this.cmdWriteNodePermissionChange(e, sub, false, rawArgs);
 		case "info":
 			return this.cmdInfo(e, rawArgs);
+		case "userinfo":
+			break;
+		case "roleinfo":
+			return this.cmdRoleInfo(e, rawArgs);
 		}
 		
 		e.getChannel().sendMessage("Unknown subcommand: *" + args[0] + "*.").queue();
@@ -261,6 +270,59 @@ public class CmdPermissionsControl implements CommandExecutor{
 		}
 	}
 	
+	/*private CommandResult cmdUserInfo(MessageReceivedEvent e, String[] rawArgs){
+		if(!PermissionUtil.hasPermission(e.getAuthor(), permUserInfo, e.getGuild(), false)){
+			return CommandResult.NO_PERMISSION;
+		}
+		
+		if(rawArgs.length < 2){
+			e.getChannel().sendMessage("Propert format is `" + SettingsManager.getCommandPrefix(e.getGuild()) + "permissions userinfo <user>`").queue();
+			return CommandResult.ERROR;
+		}
+		
+		String user = rawArgs[1];
+		
+	}*/
+	
+	private CommandResult cmdRoleInfo(MessageReceivedEvent e, String[] rawArgs){
+		if(!PermissionUtil.hasPermission(e.getAuthor(), permRoleInfo, e.getGuild(), false)){
+			return CommandResult.NO_PERMISSION;
+		}
+		
+		if(rawArgs.length < 2){
+			e.getChannel().sendMessage("Propert format is `" + SettingsManager.getCommandPrefix(e.getGuild()) + "permissions roleinfo <role>`").queue();
+			return CommandResult.ERROR;
+		}
+		
+		String[] terms = new String[rawArgs.length-1];
+		for(int i=0; i<terms.length; ++i) terms[i] = rawArgs[i+1];
+		
+		Pair<Set<Role>, Set<String>> temp = InputUtils.parseBulkRoles(terms, e.getGuild());
+		if(temp.getKey().isEmpty()){
+			e.getChannel().sendMessage("Unknown Role: `" + temp.getValue().iterator().next() + "`.").queue();
+			return CommandResult.ERROR;
+		}
+		
+		Role target = temp.getKey().iterator().next();
+		Set<PermissionNode> r = PermissionUtil.getNodesForRole(target, e.getGuild());
+		
+		EmbedBuilder eb = new EmbedBuilder();
+		eb.setAuthor("Role Information", null, IconUtil.INFO.getURL());
+		eb.setColor(SettingsManager.getColorAWT(e.getGuild()));
+		
+		eb.setDescription(target.getAsMention() + "\n" + BULLET + " Currently granted `" + r.size() + "` permission" + (r.size() == 1 ? "" : "s") + ".");
+		
+		if(r.size() > 0){
+			List<String> nodeLst = new ArrayList<String>();
+			for(PermissionNode n : r) nodeLst.add("`" + n.toString() + "`");
+			eb.addField("Granted Permissions", nodeLst.toString(), false);
+		}
+		
+		e.getChannel().sendMessage(eb.build()).queue();
+		
+		return CommandResult.SUCCESS;
+	}
+	
 	private MessageEmbed constructSubcommandTree(Guild g){
 		EmbedBuilder eb = new EmbedBuilder();
 		
@@ -271,7 +333,9 @@ public class CmdPermissionsControl implements CommandExecutor{
 				+ "`unblacklist` - Remove users from a node's blacklist.\n"
 				+ "`enable` - Make a specific node require permission.\n"
 				+ "`disable` - Disable a node's permission requirement.\n"
-				+ "`info` - View information about a permission node.");
+				+ "`info` - View information about a permission node.\n"
+				+ "`userinfo` - View permission information about a user.\n"
+				+ "`roleinfo` - View permission information about a role.");
 		eb.setFooter("Usage | " + SettingsManager.getCommandPrefix(g) + "permissions <subcommand>", IconUtil.INFO.getURL());
 		eb.setColor(SettingsManager.getColorAWT(g));
 		

@@ -123,12 +123,16 @@ public final class PermissionUtil {
 		
 		outer:
 		for(Map.Entry<String, List<String>> entry : perms.entrySet()){
-			for(String s : entry.getValue()){
-				if(s.equals(id)){
-					continue outer;
+			if(entry.getValue() != null){
+				for(String s : entry.getValue()){
+					if(s.equals(id)){
+						continue outer;
+					}
 				}
+				registered.remove(PermissionNode.get(entry.getKey()));
+			} else {
+				registered.remove(PermissionNode.get(entry.getKey()));
 			}
-			registered.remove(PermissionNode.get(entry.getKey()));
 		}
 		
 		return registered;
