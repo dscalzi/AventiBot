@@ -87,7 +87,7 @@ public class CmdPermissionsControl implements CommandExecutor{
 		case "info":
 			return this.cmdInfo(e, rawArgs);
 		case "userinfo":
-			break;
+			return this.cmdUserInfo(e, rawArgs);
 		case "roleinfo":
 			return this.cmdRoleInfo(e, rawArgs);
 		}
@@ -229,7 +229,7 @@ public class CmdPermissionsControl implements CommandExecutor{
 		}
 		
 		if(rawArgs.length < 2){
-			e.getChannel().sendMessage("Propert format is `" + SettingsManager.getCommandPrefix(e.getGuild()) + "permissions info <node>`").queue();
+			e.getChannel().sendMessage("Proper format is `" + SettingsManager.getCommandPrefix(e.getGuild()) + "permissions info <node>`").queue();
 			return CommandResult.ERROR;
 		}
 		
@@ -270,19 +270,43 @@ public class CmdPermissionsControl implements CommandExecutor{
 		}
 	}
 	
-	/*private CommandResult cmdUserInfo(MessageReceivedEvent e, String[] rawArgs){
+	private CommandResult cmdUserInfo(MessageReceivedEvent e, String[] rawArgs){
 		if(!PermissionUtil.hasPermission(e.getAuthor(), permUserInfo, e.getGuild(), false)){
 			return CommandResult.NO_PERMISSION;
 		}
 		
 		if(rawArgs.length < 2){
-			e.getChannel().sendMessage("Propert format is `" + SettingsManager.getCommandPrefix(e.getGuild()) + "permissions userinfo <user>`").queue();
+			e.getChannel().sendMessage("Proper format is `" + SettingsManager.getCommandPrefix(e.getGuild()) + "permissions userinfo <user>`").queue();
 			return CommandResult.ERROR;
 		}
 		
-		String user = rawArgs[1];
+		String[] terms = new String[rawArgs.length-1];
+		for(int i=0; i<terms.length; ++i) terms[i] = rawArgs[i+1];
 		
-	}*/
+		Pair<Set<User>, Set<String>> temp = InputUtils.parseBulkMembers(rawArgs, e.getGuild());
+		if(temp.getKey().isEmpty()){
+			e.getChannel().sendMessage("Unknown User: `" + temp.getValue().iterator().next() + "`.").queue();
+			return CommandResult.ERROR;
+		}
+		
+		User target = temp.getKey().iterator().next();
+		List<String> r = PermissionUtil.getNodesForUser(target, e.getGuild());
+		
+		EmbedBuilder eb = new EmbedBuilder();
+		eb.setAuthor("User Information", null, IconUtil.INFO.getURL());
+		eb.setColor(SettingsManager.getColorAWT(e.getGuild()));
+		
+		eb.setDescription(target.getAsMention() + "\n" + BULLET + " Currently blacklisted from `" + r.size() + "` permission" + (r.size() == 1 ? "" : "s") + ".");
+		
+		if(r.size() > 0){
+			r.replaceAll(s -> "`" + s + "`");
+			eb.addField("Blacklisted Permissions", r.toString(), false);
+		}
+		
+		e.getChannel().sendMessage(eb.build()).queue();
+		
+		return CommandResult.SUCCESS;
+	}
 	
 	private CommandResult cmdRoleInfo(MessageReceivedEvent e, String[] rawArgs){
 		if(!PermissionUtil.hasPermission(e.getAuthor(), permRoleInfo, e.getGuild(), false)){
@@ -290,7 +314,7 @@ public class CmdPermissionsControl implements CommandExecutor{
 		}
 		
 		if(rawArgs.length < 2){
-			e.getChannel().sendMessage("Propert format is `" + SettingsManager.getCommandPrefix(e.getGuild()) + "permissions roleinfo <role>`").queue();
+			e.getChannel().sendMessage("Proper format is `" + SettingsManager.getCommandPrefix(e.getGuild()) + "permissions roleinfo <role>`").queue();
 			return CommandResult.ERROR;
 		}
 		

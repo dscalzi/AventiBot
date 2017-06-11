@@ -138,6 +138,24 @@ public final class PermissionUtil {
 		return registered;
 	}
 	
+	public static List<String> getNodesForUser(User u, Guild g){
+		Map<String, List<String>> blist = blacklistMap.get(g.getId());
+		
+		List<String> ret = new ArrayList<String>();
+		
+		String id = u.getId();
+		outer:
+		for(Map.Entry<String, List<String>> entry : blist.entrySet()){
+			for(String s : entry.getValue()){
+				if(s.equals(id)) {
+					ret.add(entry.getKey());
+					continue outer;
+				}
+			}
+		}
+		return ret;
+	}
+	
 	/**
 	 * Validate that a set of nodes are actually registered, valid nodes.
 	 * 
