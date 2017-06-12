@@ -3,13 +3,14 @@
  * Copyright (C) 2016-2017 Daniel D. Scalzi
  * See LICENSE.txt for license information.
  */
-package com.dscalzi.aventibot.console;
+package com.dscalzi.aventibot.cmdline;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.PrintStream;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -17,22 +18,19 @@ import java.util.Locale;
 
 import com.dscalzi.aventibot.AventiBot;
 
-import javafx.application.Platform;
-import javafx.scene.control.TextArea;
 import net.dv8tion.jda.core.utils.SimpleLog;
 
-public class CommandLog extends OutputStream {
-	
+public class CommandLineOutput extends OutputStream {
+
 	public static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd.HH.mm.ss").withLocale(Locale.US).withZone(ZoneId.systemDefault());
 
 	private volatile boolean fileStreamClosed;
 	
-	private TextArea node;
+	private PrintStream oldOut;
 	private FileOutputStream file;
 	private File logFile;
 	
-	public CommandLog(TextArea textArea){
-		this.node = textArea;
+	public CommandLineOutput(){
 		this.logFile = new File(AventiBot.getDataPath() + File.separator + "logs", "AventiBot-" + formatter.format(Instant.now()) + ".log");
 		if(!logFile.exists()){ 
 			try {
@@ -44,6 +42,7 @@ public class CommandLog extends OutputStream {
 			}
 		}
 		try {
+			this.oldOut = System.out;
 			this.file = new FileOutputStream(logFile);
 			fileStreamClosed = false;
 		} catch (FileNotFoundException e) {
@@ -60,25 +59,23 @@ public class CommandLog extends OutputStream {
 	
 	@Override
 	public void write(int i) throws IOException {
-		synchronized(this){
-			Platform.runLater(() -> {
-				node.appendText(String.valueOf((char) i));
-			});
-		}
-		if(!fileStreamClosed)
+		if(!fileStreamClosed){
+			oldOut.write(i);
 			file.write(i);
+		}
 	}
 	
 	@Override
     public void close() throws IOException {
         super.close();
+        oldOut.close();
 		file.close();
     }
 	
 	@Override
     public void flush() throws IOException {
         super.flush();
+        oldOut.flush();
 		file.flush();
     }
-
 }
