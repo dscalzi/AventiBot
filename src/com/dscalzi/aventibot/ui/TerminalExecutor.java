@@ -6,9 +6,11 @@
 package com.dscalzi.aventibot.ui;
 
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.List;
 
 import com.dscalzi.aventibot.BotStatus;
+import com.dscalzi.aventibot.cmdline.CommandLineExecutor;
 import com.dscalzi.aventibot.AventiBot;
 
 import javafx.application.Application;
@@ -23,7 +25,12 @@ public class TerminalExecutor extends Application {
 	protected static List<String> parameters;
 	
 	public static void main(String[] args){
-		launch(args);
+		List<String> lstArgs = Arrays.asList(args);
+		if(lstArgs.contains("--cmdline")){
+			CommandLineExecutor.main(args);
+		} else {
+			launch(args);
+		}
 	}
 	
 	private final SimpleLog LOG = SimpleLog.getLog("Launcher");

@@ -1,6 +1,5 @@
 package com.dscalzi.aventibot.commands;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -8,13 +7,13 @@ import java.util.Set;
 
 import com.dscalzi.aventibot.AventiBot;
 import com.dscalzi.aventibot.BotStatus;
+import com.dscalzi.aventibot.cmdline.CommandLineExecutor;
 import com.dscalzi.aventibot.cmdutil.CommandDispatcher;
 import com.dscalzi.aventibot.cmdutil.CommandExecutor;
 import com.dscalzi.aventibot.cmdutil.CommandResult;
 import com.dscalzi.aventibot.cmdutil.PermissionNode;
 import com.dscalzi.aventibot.cmdutil.PermissionNode.NodeType;
 import com.dscalzi.aventibot.cmdutil.PermissionUtil;
-
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 public class CmdHardRestart implements CommandExecutor{
@@ -36,8 +35,12 @@ public class CmdHardRestart implements CommandExecutor{
 		}
 		
 		try {
+			if(CommandLineExecutor.usingCmdLine()){
+				e.getChannel().sendMessage("The application was started in command line mode, restarting is not supported.").queue();
+				return CommandResult.ERROR;
+			}
 			e.getChannel().sendMessage("Restarting..").queue();
-			ProcessBuilder builder = new ProcessBuilder("java", "-jar", AventiBot.getDataPath() + File.separator + "AventiBot.jar", "--abNow");
+			ProcessBuilder builder = new ProcessBuilder("java", "-jar", AventiBot.getDataPathFull(), "--abNow");
 			builder.start();
 			CommandDispatcher.displayResult(CommandResult.SUCCESS, e.getMessage(), v -> {
 				try {

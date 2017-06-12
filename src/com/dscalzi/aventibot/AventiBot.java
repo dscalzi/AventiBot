@@ -172,4 +172,8 @@ public class AventiBot {
 		return pth.substring(1, pth.lastIndexOf(File.separator));
 	}
 	
+	public static String getDataPathFull(){
+		return AventiBot.class.getProtectionDomain().getCodeSource().getLocation().getPath().substring(1);
+	}
+	
 }

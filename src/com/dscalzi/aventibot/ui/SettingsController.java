@@ -40,7 +40,7 @@ public class SettingsController implements Initializable, ChangeListener<String>
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		try {
-			current = SettingsManager.loadGlobalConfig();
+			current = SettingsManager.getGlobalConfig();
 			if(current == null){
 				throw new IOException();
 			}

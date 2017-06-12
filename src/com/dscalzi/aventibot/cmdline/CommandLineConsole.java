@@ -53,11 +53,12 @@ public class CommandLineConsole {
 				CommandDispatcher.dispatchCommand(mre, CommandDispatcher.parseMessage(mre));
 			}
 		}
+		input.close();
 	}
 	
 	public void shutdown(){
 		control = false;
-		input.close();
+		//input.close();
 	}
 	
 	public boolean isShutdown(){
