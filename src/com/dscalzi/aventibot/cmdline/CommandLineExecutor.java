@@ -7,6 +7,9 @@ package com.dscalzi.aventibot.cmdline;
 
 import java.io.IOException;
 import java.io.PrintStream;
+import java.util.Arrays;
+import java.util.List;
+
 import com.dscalzi.aventibot.AventiBot;
 import com.dscalzi.aventibot.BotStatus;
 import com.dscalzi.aventibot.settings.GlobalConfig;
@@ -24,16 +27,18 @@ public class CommandLineExecutor {
 	private static CommandLineConsole console;
 	
 	public static void main(String[] args){
+		List<String> lstArgs = Arrays.asList(args);
 		usingCmdLine = true;
 		if(!checkSettings()){
 			LOG.fatal("Specify your bot's access token then relaunch.");
-			if(AventiBot.getStatus() == BotStatus.CONNECTED)
-				AventiBot.getInstance().shutdown();
+			System.exit(0);
 		}
 		//Start Console Thread
-		console = new CommandLineConsole();
-		Thread th = new Thread(() -> console.start());
-		th.start();
+		if(!lstArgs.contains("--headless")){
+			console = new CommandLineConsole();
+			Thread th = new Thread(() -> console.start());
+			th.start();
+		}
 		
 		CommandLineOutput o = new CommandLineOutput();
 		PrintStream ps = new PrintStream(o, true);
@@ -52,7 +57,7 @@ public class CommandLineExecutor {
 				@Override
 				public void onEvent(Event e){
 					if(e instanceof ShutdownEvent){
-						console.shutdown();
+						if(console != null)	console.shutdown();
 						LOG.info("===================================");
 						LOG.info("AventiBot JDA has been shutdown..");
 						LOG.info("===================================");
@@ -69,7 +74,7 @@ public class CommandLineExecutor {
 			});
 		} else {
 			LOG.fatal("Unable to connect to discord. Try relaunching.");
-			console.shutdown();
+			if(console != null) console.shutdown();
 			try {
 				o.closeLogger();
 			} catch (IOException e1) {

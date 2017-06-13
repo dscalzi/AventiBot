@@ -53,7 +53,7 @@
               <minimizeJar>true</minimizeJar>
               <transformers>
                 <transformer>
-                  <mainClass>com.dscalzi.aventibot.ui.TerminalExecutor</mainClass>
+                  <mainClass>com.dscalzi.aventibot.LaunchWrapper</mainClass>
                 </transformer>
               </transformers>
               <filters>
