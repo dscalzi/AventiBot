@@ -4,9 +4,10 @@
 	src: url('Inconsolata-Bold.ttf');
 }
 
+/* Fancy font, found on https://fonts.google.com/specimen/Quattrocento?selection.family=Quattrocento */
 @font-face {
-	font-family: 'IM FELL Great Primer';
-	src: url('IMFeGPrm28P.ttf');
+	font-family: Quattrocento;
+	src: url(' Quattrocento-Bold.ttf');
 }
 
 #console_log {
@@ -36,7 +37,7 @@
 
 #title {
 	-fx-fill: white;
-	-fx-font: 17 'IM FELL Great Primer';
+	-fx-font: 17 Quattrocento;
 }
 
 #leftpane {

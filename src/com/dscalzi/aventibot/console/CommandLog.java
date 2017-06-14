@@ -15,8 +15,6 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
-import com.dscalzi.aventibot.AventiBot;
-
 import javafx.application.Platform;
 import javafx.scene.control.TextArea;
 import net.dv8tion.jda.core.utils.SimpleLog;
@@ -33,7 +31,7 @@ public class CommandLog extends OutputStream {
 	
 	public CommandLog(TextArea textArea){
 		this.node = textArea;
-		this.logFile = new File(AventiBot.getDataPath() + File.separator + "logs", "AventiBot-" + formatter.format(Instant.now()) + ".log");
+		this.logFile = new File("logs", "AventiBot-" + formatter.format(Instant.now()) + ".log");
 		if(!logFile.exists()){ 
 			try {
 				logFile.getParentFile().mkdirs();

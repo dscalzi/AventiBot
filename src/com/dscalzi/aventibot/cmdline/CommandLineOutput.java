@@ -16,8 +16,6 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
-import com.dscalzi.aventibot.AventiBot;
-
 import net.dv8tion.jda.core.utils.SimpleLog;
 
 public class CommandLineOutput extends OutputStream {
@@ -31,7 +29,7 @@ public class CommandLineOutput extends OutputStream {
 	private File logFile;
 	
 	public CommandLineOutput(){
-		this.logFile = new File(AventiBot.getDataPath() + File.separator + "logs", "AventiBot-" + formatter.format(Instant.now()) + ".log");
+		this.logFile = new File("logs", "AventiBot-" + formatter.format(Instant.now()) + ".log");
 		if(!logFile.exists()){ 
 			try {
 				logFile.getParentFile().mkdirs();

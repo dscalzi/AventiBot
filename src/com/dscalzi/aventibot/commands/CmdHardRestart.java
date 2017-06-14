@@ -35,12 +35,18 @@ public class CmdHardRestart implements CommandExecutor{
 		}
 		
 		try {
+			ProcessBuilder builder = null;
 			if(CommandLineExecutor.usingCmdLine()){
-				e.getChannel().sendMessage("The application was started in command line mode, restarting is not supported.").queue();
-				return CommandResult.ERROR;
+				if(!CommandLineExecutor.headless()){
+					e.getChannel().sendMessage("Restarting is not supported for terminal based command line startup.").queue();
+					return CommandResult.ERROR;
+				} else {
+					builder = new ProcessBuilder("java", "-jar", AventiBot.getDataPathFull(), "--cmdline", "--headless");
+				}
+			} else {
+				builder = new ProcessBuilder("java", "-jar", AventiBot.getDataPathFull(), "--abNow");
 			}
 			e.getChannel().sendMessage("Restarting..").queue();
-			ProcessBuilder builder = new ProcessBuilder("java", "-jar", AventiBot.getDataPathFull(), "--abNow");
 			builder.start();
 			CommandDispatcher.displayResult(CommandResult.SUCCESS, e.getMessage(), v -> {
 				try {

@@ -22,6 +22,7 @@ import net.dv8tion.jda.core.utils.SimpleLog;
 public class CommandLineExecutor {
 	
 	private static boolean usingCmdLine = false;
+	private static boolean headless = false;
 	
 	private static final SimpleLog LOG = SimpleLog.getLog("Launcher");
 	private static CommandLineConsole console;
@@ -38,6 +39,8 @@ public class CommandLineExecutor {
 			console = new CommandLineConsole();
 			Thread th = new Thread(() -> console.start());
 			th.start();
+		} else {
+			headless = true;
 		}
 		
 		CommandLineOutput o = new CommandLineOutput();
@@ -106,6 +109,10 @@ public class CommandLineExecutor {
 	
 	public static boolean usingCmdLine(){
 		return usingCmdLine;
+	}
+	
+	public static boolean headless(){
+		return headless;
 	}
 	
 }
