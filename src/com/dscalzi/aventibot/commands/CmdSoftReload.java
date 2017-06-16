@@ -52,7 +52,7 @@ private final PermissionNode permSoftReload = PermissionNode.get(NodeType.COMMAN
 	}
 
 	@Override
-	public Set<PermissionNode> getNodes() {
+	public Set<PermissionNode> provideNodes() {
 		return nodes;
 	}
 

@@ -212,7 +212,7 @@ public class CmdSettingsControl implements CommandExecutor{
 	
 
 	@Override
-	public Set<PermissionNode> getNodes() {
+	public Set<PermissionNode> provideNodes() {
 		return nodes;
 	}
 
