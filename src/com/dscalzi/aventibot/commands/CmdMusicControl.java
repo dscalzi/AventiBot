@@ -216,7 +216,7 @@ public class CmdMusicControl implements CommandExecutor{
 			
 			EmbedBuilder eb = new EmbedBuilder().setColor(SettingsManager.getColorAWT(e.getGuild()));
 			int skips = current.getNumSkips();
-			int usrs = scheduler.getCurrentChannel().getMembers().size()-1;
+			int usrs = scheduler.getCurrentChannel().get().getMembers().size()-1;
 			eb.addField(new Field("Currently Playing:", current.getTrack().getInfo().title + " (" + TimeUtils.formatTrackDuration(current.getTrack().getPosition()) + "/" + TimeUtils.formatTrackDuration(current.getTrack().getDuration()) + ")" + (skips > 0 ? (" | Votes " + skips + "/" + usrs + " (" + (int)(((double)skips/usrs)*100) + "%)") : ""), false));
 			String desc = "";
 			
@@ -324,7 +324,7 @@ public class CmdMusicControl implements CommandExecutor{
 				eb.setColor(SettingsManager.getColorAWT(e.getGuild()));
 				eb.setTitle("Voted to skip " + tm.getTrack().getInfo().title, null);
 				int skips = tm.getNumSkips();
-				int usrs = scheduler.getCurrentChannel().getMembers().size()-1;
+				int usrs = scheduler.getCurrentChannel().get().getMembers().size()-1;
 				eb.setFooter("Votes - " + skips + "/" + usrs
 						+ " (" + (int)(((double)skips/usrs)*100) + "%)", IconUtil.VOTE.getURL());
 				e.getChannel().sendMessage(eb.build()).queue();
@@ -355,7 +355,7 @@ public class CmdMusicControl implements CommandExecutor{
 				eb.setColor(SettingsManager.getColorAWT(e.getGuild()));
 				eb.setTitle("Cancelled vote to skip " + tm.getTrack().getInfo().title, null);
 				int skips = tm.getNumSkips();
-				int usrs = scheduler.getCurrentChannel().getMembers().size()-1;
+				int usrs = scheduler.getCurrentChannel().get().getMembers().size()-1;
 				eb.setFooter("Votes - " + skips + "/" + usrs
 						+ " (" + (int)(((double)skips/usrs)*100) + "%)", IconUtil.VOTE.getURL());
 				e.getChannel().sendMessage(eb.build()).queue();

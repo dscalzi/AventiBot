@@ -152,12 +152,14 @@ public class TrackScheduler extends AudioEventAdapter implements EventListener{
 	public void onEvent(Event event){
 		if(event instanceof GuildVoiceLeaveEvent){
 			GuildVoiceLeaveEvent e = (GuildVoiceLeaveEvent)event;
-			if(e.getGuild().equals(associatedGuild) && e.getChannelLeft().equals(getCurrentChannel())){
+			Optional<VoiceChannel> vcOpt = getCurrentChannel();
+			if(e.getGuild().equals(associatedGuild) && vcOpt.isPresent() && e.getChannelLeft().equals(vcOpt.get())){
 				modifyVoteWeight(e.getMember().getUser(), 0);
 			}
 		} else if(event instanceof GuildVoiceJoinEvent){
 			GuildVoiceJoinEvent e = (GuildVoiceJoinEvent)event;
-			if(e.getGuild().equals(associatedGuild) && e.getChannelJoined().equals(getCurrentChannel())){
+			Optional<VoiceChannel> vcOpt = getCurrentChannel();
+			if(e.getGuild().equals(associatedGuild) && vcOpt.isPresent() && e.getChannelJoined().equals(vcOpt.get())){
 				modifyVoteWeight(e.getMember().getUser(), 1);
 			}
 		}
@@ -185,7 +187,7 @@ public class TrackScheduler extends AudioEventAdapter implements EventListener{
 			boolean ret;
 			//Requester of the song does not need to vote.
 			if(u.equals(otm.get().getRequester()))
-				ret = otm.get().addSkip(u, getCurrentChannel().getMembers().size());
+				ret = otm.get().addSkip(u, getCurrentChannel().get().getMembers().size());
 			else 
 				ret = otm.get().addSkip(u);
 			if(ret) {
@@ -223,7 +225,7 @@ public class TrackScheduler extends AudioEventAdapter implements EventListener{
 	
 	private boolean attemptVoteSkip(TrackMeta current){
 		if(current != null){
-			VoiceChannel vc = getCurrentChannel();
+			VoiceChannel vc = getCurrentChannel().get();
 			if((double)current.getNumSkips()/(vc.getMembers().size()-1) >= .5){
 				//current.getRequestedIn().sendTyping().queue(v -> {
 					//current.getRequestedIn().sendMessage("Skipped " + current.getTrack().getInfo().title).queue();
@@ -235,8 +237,9 @@ public class TrackScheduler extends AudioEventAdapter implements EventListener{
 		return false;
 	}
 	
-	public VoiceChannel getCurrentChannel(){
-		return associatedGuild.getMember(AventiBot.getInstance().getJDA().getSelfUser()).getVoiceState().getChannel();
+	public Optional<VoiceChannel> getCurrentChannel(){
+		VoiceChannel vc = associatedGuild.getMember(AventiBot.getInstance().getJDA().getSelfUser()).getVoiceState().getChannel();
+		return vc == null ? Optional.empty() : Optional.of(vc);
 	}
 	
 	public long getPlaylistDuration(){
