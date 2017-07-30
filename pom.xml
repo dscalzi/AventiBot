@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.dscalzi</groupId>
   <artifactId>AventiBot</artifactId>
-  <version>BETA-1</version>
+  <version>0.72.0</version>
   <name>AventiBot</name>
   <description>Customizable Discord Bot</description>
   
@@ -57,7 +57,6 @@
               <goal>shade</goal>
             </goals>
             <configuration>
-            	<minimizeJar>true</minimizeJar>
 	            <transformers>
 	                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
 	                  <mainClass>com.dscalzi.aventibot.LaunchWrapper</mainClass>
@@ -91,7 +90,7 @@
     <dependency>
       <groupId>net.dv8tion</groupId>
       <artifactId>JDA</artifactId>
-      <version>3.1.1_212</version>
+      <version>3.2.0_241</version>
     </dependency>
   	<dependency>
    		<groupId>com.sedmelluq</groupId>

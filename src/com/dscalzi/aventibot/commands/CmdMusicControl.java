@@ -214,10 +214,17 @@ public class CmdMusicControl implements CommandExecutor{
 				return;
 			}
 			
+			Optional<VoiceChannel> vc = scheduler.getCurrentChannel();
+			int usrs = -1;
+			if(!vc.isPresent()) {
+				e.getChannel().sendMessage("\u2757 Warning - Not connected to voice! Report this issue.").queue();
+			} else {
+				usrs = vc.get().getMembers().size()-1;
+			}
+			
 			EmbedBuilder eb = new EmbedBuilder().setColor(SettingsManager.getColorAWT(e.getGuild()));
 			int skips = current.getNumSkips();
-			int usrs = scheduler.getCurrentChannel().get().getMembers().size()-1;
-			eb.addField(new Field("Currently Playing:", current.getTrack().getInfo().title + " (" + TimeUtils.formatTrackDuration(current.getTrack().getPosition()) + "/" + TimeUtils.formatTrackDuration(current.getTrack().getDuration()) + ")" + (skips > 0 ? (" | Votes " + skips + "/" + usrs + " (" + (int)(((double)skips/usrs)*100) + "%)") : ""), false));
+			eb.addField(new Field("Currently Playing:", current.getTrack().getInfo().title + " (" + TimeUtils.formatTrackDuration(current.getTrack().getPosition()) + "/" + TimeUtils.formatTrackDuration(current.getTrack().getDuration()) + ")" + (usrs > -1 && skips > 0 ? (" | Votes " + skips + "/" + usrs + " (" + (int)(((double)skips/usrs)*100) + "%)") : ""), false));
 			String desc = "";
 			
 			if(tracks.size() != 0)

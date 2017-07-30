@@ -4,7 +4,7 @@
   <groupId>com.dscalzi</groupId>
   <artifactId>AventiBot</artifactId>
   <name>AventiBot</name>
-  <version>BETA-1</version>
+  <version>0.72.0</version>
   <description>Customizable Discord Bot</description>
   <developers>
     <developer>
@@ -50,7 +50,6 @@
               <goal>shade</goal>
             </goals>
             <configuration>
-              <minimizeJar>true</minimizeJar>
               <transformers>
                 <transformer>
                   <mainClass>com.dscalzi.aventibot.LaunchWrapper</mainClass>

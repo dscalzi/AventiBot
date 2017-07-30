@@ -130,7 +130,7 @@ public class AventiBot {
 	
 	public void shutdown(){
 		AventiBot.status = BotStatus.SHUTDOWN;
-		jda.shutdown(true);
+		jda.shutdownNow();
 		LavaWrapper.getInstance().getAudioPlayerManager().shutdown();
 	}
 	
