@@ -4,7 +4,7 @@
   <groupId>com.dscalzi</groupId>
   <artifactId>AventiBot</artifactId>
   <name>AventiBot</name>
-  <version>0.72.0</version>
+  <version>0.73.0</version>
   <description>Customizable Discord Bot</description>
   <developers>
     <developer>
@@ -15,19 +15,10 @@
     </developer>
   </developers>
   <build>
-    <sourceDirectory>src</sourceDirectory>
     <defaultGoal>package</defaultGoal>
     <resources>
       <resource>
-        <targetPath>.</targetPath>
-        <directory>${basedir}/src/com/dscalzi/aventibot/resources/</directory>
-      </resource>
-      <resource>
-        <targetPath>${basedir}/target/classes/com/dscalzi/aventibot/ui/</targetPath>
-        <directory>${basedir}/src/com/dscalzi/aventibot/ui/</directory>
-        <includes>
-          <include>**/*</include>
-        </includes>
+        <directory>src/main/resources</directory>
       </resource>
     </resources>
     <finalName>AventiBot</finalName>
@@ -76,5 +67,8 @@
       <url>http://jcenter.bintray.com</url>
     </repository>
   </repositories>
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
 </project>
 

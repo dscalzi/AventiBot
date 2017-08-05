@@ -1,13 +1,13 @@
 /* Logger font, found on https://fonts.google.com/specimen/Inconsolata?selection.family=Inconsolata */
 @font-face {
 	font-family: inconsolata;
-	src: url('Inconsolata-Bold.ttf');
+	src: url('../fonts/Inconsolata-Bold.ttf');
 }
 
 /* Fancy font, found on https://fonts.google.com/specimen/Quattrocento?selection.family=Quattrocento */
 @font-face {
 	font-family: Quattrocento;
-	src: url(' Quattrocento-Bold.ttf');
+	src: url('../fonts/Quattrocento-Bold.ttf');
 }
 
 #console_log {

@@ -69,9 +69,9 @@ public class TerminalController implements Initializable {
 		FXMLLoader loader = new FXMLLoader();
 		Scene root;
 		
-		try(InputStream fxmlStream = getClass().getResourceAsStream("SettingsFXML.fxml")){
+		try(InputStream fxmlStream = getClass().getResourceAsStream("/assets/fxml/SettingsFXML.fxml")){
 			root = (Scene) loader.load(fxmlStream);
-			root.getStylesheets().add(getClass().getResource("styles/settings.css").toExternalForm());
+			root.getStylesheets().add(getClass().getResource("/assets/styles/settings.css").toExternalForm());
 		} catch (IOException e1) {
 			LOG.fatal("Unable to open settings window..");
 			e1.printStackTrace();
@@ -112,7 +112,7 @@ public class TerminalController implements Initializable {
 			
 		});
 		
-		stage.getIcons().add(new Image(getClass().getResourceAsStream("styles/avatar.png")));
+		stage.getIcons().add(new Image(getClass().getResourceAsStream("/assets/images/avatar.png")));
 		stage.initOwner(launch_button.getScene().getWindow());
 		stage.initModality(Modality.APPLICATION_MODAL);
 		stage.setTitle("AventiBot Settings");

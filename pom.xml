@@ -2,9 +2,13 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.dscalzi</groupId>
   <artifactId>AventiBot</artifactId>
-  <version>0.72.0</version>
+  <version>0.73.0</version>
   <name>AventiBot</name>
   <description>Customizable Discord Bot</description>
+  
+  <properties>
+  	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
   
   <developers>
     <developer>
@@ -16,22 +20,12 @@
   </developers>
   
   <build>
-    <sourceDirectory>src</sourceDirectory>
     <defaultGoal>package</defaultGoal>
     <finalName>AventiBot</finalName>
     
     <resources>
         <resource>
-            <targetPath>.</targetPath>
-            <directory>${basedir}/src/com/dscalzi/aventibot/resources/</directory>
-        </resource>
-        <resource>
-        	<filtering>false</filtering>
-        	<targetPath>${basedir}/target/classes/com/dscalzi/aventibot/ui/</targetPath>
-            <directory>${basedir}/src/com/dscalzi/aventibot/ui/</directory>
-            <includes>                      
-                <include>**/*</include>
-            </includes>
+            <directory>src/main/resources</directory>
         </resource>
     </resources>
     

@@ -35,13 +35,13 @@ public class TerminalExecutor extends Application {
 		
 		Scene root;
 		
-		try(InputStream fxmlStream = getClass().getResourceAsStream("TerminalFXML.fxml")){
+		try(InputStream fxmlStream = getClass().getResourceAsStream("/assets/fxml/TerminalFXML.fxml")){
 			root = (Scene) loader.load(fxmlStream);
 		}
 		
 		LOG.info("Starting terminal..");
 		
-		root.getStylesheets().add(getClass().getResource("styles/styles.css").toExternalForm());
+		root.getStylesheets().add(getClass().getResource("/assets/styles/styles.css").toExternalForm());
 		
 		primaryStage.setOnCloseRequest(e -> {
 			try {
@@ -56,7 +56,7 @@ public class TerminalExecutor extends Application {
 		});
 		
 		
-		primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("styles/avatar.png")));
+		primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("/assets/images/avatar.png")));
 		primaryStage.setTitle("AventiBot Launcher");
 		primaryStage.setScene(root);
 		primaryStage.show();

@@ -31,7 +31,7 @@
 				<Button id="directory_button" prefWidth="20" onAction="#handleDirectoryButton">
 					<graphic>
 						<ImageView fitHeight="20" fitWidth="20" pickOnBounds="true" preserveRatio="true">
-							<Image url="@/com/dscalzi/aventibot/ui/styles/explorer.png" />
+							<Image url="@/assets/images/explorer.png" />
 						</ImageView>
 					</graphic>
 				</Button>
