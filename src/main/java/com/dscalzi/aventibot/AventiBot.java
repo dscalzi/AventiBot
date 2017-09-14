@@ -176,4 +176,9 @@ public class AventiBot {
 		return AventiBot.class.getProtectionDomain().getCodeSource().getLocation().getPath().substring(1);
 	}
 	
+	public static String getVersion() {
+		String v = AventiBot.class.getPackage().getImplementationVersion();
+		return v == null ? "Debug" : v;
+	}
+	
 }

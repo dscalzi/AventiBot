@@ -22,8 +22,15 @@
 		<VBox id="leftpane" alignment="top_center">
 			<StackPane id="infoBox" alignment="top_center">
 				<VBox alignment="center">
-					<Text id="title" text="AventiBot" textAlignment="center"/>
-					<Text id="author" text="Created by Daniel Scalzi &#10; AGPL License"  textAlignment="center"/>
+					<HBox alignment="bottom_center">
+						<Text id="title" text="AventiBot" textAlignment="center"/>
+					</HBox>
+					<Text styleClass="home_info" text="Created by Daniel Scalzi"  textAlignment="center"/>
+					<HBox alignment="center">
+						<Text styleClass="home_info" text="AGPL License" textAlignment="center"/>
+						<!-- <StackPane id="spacer" HBox.hgrow="ALWAYS"/> -->
+						<Text fx:id="version" text=" | Debug Mode" textAlignment="left"/>
+					</HBox>
 				</VBox>
 			</StackPane>
 			<HBox>

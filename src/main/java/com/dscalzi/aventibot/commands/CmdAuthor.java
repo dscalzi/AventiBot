@@ -47,6 +47,11 @@ public class CmdAuthor implements CommandExecutor {
 		b.setAuthor("Daniel Scalzi", "https://twitter.com/d_scalzi", avatar);
 		b.setColor(Color.decode("#0f579d"));
 		b.setDescription("AventiBot was developed by Daniel Scalzi (" + author.getAsMention() + ")");
+		String ver = AventiBot.getVersion();
+		if(!ver.equals("Debug"))
+			b.setFooter("v" + ver, null);
+		else
+			b.setFooter("Debug Mode", null);
 		
 		e.getChannel().sendMessage(b.build()).queue();
 		

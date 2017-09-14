@@ -216,15 +216,17 @@ public class CmdMusicControl implements CommandExecutor{
 			
 			Optional<VoiceChannel> vc = scheduler.getCurrentChannel();
 			int usrs = -1;
+			int required = -1;
 			if(!vc.isPresent()) {
 				e.getChannel().sendMessage("\u2757 Warning - Not connected to voice! Report this issue.").queue();
 			} else {
 				usrs = vc.get().getMembers().size()-1;
+				required = (int)Math.ceil(usrs/2D);
 			}
 			
 			EmbedBuilder eb = new EmbedBuilder().setColor(SettingsManager.getColorAWT(e.getGuild()));
 			int skips = current.getNumSkips();
-			eb.addField(new Field("Currently Playing:", current.getTrack().getInfo().title + " (" + TimeUtils.formatTrackDuration(current.getTrack().getPosition()) + "/" + TimeUtils.formatTrackDuration(current.getTrack().getDuration()) + ")" + (usrs > -1 && skips > 0 ? (" | Votes " + skips + "/" + usrs + " (" + (int)(((double)skips/usrs)*100) + "%)") : ""), false));
+			eb.addField(new Field("Currently Playing:", current.getTrack().getInfo().title + " (" + TimeUtils.formatTrackDuration(current.getTrack().getPosition()) + "/" + TimeUtils.formatTrackDuration(current.getTrack().getDuration()) + ")" + (usrs > -1 && skips > 0 ? (" | Votes " + skips + "/" + required + " (" + (int)(((double)skips/required)*100) + "%)") : ""), false));
 			String desc = "";
 			
 			if(tracks.size() != 0)
@@ -332,8 +334,9 @@ public class CmdMusicControl implements CommandExecutor{
 				eb.setTitle("Voted to skip " + tm.getTrack().getInfo().title, null);
 				int skips = tm.getNumSkips();
 				int usrs = scheduler.getCurrentChannel().get().getMembers().size()-1;
-				eb.setFooter("Votes - " + skips + "/" + usrs
-						+ " (" + (int)(((double)skips/usrs)*100) + "%)", IconUtil.VOTE.getURL());
+				int required = (int) Math.ceil(usrs/2D);
+				eb.setFooter("Votes - " + skips + "/" + required
+						+ " (" + (int)(((double)skips/required)*100) + "%)", IconUtil.VOTE.getURL());
 				e.getChannel().sendMessage(eb.build()).queue();
 			});
 			return CommandResult.SUCCESS;

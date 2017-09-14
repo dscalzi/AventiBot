@@ -30,7 +30,7 @@
 	-fx-focus-color: #2d2835;
 }
 
-#author {
+.home_info {
 	-fx-font-size: 11px;
 	-fx-fill: white;
 }
@@ -38,6 +38,11 @@
 #title {
 	-fx-fill: white;
 	-fx-font: 17 Quattrocento;
+}
+
+#version {
+	-fx-fill: grey;
+	-fx-font: 10 inconsolata;
 }
 
 #leftpane {

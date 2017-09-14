@@ -35,6 +35,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
+import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -54,6 +55,8 @@ public class TerminalController implements Initializable {
 	
 	@FXML private TextArea console_log;
 	@FXML private TextField commandline;
+	
+	@FXML private Text version;
 	
 	private CommandLog console;
 	
@@ -186,6 +189,10 @@ public class TerminalController implements Initializable {
 	}
 	
 	private void setupTerminal(){
+		String ver = AventiBot.getVersion();
+		if(!ver.equals("Debug"))
+			this.version.setText(" | v" + ver);
+		this.version.toFront();
 		@SuppressWarnings("unused")
 		CommandLine cl = new CommandLine(commandline);
 		console = new CommandLog(console_log);
