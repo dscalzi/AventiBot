@@ -33,7 +33,7 @@ repositories {
 }
 
 dependencies {
-    compile group: 'net.dv8tion', name: 'JDA', version:'3.3.0_266'
+    compile group: 'net.dv8tion', name: 'JDA', version:'3.3.1_284'
     compile group: 'com.sedmelluq', name: 'lavaplayer', version:'1.2.43'
     compile group: 'com.google.code.gson', name: 'gson', version:'2.8.0'
 }
@@ -51,6 +51,13 @@ shadowJar {
     classifier = "shaded"
 }
 
+task('updateReadme') {
+	def readMe = new File('README.md')
+	
+	def txt = readMe.text.replaceFirst(/JDA-(.+?)__(.+?)-/, 'JDA-' + getDepdencyVersion('JDA').replaceAll('_', '__') + '-')
+	readMe.text = txt.replaceFirst(/lavaplayer-(.+?)-/, 'lavaplayer-' + getDepdencyVersion('lavaplayer') + '-')
+}
+
 build {
     dependsOn clean
     dependsOn jar
@@ -58,6 +65,20 @@ build {
 
     jar.mustRunAfter clean
     shadowJar.mustRunAfter jar
+}
+
+String getDepdencyVersion(name) {
+	def res = ''
+
+	configurations.runtime.resolvedConfiguration.resolvedArtifacts.each { artifact ->
+		def id = artifact.moduleVersion.id
+		if(id.name.equals(name)) {
+			res = id.version
+			return;
+		}
+	}
+	
+	return res
 }
 
 class Version {
