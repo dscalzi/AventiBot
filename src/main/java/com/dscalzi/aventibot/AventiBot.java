@@ -10,8 +10,6 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 
 import javax.security.auth.login.LoginException;
-import javax.xml.ws.http.HTTPException;
-
 import com.dscalzi.aventibot.cmdutil.CommandListener;
 import com.dscalzi.aventibot.cmdutil.CommandRegistry;
 import com.dscalzi.aventibot.commands.CmdAuthor;
@@ -119,7 +117,7 @@ public class AventiBot {
 			jda = jdaBuilder.buildBlocking();
 			status = BotStatus.CONNECTED;
 			postConntectionSetup();
-		} catch (LoginException | IllegalArgumentException | InterruptedException | HTTPException | RateLimitedException | IOException e) {
+		} catch (LoginException | IllegalArgumentException | InterruptedException | RateLimitedException | IOException e) {
 			status = BotStatus.LAUNCHED;
 			SimpleLog.getLog("JDA").fatal("Failed to connect to Discord!");
 			e.printStackTrace();

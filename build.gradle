@@ -1,0 +1,73 @@
+/*
+ * AventiBot
+ * Copyright (C) 2016-2017 Daniel D. Scalzi
+ * See LICENSE.txt for license information.
+ */
+
+plugins {
+    id'java'
+    id'application'
+    id'com.github.johnrengelman.shadow' version '2.0.1'
+}
+
+mainClassName = 'com.dscalzi.aventibot.LaunchWrapper'
+
+def versionObj = new Version(major: 0, minor: 75, revision: 0)
+
+description = """\
+Highly customizable Discord Bot
+------------------------------------------
+Current Version: ${versionObj}
+------------------------------------------
+"""
+
+group = 'com.dscalzi'
+archivesBaseName = 'AventiBot'
+version = "$versionObj"
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+    compile group: 'net.dv8tion', name: 'JDA', version:'3.3.0_266'
+    compile group: 'com.sedmelluq', name: 'lavaplayer', version:'1.2.43'
+    compile group: 'com.google.code.gson', name: 'gson', version:'2.8.0'
+}
+
+compileJava.options.encoding = 'UTF-8'
+
+jar {
+    baseName = project.name
+    manifest {
+        attributes 'Implementation-Version': version
+    }
+}
+
+shadowJar {
+    classifier = "shaded"
+}
+
+build {
+    dependsOn clean
+    dependsOn jar
+    dependsOn shadowJar
+
+    jar.mustRunAfter clean
+    shadowJar.mustRunAfter jar
+}
+
+class Version {
+    String major, minor, revision
+
+    String getBuild() {
+        System.getenv("BUILD_NUMBER") ?: System.getProperty("BUILD_NUMBER") ?: "DEV"
+    }
+
+    String toString() {
+        "${major}.${minor}.${revision}_$build"
+    }
+}
