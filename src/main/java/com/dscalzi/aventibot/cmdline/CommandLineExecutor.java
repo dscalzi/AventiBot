@@ -10,6 +10,10 @@ import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MarkerFactory;
+
 import com.dscalzi.aventibot.AventiBot;
 import com.dscalzi.aventibot.BotStatus;
 import com.dscalzi.aventibot.settings.GlobalConfig;
@@ -17,21 +21,20 @@ import com.dscalzi.aventibot.settings.SettingsManager;
 import net.dv8tion.jda.core.events.Event;
 import net.dv8tion.jda.core.events.ShutdownEvent;
 import net.dv8tion.jda.core.hooks.EventListener;
-import net.dv8tion.jda.core.utils.SimpleLog;
 
 public class CommandLineExecutor {
 	
 	private static boolean usingCmdLine = false;
 	private static boolean headless = false;
 	
-	private static final SimpleLog LOG = SimpleLog.getLog("Launcher");
+	private static final Logger LOG = LoggerFactory.getLogger("Launcher");
 	private static CommandLineConsole console;
 	
 	public static void main(String[] args){
 		List<String> lstArgs = Arrays.asList(args);
 		usingCmdLine = true;
 		if(!checkSettings()){
-			LOG.fatal("Specify your bot's access token then relaunch.");
+			LOG.error(MarkerFactory.getMarker("FATAL"), "Specify your bot's access token then relaunch.");
 			System.exit(0);
 		}
 		//Start Console Thread
@@ -68,7 +71,7 @@ public class CommandLineExecutor {
 						try {
 							o.closeLogger();
 						} catch (IOException e1) {
-							LOG.fatal("Error while releasing log file:");
+							LOG.error(MarkerFactory.getMarker("FATAL"), "Error while releasing log file:");
 							e1.printStackTrace();
 						}
 						System.exit(0);
@@ -76,12 +79,12 @@ public class CommandLineExecutor {
 				}
 			});
 		} else {
-			LOG.fatal("Unable to connect to discord. Try relaunching.");
+			LOG.error(MarkerFactory.getMarker("FATAL"), "Unable to connect to discord. Try relaunching.");
 			if(console != null) console.shutdown();
 			try {
 				o.closeLogger();
 			} catch (IOException e1) {
-				LOG.fatal("Error while releasing log file:");
+				LOG.error(MarkerFactory.getMarker("FATAL"), "Error while releasing log file:");
 				e1.printStackTrace();
 			}
 			System.exit(0);
@@ -96,7 +99,7 @@ public class CommandLineExecutor {
 				throw new IOException();
 			}
 		} catch(IOException e){
-			LOG.fatal("Unable to load global config. This error is FATAL, shutting down..");
+			LOG.error(MarkerFactory.getMarker("FATAL"), "Unable to load global config. This error is FATAL, shutting down..");
 			e.printStackTrace();
 			return false;
 		}

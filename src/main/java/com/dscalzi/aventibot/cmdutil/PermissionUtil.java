@@ -17,6 +17,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.dscalzi.aventibot.AventiBot;
 import com.dscalzi.aventibot.console.ConsoleUser;
 import com.dscalzi.aventibot.settings.SettingsManager;
@@ -33,14 +36,13 @@ import javafx.util.Pair;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.entities.User;
-import net.dv8tion.jda.core.utils.SimpleLog;
 
 public final class PermissionUtil {
 	
 	private static final String ALLOWEDKEY = "allowedRoles";
 	private static final String BLACKLISTKEY = "blacklistedUsers";
 	private static final String GATEKEY = "requiresPermission";
-	private static final SimpleLog log = SimpleLog.getLog("PermissionUtil");
+	private static final Logger log = LoggerFactory.getLogger("PermissionUtil");
 	
 	private static final Map<Guild, Boolean> initialized;
 

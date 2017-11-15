@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
+import org.slf4j.LoggerFactory;
+
 import com.dscalzi.aventibot.AventiBot;
 import com.dscalzi.aventibot.settings.SettingsManager;
 
@@ -18,7 +20,6 @@ import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.core.utils.SimpleLog;
 
 public class CommandDispatcher {
 
@@ -48,7 +49,7 @@ public class CommandDispatcher {
 			if(cmdPrefix.equals(AventiBot.getInstance().getJDA().getSelfUser().getAsMention()))
 				cmdPrefix = cmdPrefix + " ";
 			
-			SimpleLog.getLog("CommandDispatcher").info("User " + e.getAuthor().getName() + " (" + e.getAuthor().getId() + ") has just run the command '" + cmdPrefix + cmd + (fullArgs.length() > 0 ? " " : "") + fullArgs + "'");
+			LoggerFactory.getLogger("CommandDispatcher").info("User " + e.getAuthor().getName() + " (" + e.getAuthor().getId() + ") has just run the command '" + cmdPrefix + cmd + (fullArgs.length() > 0 ? " " : "") + fullArgs + "'");
 			
 			CommandResult result = cmdEx.onCommand(e, cmd, args, rawArgs);
 			

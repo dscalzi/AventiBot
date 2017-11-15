@@ -15,6 +15,10 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MarkerFactory;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
@@ -25,7 +29,6 @@ import com.google.gson.stream.JsonReader;
 
 import javafx.util.Pair;
 import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.utils.SimpleLog;
 
 /**
  * 
@@ -36,7 +39,7 @@ import net.dv8tion.jda.core.utils.SimpleLog;
  */
 public class SettingsManager {
 	
-	private static final SimpleLog LOG = SimpleLog.getLog("SettingsManager");
+	private static final Logger LOG = LoggerFactory.getLogger("SettingsManager");
 	
 	private static GlobalConfig configCache = null;
 	private static Map<String, GuildConfig> gConfigCache = new HashMap<String, GuildConfig>();
@@ -66,7 +69,7 @@ public class SettingsManager {
 		if(!f.exists()){
 			if(f.mkdirs()) return f;
 			else {
-				LOG.fatal("Unable to create settings directory!");
+				LOG.error(MarkerFactory.getMarker("FATAL"), "Unable to create settings directory!");
 				return null;
 			}
 		}
@@ -85,7 +88,7 @@ public class SettingsManager {
 		if(!f.exists()){
 			if(f.mkdirs()) return f;
 			else {
-				LOG.fatal("Unable to create settings directory for guild "+g.getName()+" ("+g.getId()+")!");
+				LOG.error(MarkerFactory.getMarker("FATAL"), "Unable to create settings directory for guild "+g.getName()+" ("+g.getId()+")!");
 				return null;
 			}
 		}
@@ -105,11 +108,11 @@ public class SettingsManager {
 			try {
 				if(f.createNewFile()) return f;
 				else {
-					LOG.fatal("Unable to create permission file for guild "+g.getName()+" ("+g.getId()+")!");
+					LOG.error(MarkerFactory.getMarker("FATAL"), "Unable to create permission file for guild "+g.getName()+" ("+g.getId()+")!");
 					return null;
 				}
 			} catch (IOException e) {
-				LOG.fatal("Unable to create permission file for guild "+g.getName()+" ("+g.getId()+")!");
+				LOG.error(MarkerFactory.getMarker("FATAL"), "Unable to create permission file for guild "+g.getName()+" ("+g.getId()+")!");
 				e.printStackTrace();
 				return null;
 			}
@@ -130,11 +133,11 @@ public class SettingsManager {
 			try {
 				if(f.createNewFile()) return f;
 				else {
-					LOG.fatal("Unable to create configuration file for guild "+g.getName()+" ("+g.getId()+")!");
+					LOG.error(MarkerFactory.getMarker("FATAL"), "Unable to create configuration file for guild "+g.getName()+" ("+g.getId()+")!");
 					return null;
 				}
 			} catch (IOException e) {
-				LOG.fatal("Unable to create configuration file for guild "+g.getName()+" ("+g.getId()+")!");
+				LOG.error(MarkerFactory.getMarker("FATAL"), "Unable to create configuration file for guild "+g.getName()+" ("+g.getId()+")!");
 				e.printStackTrace();
 				return null;
 			}
@@ -153,11 +156,11 @@ public class SettingsManager {
 			try {
 				if(f.createNewFile()) return f;
 				else {
-					LOG.fatal("Unable to create global configuration file!");
+					LOG.error(MarkerFactory.getMarker("FATAL"), "Unable to create global configuration file!");
 					return null;
 				}
 			} catch (IOException e) {
-				LOG.fatal("Unable to create global configuration file!");
+				LOG.error(MarkerFactory.getMarker("FATAL"), "Unable to create global configuration file!");
 				e.printStackTrace();
 				return null;
 			}
@@ -241,7 +244,7 @@ public class SettingsManager {
 						}else
 							m.invoke(g, gson.fromJson(v, required));
 					} catch (JsonSyntaxException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e1) {
-						LOG.fatal("Exception while parsing global config on value '" + e.getKey() + "'.");
+						LOG.error(MarkerFactory.getMarker("FATAL"), "Exception while parsing global config on value '" + e.getKey() + "'.");
 						e1.printStackTrace();
 					}
 				}
@@ -266,7 +269,7 @@ public class SettingsManager {
 			try {
 				e.getValue().invoke(def, e.getKey().getValue());
 			} catch (Throwable t){
-				LOG.fatal("Error while creating default configuration:");
+				LOG.error(MarkerFactory.getMarker("FATAL"), "Error while creating default configuration:");
 				t.printStackTrace();
 			}
 		}
@@ -353,7 +356,7 @@ public class SettingsManager {
 						}else
 							m.invoke(g, gson.fromJson(v, required));
 					} catch (JsonSyntaxException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e1) {
-						LOG.fatal("Exception while parsing config for guild "+id.getName()+" ("+id.getId()+") on value '" + e.getKey() + "'.");
+						LOG.error(MarkerFactory.getMarker("FATAL"), "Exception while parsing config for guild "+id.getName()+" ("+id.getId()+") on value '" + e.getKey() + "'.");
 						e1.printStackTrace();
 					}
 				}
@@ -380,7 +383,7 @@ public class SettingsManager {
 			try {
 				e.getValue().invoke(def, e.getKey().getValue());
 			} catch (Throwable t){
-				LOG.fatal("Error while creating default configuration:");
+				LOG.error(MarkerFactory.getMarker("FATAL"), "Error while creating default configuration:");
 				t.printStackTrace();
 			}
 		}

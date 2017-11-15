@@ -6,6 +6,10 @@
 package com.dscalzi.aventibot.console;
 
 import com.dscalzi.aventibot.BotStatus;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.dscalzi.aventibot.AventiBot;
 import com.dscalzi.aventibot.cmdutil.CommandDispatcher;
 
@@ -15,15 +19,14 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.entities.impl.MessageImpl;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.core.utils.SimpleLog;
 
 public class CommandLine {
 
-	private final SimpleLog LOG;
+	private final Logger LOG;
 	private TextField node;
 	
 	public CommandLine(TextField node){
-		this.LOG = SimpleLog.getLog("Console");
+		this.LOG = LoggerFactory.getLogger("Console");
 		this.node = node;
 		this.node.setOnKeyPressed((e) -> {
 			if(e.getCode().equals(KeyCode.ENTER)){

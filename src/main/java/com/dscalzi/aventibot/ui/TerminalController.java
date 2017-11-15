@@ -14,6 +14,10 @@ import java.net.URL;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MarkerFactory;
+
 import com.dscalzi.aventibot.BotStatus;
 import com.dscalzi.aventibot.AventiBot;
 import com.dscalzi.aventibot.console.CommandLine;
@@ -42,13 +46,12 @@ import javafx.util.Duration;
 import net.dv8tion.jda.core.events.Event;
 import net.dv8tion.jda.core.events.ShutdownEvent;
 import net.dv8tion.jda.core.hooks.EventListener;
-import net.dv8tion.jda.core.utils.SimpleLog;
 
 public class TerminalController implements Initializable {
 
 	protected static boolean markSoftShutdown;
 	
-	private static final SimpleLog LOG = SimpleLog.getLog("Launcher");
+	private static final Logger LOG = LoggerFactory.getLogger("Launcher");
 	
 	@FXML private Button launch_button;
 	@FXML private Button terminate_button;
@@ -76,7 +79,7 @@ public class TerminalController implements Initializable {
 			root = (Scene) loader.load(fxmlStream);
 			root.getStylesheets().add(getClass().getResource("/assets/styles/settings.css").toExternalForm());
 		} catch (IOException e1) {
-			LOG.fatal("Unable to open settings window..");
+			LOG.error(MarkerFactory.getMarker("FATAL"), "Unable to open settings window..");
 			e1.printStackTrace();
 			if(markSoftShutdown){
 				this.softShutdown();
@@ -150,7 +153,7 @@ public class TerminalController implements Initializable {
 								try {
 									console.closeLogger();
 								} catch (IOException e1) {
-									LOG.fatal("Error while releasing log file:");
+									LOG.error(MarkerFactory.getMarker("FATAL"), "Error while releasing log file:");
 									e1.printStackTrace();
 								}
 							}
@@ -181,7 +184,7 @@ public class TerminalController implements Initializable {
 			else if(OSUtil.isMac())
 				Runtime.getRuntime().exec("open " + AventiBot.getDataPath());
 			else 
-				LOG.fatal("Cannot open the data directory, unsupported OS. Path is " + AventiBot.getDataPath());
+				LOG.error(MarkerFactory.getMarker("FATAL"), "Cannot open the data directory, unsupported OS. Path is " + AventiBot.getDataPath());
 		} catch (IOException e1) {
 			LOG.warn("Error while opening file explorer:");
 			e1.printStackTrace();
@@ -205,28 +208,33 @@ public class TerminalController implements Initializable {
      * Hack TooltipBehavior 
      */
     static {
-        try {
-            Tooltip obj = new Tooltip();
-            Class<?> clazz = obj.getClass().getDeclaredClasses()[0];
-            Constructor<?> constructor = clazz.getDeclaredConstructor(
-                    Duration.class,
-                    Duration.class,
-                    Duration.class,
-                    boolean.class);
-            constructor.setAccessible(true);
-            Object tooltipBehavior = constructor.newInstance(
-                    new Duration(100),  //open
-                    new Duration(30000), //visible
-                    new Duration(200),  //close
-                    false);
-            Field fieldBehavior = obj.getClass().getDeclaredField("BEHAVIOR");
-            fieldBehavior.setAccessible(true);
-            fieldBehavior.set(obj, tooltipBehavior);
-        }
-        catch (Exception e) {
-        	SimpleLog.getLog("Launcher").warn("Could not change tooltip behavior, report to developer!");
-        	e.printStackTrace();
-        }
+    	try {
+			if(Double.parseDouble(System.getProperty("java.specification.version")) == 1.8) {
+				try {
+					Tooltip obj = new Tooltip();
+					Class<?> clazz = obj.getClass().getDeclaredClasses()[0];
+					Constructor<?> constructor = clazz.getDeclaredConstructor(
+							Duration.class,
+							Duration.class,
+							Duration.class,
+							boolean.class);
+					constructor.setAccessible(true);
+					Object tooltipBehavior = constructor.newInstance(
+							new Duration(100),  //open
+							new Duration(30000), //visible
+							new Duration(200),  //close
+							false);
+					Field fieldBehavior = obj.getClass().getDeclaredField("BEHAVIOR");
+					fieldBehavior.setAccessible(true);
+					fieldBehavior.set(obj, tooltipBehavior);
+				} catch (Exception e) {
+					LoggerFactory.getLogger("Launcher").warn("Could not change tooltip behavior, report to developer!");
+					e.printStackTrace();
+				}
+			}
+    	} catch(Exception e) {
+    		LoggerFactory.getLogger("Launcher").warn("Could not change tooltip behavior, running on unsupported java version.");
+    	}
     }
 	
 }

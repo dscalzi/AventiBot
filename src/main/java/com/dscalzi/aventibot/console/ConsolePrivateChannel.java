@@ -5,6 +5,8 @@
  */
 package com.dscalzi.aventibot.console;
 
+import org.slf4j.LoggerFactory;
+
 import net.dv8tion.jda.client.entities.Call;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.MessageBuilder;
@@ -14,7 +16,6 @@ import net.dv8tion.jda.core.entities.MessageEmbed;
 import net.dv8tion.jda.core.entities.PrivateChannel;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.requests.RestAction;
-import net.dv8tion.jda.core.utils.SimpleLog;
 
 public class ConsolePrivateChannel implements PrivateChannel{
 	
@@ -30,13 +31,13 @@ public class ConsolePrivateChannel implements PrivateChannel{
 	
     @Override
 	public RestAction<Message> sendMessage(String text) {
-    	SimpleLog.getLog("??? -> Me").info(text);
+    	LoggerFactory.getLogger("??? -> Me").info(text);
     	return new RestAction.EmptyRestAction<Message>(api, new MessageBuilder().append(text).build());
 	}
 
 	@Override
 	public RestAction<Message> sendMessage(Message msg) {
-		SimpleLog.getLog(msg.getAuthor().getDiscriminator() + " -> Me").info(msg.getRawContent());
+		LoggerFactory.getLogger(msg.getAuthor().getDiscriminator() + " -> Me").info(msg.getRawContent());
 		return new RestAction.EmptyRestAction<Message>(api, msg);
 	}
 	

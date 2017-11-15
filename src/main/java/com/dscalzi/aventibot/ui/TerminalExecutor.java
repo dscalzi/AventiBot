@@ -8,6 +8,9 @@ package com.dscalzi.aventibot.ui;
 import java.io.InputStream;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.dscalzi.aventibot.BotStatus;
 import com.dscalzi.aventibot.AventiBot;
 
@@ -16,7 +19,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
-import net.dv8tion.jda.core.utils.SimpleLog;
 
 public class TerminalExecutor extends Application {
 
@@ -26,7 +28,7 @@ public class TerminalExecutor extends Application {
 		launch(args);
 	}
 	
-	private final SimpleLog LOG = SimpleLog.getLog("Launcher");
+	private final Logger LOG = LoggerFactory.getLogger("Launcher");
 	
 	@Override
 	public void start(Stage primaryStage) throws Exception {

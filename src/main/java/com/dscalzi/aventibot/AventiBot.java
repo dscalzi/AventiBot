@@ -8,8 +8,11 @@ package com.dscalzi.aventibot;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
-
 import javax.security.auth.login.LoginException;
+
+import org.slf4j.LoggerFactory;
+import org.slf4j.MarkerFactory;
+
 import com.dscalzi.aventibot.cmdutil.CommandListener;
 import com.dscalzi.aventibot.cmdutil.CommandRegistry;
 import com.dscalzi.aventibot.commands.CmdAuthor;
@@ -35,7 +38,6 @@ import net.dv8tion.jda.core.JDABuilder;
 import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
-import net.dv8tion.jda.core.utils.SimpleLog;
 
 public class AventiBot {
 	
@@ -56,7 +58,6 @@ public class AventiBot {
 		/*try {
 			jda.getSelfUser().getManager().setAvatar(Icon.from(new File("C:/Users/Asus/Desktop/HgXD7h2O.jpg"))).queue();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}*/
 	}
@@ -119,7 +120,7 @@ public class AventiBot {
 			postConntectionSetup();
 		} catch (LoginException | IllegalArgumentException | InterruptedException | RateLimitedException | IOException e) {
 			status = BotStatus.LAUNCHED;
-			SimpleLog.getLog("JDA").fatal("Failed to connect to Discord!");
+			LoggerFactory.getLogger("JDA").error(MarkerFactory.getMarker("FATAL"), "Failed to connect to Discord!");
 			e.printStackTrace();
 			return false;
 		}
@@ -163,7 +164,7 @@ public class AventiBot {
 		try {
 			pth = AventiBot.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath().replace("/", File.separator);
 		} catch (URISyntaxException e) {
-			SimpleLog.getLog("AventiBot").fatal("The paths on your machine cannot be converted to URIs, I am speechless.");
+			LoggerFactory.getLogger("AventiBot").error(MarkerFactory.getMarker("FATAL"), "The paths on your machine cannot be converted to URIs, I am speechless.");
 			e.printStackTrace();
 			return null;
 		}

@@ -9,18 +9,20 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.dv8tion.jda.core.utils.SimpleLog;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MarkerFactory;
 
 public class ExtensionLoader {
 
-	private static final SimpleLog LOG = SimpleLog.getLog("ExtensionLoader");
+	private static final Logger LOG = LoggerFactory.getLogger("ExtensionLoader");
 	
 	public static File getBaseExtensionsDirectory() {
 		File f = new File("extensions");
 		if(!f.exists()){
 			if(f.mkdirs()) return f;
 			else {
-				LOG.fatal("Unable to create settings directory!");
+				LOG.error(MarkerFactory.getMarker("FATAL"), "Unable to create settings directory!");
 				return null;
 			}
 		}

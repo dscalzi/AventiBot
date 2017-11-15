@@ -4,6 +4,10 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MarkerFactory;
+
 import com.dscalzi.aventibot.AventiBot;
 import com.dscalzi.aventibot.BotStatus;
 import com.dscalzi.aventibot.settings.GlobalConfig;
@@ -21,11 +25,10 @@ import javafx.scene.control.ColorPicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.paint.Color;
-import net.dv8tion.jda.core.utils.SimpleLog;
 
 public class SettingsController implements Initializable, ChangeListener<String>{
 
-	private static final SimpleLog LOG = SimpleLog.getLog("Launcher");
+	private static final Logger LOG = LoggerFactory.getLogger("Launcher");
 	private GlobalConfig current;
 	private SettingsState state;
 	
@@ -45,7 +48,7 @@ public class SettingsController implements Initializable, ChangeListener<String>
 				throw new IOException();
 			}
 		} catch (IOException e) {
-			LOG.fatal("Unable to load global config. This error is FATAL, shutting down..");
+			LOG.error(MarkerFactory.getMarker("FATAL"), "Unable to load global config. This error is FATAL, shutting down..");
 			e.printStackTrace();
 			if(AventiBot.getStatus() == BotStatus.CONNECTED)
 				AventiBot.getInstance().shutdown();
@@ -92,7 +95,7 @@ public class SettingsController implements Initializable, ChangeListener<String>
 			current = g;
 			setState(SettingsState.SAVED);
 		} catch (IOException e1) {
-			LOG.fatal("Failed to save global configuration settings..");
+			LOG.error(MarkerFactory.getMarker("FATAL"), "Failed to save global configuration settings..");
 			e1.printStackTrace();
 		}
 	}
@@ -105,7 +108,7 @@ public class SettingsController implements Initializable, ChangeListener<String>
 			else if(OSUtil.isMac())
 				Runtime.getRuntime().exec("open " + SettingsManager.getGlobalConfigurationFile().getAbsolutePath());
 			else 
-				LOG.fatal("Cannot open the configuration file location, unsupported OS. Path is " + SettingsManager.getGlobalConfigurationFile().getAbsolutePath());
+				LOG.error(MarkerFactory.getMarker("FATAL"), "Cannot open the configuration file location, unsupported OS. Path is " + SettingsManager.getGlobalConfigurationFile().getAbsolutePath());
 		} catch (IOException e1) {
 			LOG.warn("Error while opening file explorer:");
 			e1.printStackTrace();

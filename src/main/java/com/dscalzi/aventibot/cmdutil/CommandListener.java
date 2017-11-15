@@ -5,13 +5,15 @@
  */
 package com.dscalzi.aventibot.cmdutil;
 
+import org.slf4j.LoggerFactory;
+import org.slf4j.MarkerFactory;
+
 import com.dscalzi.aventibot.AventiBot;
 import com.dscalzi.aventibot.settings.SettingsManager;
 
 import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
-import net.dv8tion.jda.core.utils.SimpleLog;
 
 public class CommandListener extends ListenerAdapter {
 
@@ -23,7 +25,7 @@ public class CommandListener extends ListenerAdapter {
 					try{
 						PermissionUtil.loadJson(e.getGuild());
 					} catch(Throwable t){
-						SimpleLog.getLog("AventiBot").fatal("Error occured loading permissions.. unable to process"
+						LoggerFactory.getLogger("AventiBot").error(MarkerFactory.getMarker("FATAL"), "Error occured loading permissions.. unable to process"
 								+ "requests for guild " + e.getGuild().getName() + "(" + e.getGuild().getId() +  ")!");
 						t.printStackTrace();
 						return;
