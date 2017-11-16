@@ -45,7 +45,7 @@ compileJava.options.encoding = 'UTF-8'
 jar {
     baseName = project.name
     manifest {
-        attributes 'Implementation-Version': version
+        attributes 'Implementation-Version': version, 'Specification-Version': version
     }
 }
 

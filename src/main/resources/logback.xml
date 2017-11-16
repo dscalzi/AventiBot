@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <!-- Conversions for logging. -->
+    <!-- Make sure to replace the "converterClass" path with the path to the file in your project.
+    <conversionRule conversionWord="simpleHL"
+                    converterClass="path.to.SimpleHL"/>-->
+
+    <appender name="Simple" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <!-- Pattern -->
+            <pattern>
+                %nopex[%d{HH:mm:ss}] [%level] [%logger{0}]: %msg%n%ex
+            </pattern>
+        </encoder>
+    </appender>
+
+    <root level="INFO">
+        <appender-ref ref="Simple"/>
+    </root>
+    
+</configuration>

@@ -80,6 +80,7 @@ public class AventiBot {
 	}
 	
 	private void registerCommands(){
+		LoggerFactory.getLogger("Test ing").error("Test");
 		CmdMusicControl mcc = new CmdMusicControl();
 		this.registry.register("play", mcc);
 		this.registry.register("playlist", mcc);
@@ -176,8 +177,9 @@ public class AventiBot {
 	}
 	
 	public static String getVersion() {
+		String a = AventiBot.class.getPackage().getSpecificationVersion();
 		String v = AventiBot.class.getPackage().getImplementationVersion();
-		return v == null ? "Debug" : v;
+		return v == null ? a == null? "Debug" : a : v;
 	}
 	
 }

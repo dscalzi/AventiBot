@@ -24,6 +24,11 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 public class CommandDispatcher {
 
 	public static void dispatchCommand(MessageReceivedEvent e, String cmd){
+		
+		if(cmd == null) {
+			return;
+		}
+		
 		Optional<CommandExecutor> exec = AventiBot.getInstance().getCommandRegistry().getExecutor(cmd);
 		
 		if(exec.isPresent()){
@@ -67,6 +72,9 @@ public class CommandDispatcher {
 	public static String parseMessage(MessageReceivedEvent e){
 		String c = e.getMessage().getRawContent();
 		String prefix = SettingsManager.getCommandPrefix(e.getGuild()).trim();
+		if(c.length() <= prefix.length()) {
+			return null;
+		}
 		c = c.substring(prefix.length());
 		if(prefix.equals(e.getGuild() == null ? AventiBot.getInstance().getJDA().getSelfUser().getAsMention() : e.getGuild().getMember(AventiBot.getInstance().getJDA().getSelfUser()).getAsMention()))
 			c = c.trim();
