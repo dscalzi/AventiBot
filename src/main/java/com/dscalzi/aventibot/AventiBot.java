@@ -80,7 +80,6 @@ public class AventiBot {
 	}
 	
 	private void registerCommands(){
-		LoggerFactory.getLogger("Test ing").error("Test");
 		CmdMusicControl mcc = new CmdMusicControl();
 		this.registry.register("play", mcc);
 		this.registry.register("playlist", mcc);
