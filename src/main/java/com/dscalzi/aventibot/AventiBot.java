@@ -114,7 +114,7 @@ public class AventiBot {
 					.setAutoReconnect(true)
 					.setToken(g.getToken());
 			if(!g.getCurrentGame().isEmpty()) 
-				jdaBuilder.setGame(Game.of(g.getCurrentGame()));
+				jdaBuilder.setGame(Game.playing(g.getCurrentGame()));
 			jda = jdaBuilder.buildBlocking();
 			status = BotStatus.CONNECTED;
 			postConntectionSetup();
@@ -143,7 +143,7 @@ public class AventiBot {
 	
 	public static void setCurrentGame(String name){
 		if(AventiBot.getStatus() == BotStatus.CONNECTED && getInstance() != null)
-			getInstance().getJDA().getPresence().setGame(name != null && !name.isEmpty() ? Game.of(name) : null);
+			getInstance().getJDA().getPresence().setGame(name != null && !name.isEmpty() ? Game.playing(name) : null);
 	}
 	
 	

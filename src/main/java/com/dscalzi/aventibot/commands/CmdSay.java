@@ -53,7 +53,7 @@ public class CmdSay implements CommandExecutor{
 			}
 		}
 		
-		String message = e.getMessage().getRawContent().substring((ch == null) ? e.getMessage().getRawContent().indexOf(cmd) + cmd.length() : e.getMessage().getRawContent().indexOf(rawArgs[0]) + rawArgs[0].length());
+		String message = e.getMessage().getContentRaw().substring((ch == null) ? e.getMessage().getContentRaw().indexOf(cmd) + cmd.length() : e.getMessage().getContentRaw().indexOf(rawArgs[0]) + rawArgs[0].length());
 		MessageBuilder mb = new MessageBuilder();
 		mb.append(message);
 		

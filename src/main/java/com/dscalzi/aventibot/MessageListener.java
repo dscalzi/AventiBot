@@ -12,7 +12,7 @@ public class MessageListener extends ListenerAdapter{
 
 	@Override
 	public void onMessageReceived(MessageReceivedEvent e){
-		String content = e.getMessage().getContent().toLowerCase();
+		String content = e.getMessage().getContentDisplay().toLowerCase();
 		if(content.equals("just do it")){
 			e.getChannel().sendMessage("Yesterday you said tomorrow SO JUST DO IT!").queue();
 			e.getChannel().sendMessage("https://www.youtube.com/watch?v=1IzYQYYAdw0").queue();

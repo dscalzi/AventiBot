@@ -19,7 +19,7 @@ public class CommandListener extends ListenerAdapter {
 
 	@Override
 	public void onMessageReceived(MessageReceivedEvent e){
-		if(e.getMessage().getRawContent().trim().startsWith(SettingsManager.getCommandPrefix(e.getGuild()))){
+		if(e.getMessage().getContentRaw().trim().startsWith(SettingsManager.getCommandPrefix(e.getGuild()))){
 			if(e.getChannelType() != ChannelType.PRIVATE)
 				if(!PermissionUtil.isInitialized(e.getGuild())){
 					try{

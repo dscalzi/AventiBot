@@ -36,7 +36,7 @@ public class CommandDispatcher {
 			CommandExecutor cmdEx = exec.get();
 			
 			String fakeCmd = cmd;
-			String msg = e.getMessage().getContent();
+			String msg = e.getMessage().getContentDisplay();
 			if(cmd.equals(AventiBot.getInstance().getJDA().getSelfUser().getAsMention()) &&
 				msg.startsWith(getDisplayedMention(e.getGuild()))){
 				fakeCmd = getDisplayedMention(e.getGuild());
@@ -44,7 +44,7 @@ public class CommandDispatcher {
 			String argStr = msg.substring(msg.indexOf(fakeCmd) + fakeCmd.length()).trim();
 			String[] args = cleanArgsArray((argStr.length() > 0) ? argStr.split("\\s") : new String[0]);
 			
-			String rawMsg = e.getMessage().getRawContent();
+			String rawMsg = e.getMessage().getContentRaw();
 			String rawArgStr = rawMsg.substring(rawMsg.indexOf(cmd) + cmd.length()).trim();
 			String[] rawArgs = cleanArgsArray((rawArgStr.length() > 0) ?  rawArgStr.split("\\s") : new String[0]);
 			
@@ -70,7 +70,7 @@ public class CommandDispatcher {
 	}
 	
 	public static String parseMessage(MessageReceivedEvent e){
-		String c = e.getMessage().getRawContent();
+		String c = e.getMessage().getContentRaw();
 		String prefix = SettingsManager.getCommandPrefix(e.getGuild()).trim();
 		if(c.length() <= prefix.length()) {
 			return null;
