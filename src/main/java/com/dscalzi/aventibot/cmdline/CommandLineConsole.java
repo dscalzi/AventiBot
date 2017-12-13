@@ -5,8 +5,6 @@
  */
 package com.dscalzi.aventibot.cmdline;
 
-import java.time.OffsetDateTime;
-import java.util.ArrayList;
 import java.util.Scanner;
 
 import org.slf4j.Logger;
@@ -15,15 +13,11 @@ import org.slf4j.LoggerFactory;
 import com.dscalzi.aventibot.AventiBot;
 import com.dscalzi.aventibot.BotStatus;
 import com.dscalzi.aventibot.cmdutil.CommandDispatcher;
+import com.dscalzi.aventibot.console.ConsoleMessage;
 import com.dscalzi.aventibot.console.ConsoleUser;
 
 import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.entities.MessageEmbed;
-import net.dv8tion.jda.core.entities.MessageReaction;
-import net.dv8tion.jda.core.entities.MessageType;
-import net.dv8tion.jda.core.entities.Message.Attachment;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
-import net.dv8tion.jda.core.entities.impl.SystemMessage;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 public class CommandLineConsole {
@@ -54,20 +48,7 @@ public class CommandLineConsole {
 				
 				LOG.info(line);
 				
-				SystemMessage m = new SystemMessage(-1L,
-						((JDAImpl)api).getPrivateChannelById(-1L),
-						MessageType.DEFAULT,
-						false,
-						false,
-						false,
-						false,
-						line,
-						"-1",
-						console,
-						OffsetDateTime.now(),
-						new ArrayList<MessageReaction>(),
-						new ArrayList<Attachment>(),
-						new ArrayList<MessageEmbed>());
+				ConsoleMessage m = new ConsoleMessage(((JDAImpl)api).getPrivateChannelById(-1L), line, console);
 				MessageReceivedEvent mre = new MessageReceivedEvent(api, -1, m);
 				CommandDispatcher.dispatchCommand(mre, CommandDispatcher.parseMessage(mre));
 			}

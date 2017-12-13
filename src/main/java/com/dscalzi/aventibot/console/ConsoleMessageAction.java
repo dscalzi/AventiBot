@@ -10,6 +10,7 @@ import java.util.function.Consumer;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageChannel;
+import net.dv8tion.jda.core.requests.RequestFuture;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.Route.CompiledRoute;
 import net.dv8tion.jda.core.requests.restaction.MessageAction;
@@ -20,16 +21,16 @@ import net.dv8tion.jda.core.requests.restaction.MessageAction;
  * @author Daniel D. Scalzi
  *
  */
-public class FakeMessageAction extends MessageAction {
+public class ConsoleMessageAction extends MessageAction {
 
 	private Message message;
 	
-	public FakeMessageAction(JDA api, CompiledRoute route, MessageChannel channel, Message message) {
+	public ConsoleMessageAction(JDA api, CompiledRoute route, MessageChannel channel, Message message) {
 		super(api, route, channel);
 		this.message = message;
 	}
 
-	public FakeMessageAction(JDA api, Route.CompiledRoute route, MessageChannel channel, StringBuilder contentBuilder) {
+	public ConsoleMessageAction(JDA api, Route.CompiledRoute route, MessageChannel channel, StringBuilder contentBuilder) {
 		super(api, route, channel, contentBuilder);
 	}
 	
@@ -53,5 +54,15 @@ public class FakeMessageAction extends MessageAction {
 			failure = DEFAULT_FAILURE;*/
 		if(success != null)
 			success.accept(message);
+    }
+	
+	@Override
+	public RequestFuture<Message> submit() {
+        return submit(true);
+    }
+
+    @Override
+    public RequestFuture<Message> submit(boolean shouldQueue) {
+        return new ConsoleFuture<>(message);
     }
 }

@@ -5,10 +5,6 @@
  */
 package com.dscalzi.aventibot.console;
 
-import java.time.OffsetDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-
 import org.slf4j.LoggerFactory;
 
 import net.dv8tion.jda.client.entities.Call;
@@ -16,16 +12,12 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageEmbed;
-import net.dv8tion.jda.core.entities.MessageReaction;
-import net.dv8tion.jda.core.entities.MessageType;
 import net.dv8tion.jda.core.entities.PrivateChannel;
 import net.dv8tion.jda.core.entities.User;
-import net.dv8tion.jda.core.entities.Message.Attachment;
-import net.dv8tion.jda.core.entities.impl.SystemMessage;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.restaction.MessageAction;
 
-public class ConsolePrivateChannel implements PrivateChannel{
+public class ConsolePrivateChannel implements PrivateChannel {
 	
     private final long id;
     private final User user;
@@ -40,47 +32,21 @@ public class ConsolePrivateChannel implements PrivateChannel{
     @Override
 	public MessageAction sendMessage(CharSequence text) {
     	LoggerFactory.getLogger("??? -> Me").info(text.toString());
-    	SystemMessage msg = new SystemMessage(-1L,
-				this,
-				MessageType.DEFAULT,
-				false,
-				false,
-				false,
-				false,
-				text.toString(),
-				"-1",
-				user, // For now, say the "console" sent a message sent through it's PM.
-				OffsetDateTime.now(),
-				new ArrayList<MessageReaction>(),
-				new ArrayList<Attachment>(),
-				new ArrayList<MessageEmbed>());
-    	return new FakeMessageAction(api, null, this, msg);
+    	ConsoleMessage msg = new ConsoleMessage(this, text.toString(), user);
+    	return new ConsoleMessageAction(api, null, this, msg);
 	}
 
 	@Override
 	public MessageAction sendMessage(Message msg) {
 		LoggerFactory.getLogger(msg.getAuthor().getDiscriminator() + " -> Me").info(msg.getContentRaw());
-		return new FakeMessageAction(api, null, this, msg);
+		return new ConsoleMessageAction(api, null, this, msg);
 	}
 	
 	@Override
 	public MessageAction sendMessage(MessageEmbed embed) {
 		// Not supported
-		SystemMessage msg = new SystemMessage(-1L,
-				this,
-				MessageType.DEFAULT,
-				false,
-				false,
-				false,
-				false,
-				null, // Does null text work?
-				"-1",
-				user, // For now, say the "console" sent a message sent through it's PM.
-				OffsetDateTime.now(),
-				new ArrayList<MessageReaction>(),
-				new ArrayList<Attachment>(),
-				new ArrayList<MessageEmbed>(Arrays.asList(embed)));
-		return new FakeMessageAction(api, null, this, msg);
+		ConsoleMessage msg = new ConsoleMessage(this, null, user);
+		return new ConsoleMessageAction(api, null, this, msg);
 	}
 
 	@Override
@@ -146,8 +112,8 @@ public class ConsolePrivateChannel implements PrivateChannel{
 
 	@Override
 	public long getLatestMessageIdLong() {
-		// TODO Auto-generated method stub
-		return 0;
+		// Not supported
+		return 0L;
 	}
 
 	@Override

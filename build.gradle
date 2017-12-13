@@ -12,7 +12,7 @@ plugins {
 
 mainClassName = 'com.dscalzi.aventibot.LaunchWrapper'
 
-def versionObj = new Version(major: 0, minor: 76, revision: 2)
+def versionObj = new Version(major: 0, minor: 76, revision: 3)
 
 description = """\
 Highly customizable Discord Bot

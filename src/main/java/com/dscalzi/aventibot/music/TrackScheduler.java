@@ -138,7 +138,7 @@ public class TrackScheduler extends AudioEventAdapter implements EventListener{
 		
 		if(am.isConnected() && am.getConnectedChannel().getMembers().size() == 1){
 			clearQueue();
-			new Thread(() -> am.closeAudioConnection()).start();;
+			new Thread(() -> am.closeAudioConnection()).start();
 			return;
 		}
 		
