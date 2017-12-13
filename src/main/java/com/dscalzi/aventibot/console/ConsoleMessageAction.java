@@ -11,6 +11,7 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.requests.RequestFuture;
+import net.dv8tion.jda.core.requests.RestFuture;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.Route.CompiledRoute;
 import net.dv8tion.jda.core.requests.restaction.MessageAction;
@@ -63,6 +64,6 @@ public class ConsoleMessageAction extends MessageAction {
 
     @Override
     public RequestFuture<Message> submit(boolean shouldQueue) {
-        return new ConsoleFuture<>(message);
+        return new RestFuture<>(message);
     }
 }
