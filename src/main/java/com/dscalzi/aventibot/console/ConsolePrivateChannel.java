@@ -44,7 +44,7 @@ public class ConsolePrivateChannel implements PrivateChannel {
 	
 	@Override
 	public MessageAction sendMessage(MessageEmbed embed) {
-		// Not supported
+		LoggerFactory.getLogger("Embeded Message").info("Unable to display embed on terminal.");
 		ConsoleMessage msg = new ConsoleMessage(this, null, user);
 		return new ConsoleMessageAction(api, null, this, msg);
 	}

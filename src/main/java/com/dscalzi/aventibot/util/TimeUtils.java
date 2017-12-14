@@ -101,4 +101,41 @@ public class TimeUtils {
 		return (hours > 0 ? hours + ":" : "") + (minutes > 0 ? ((hours > 0 && minutes/10 == 0) ? "0" + minutes : minutes) + ":" : "0:") + (seconds/10 == 0 ? "0" + seconds : seconds);
 	}
 	
+	/**
+	 * Converts Unix time to:<br><br>
+	 * <strong>hh:mm:ss</strong><br><br>
+	 * Each unit will be shown even if the value is zero, (ex. 00:00:00).
+	 * 
+	 * @param d
+	 * @return
+	 */
+	private static String formatUptimeShort(long d) {
+		int hours = (int) Math.floorDiv(d, 3600000L);
+		d -= hours > 0 ? 3600000*hours : 0;
+		int minutes = (int)Math.floorDiv(d, 60000L);
+		d -= minutes > 0 ? 60000*minutes : 0;
+		int seconds = (int)Math.floorDiv(d, 1000L);
+		return ((hours/10 == 0 ? "0" : "") + hours + ":" + (minutes/10 == 0 ? "0" : "") + minutes + ":" + (seconds/10 == 0 ? "0" : "") + seconds);
+	}
+	
+	/**
+	 * Formats uptime from Unix time. The format will be:
+	 * <br>
+	 * <strong>x Days, hh:mm:ss</strong>
+	 * <br><br>
+	 * Ex.<br>
+	 * <strong>10 Days, 07:18:27</strong>
+	 * <br>
+	 * Each field will always be present, even if the value is zero.
+	 * 
+	 * @param d
+	 * @return
+	 */
+	public static String formatUptime(long d) {
+		int days = (int) Math.floorDiv(d, 86400000L);
+		d -= 86400000L*days;
+		return ((days + " Day" + (days != 1 ? "s" : "") + ", ") + 
+				TimeUtils.formatUptimeShort(d));
+	}
+	
 }

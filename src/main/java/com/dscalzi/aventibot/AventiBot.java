@@ -51,6 +51,7 @@ public class AventiBot {
 	private JDA jda;
 	private ConsoleUser console;
 	private CommandRegistry registry;
+	private Long launchTime = null;
 	
 	private AventiBot(){
 		this.registry = new CommandRegistry();
@@ -77,6 +78,7 @@ public class AventiBot {
 		LavaWrapper.initialize();
 		this.console = ConsoleUser.build(jda);
 		((JDAImpl)jda).getPrivateChannelMap().put(console.getIdLong(), console.getPrivateChannel());
+		launchTime = System.currentTimeMillis();
 	}
 	
 	private void registerCommands(){
@@ -153,6 +155,14 @@ public class AventiBot {
 	
 	public ConsoleUser getConsole(){
 		return this.console;
+	}
+	
+	public long getUptime() {
+		return launchTime == null ? 0 : System.currentTimeMillis() - launchTime;
+	}
+	
+	public long getLaunchTime() {
+		return launchTime == null ? 0 : launchTime;
 	}
 	
 	public JDA getJDA(){
