@@ -1,6 +1,6 @@
 /*
  * AventiBot
- * Copyright (C) 2016-2017 Daniel D. Scalzi
+ * Copyright (C) 2016-2018 Daniel D. Scalzi
  * See LICENSE.txt for license information.
  */
 package com.dscalzi.aventibot.util;
@@ -14,7 +14,6 @@ public class TimeUtils {
 
 	private static Pattern timePattern = Pattern.compile("(?:([0-9]+)\\s*y[a-z]*[,\\s]*)?" + "(?:([0-9]+)\\s*mo[a-z]*[,\\s]*)?" + "(?:([0-9]+)\\s*w[a-z]*[,\\s]*)?" + "(?:([0-9]+)\\s*d[a-z]*[,\\s]*)?" + "(?:([0-9]+)\\s*h[a-z]*[,\\s]*)?" + "(?:([0-9]+)\\s*m[a-z]*[,\\s]*)?" + "(?:([0-9]+)\\s*(?:s[a-z]*)?)?", Pattern.CASE_INSENSITIVE);
 	
-	// Copyright essentials, all credits to them for this.
 	/**
 	 * Convert time input to Unix time in seconds. The returned time is the instant
 	 * either in the past or future by adding/subtracting the time period given to
@@ -38,6 +37,7 @@ public class TimeUtils {
 	 * @throws Exception Thrown if illegal date, or if the time exceeds the limit set by the method.
 	 */
 	public static long parseDateDiff(String time, boolean future) throws Exception {
+		// Copyright essentials, all credits to them for this.
 		Matcher m = timePattern.matcher(time);
 	    int years = 0, months = 0, weeks = 0, days = 0, hours = 0, minutes = 0, seconds = 0;
 	    boolean found = false;
