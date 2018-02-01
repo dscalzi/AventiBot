@@ -37,7 +37,6 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
 import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
-import net.dv8tion.jda.core.exceptions.RateLimitedException;
 
 public class AventiBot {
 	
@@ -120,7 +119,7 @@ public class AventiBot {
 			jda = jdaBuilder.buildBlocking();
 			status = BotStatus.CONNECTED;
 			postConntectionSetup();
-		} catch (LoginException | IllegalArgumentException | InterruptedException | RateLimitedException | IOException e) {
+		} catch (LoginException | IllegalArgumentException | InterruptedException | IOException e) {
 			status = BotStatus.LAUNCHED;
 			LoggerFactory.getLogger("JDA").error(MarkerFactory.getMarker("FATAL"), "Failed to connect to Discord!");
 			e.printStackTrace();
