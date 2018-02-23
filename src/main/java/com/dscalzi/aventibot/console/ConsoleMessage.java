@@ -6,6 +6,8 @@
 package com.dscalzi.aventibot.console;
 
 import java.util.ArrayList;
+
+import gnu.trove.set.hash.TLongHashSet;
 import net.dv8tion.jda.core.entities.Emote;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageChannel;
@@ -21,7 +23,7 @@ import net.dv8tion.jda.core.requests.restaction.MessageAction;
 public class ConsoleMessage extends ReceivedMessage {
 	
 	public ConsoleMessage(MessageChannel channel, String content, User author) {
-		super(-1L, channel, MessageType.DEFAULT, false, false, false, false, content, "-1", author, null,
+		super(-1L, channel, MessageType.DEFAULT, false, false, new TLongHashSet(), new TLongHashSet(), false, false, content, "-1", author, null,
 				new ArrayList<MessageReaction>(), new ArrayList<Attachment>(), new ArrayList<MessageEmbed>());
 	}
 	
