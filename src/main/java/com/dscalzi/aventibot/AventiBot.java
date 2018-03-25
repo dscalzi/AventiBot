@@ -27,6 +27,7 @@ import com.dscalzi.aventibot.commands.CmdSay;
 import com.dscalzi.aventibot.commands.CmdSettingsControl;
 import com.dscalzi.aventibot.commands.CmdShutdown;
 import com.dscalzi.aventibot.commands.CmdSoftReload;
+import com.dscalzi.aventibot.commands.CmdUrbanDictionary;
 import com.dscalzi.aventibot.console.ConsoleUser;
 import com.dscalzi.aventibot.music.LavaWrapper;
 import com.dscalzi.aventibot.settings.GlobalConfig;
@@ -82,6 +83,7 @@ public class AventiBot {
 	
 	private void registerCommands(){
 		CmdMusicControl mcc = new CmdMusicControl();
+		CmdUrbanDictionary ud = new CmdUrbanDictionary();
 		this.registry.register("play", mcc);
 		this.registry.register("playlist", mcc);
 		this.registry.register("skip", mcc);
@@ -101,6 +103,8 @@ public class AventiBot {
 		this.registry.register("settings", new CmdSettingsControl());
 		this.registry.register("softreload", new CmdSoftReload());
 		this.registry.register("hardrestart", new CmdHardRestart());
+		this.registry.register("urbandictionary", ud);
+		this.registry.register("define", ud);
 	}
 	
 	private void registerListeners(){
