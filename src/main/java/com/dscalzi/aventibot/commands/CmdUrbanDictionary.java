@@ -1,3 +1,8 @@
+/*
+ * AventiBot
+ * Copyright (C) 2016-2018 Daniel D. Scalzi
+ * See LICENSE for license information.
+ */
 package com.dscalzi.aventibot.commands;
 
 import java.awt.Color;
@@ -19,6 +24,7 @@ import com.dscalzi.aventibot.cmdutil.CommandResult;
 import com.dscalzi.aventibot.cmdutil.PermissionNode;
 import com.dscalzi.aventibot.cmdutil.PermissionUtil;
 import com.dscalzi.aventibot.cmdutil.PermissionNode.NodeType;
+import com.dscalzi.aventibot.util.IconUtil;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -105,7 +111,7 @@ public class CmdUrbanDictionary implements CommandExecutor {
 								ex.printStackTrace();
 							}
 							b.setColor(Color.decode("#1d2439"));
-							b.setAuthor(ath, "https://www.urbandictionary.com/author.php?author=" + athEncode, "https://i.imgur.com/quPH023.png");
+							b.setAuthor(ath, "https://www.urbandictionary.com/author.php?author=" + athEncode, IconUtil.URBAN_DICTIONARY.getURL());
 							b.setTitle(def.get("word").getAsString(), def.get("permalink").getAsString());
 							Field defField = new Field("Definition", def.get("definition").getAsString(), false);
 							Field exField = new Field("Example", "*" + def.get("example").getAsString() + "*", false);

@@ -1,7 +1,7 @@
 /*
  * AventiBot
  * Copyright (C) 2016-2018 Daniel D. Scalzi
- * See LICENSE.txt for license information.
+ * See LICENSE for license information.
  */
 package com.dscalzi.aventibot.util;
 
@@ -12,7 +12,8 @@ public enum IconUtil {
 	PLAY("http://i.imgur.com/nEw5Gsk.png"),
 	ADD("http://i.imgur.com/7OfFSFx.png"),
 	REMOVE("http://i.imgur.com/voGutMQ.png"),
-	VOTE("http://i.imgur.com/saXkgYz.png");
+	VOTE("http://i.imgur.com/saXkgYz.png"),
+	URBAN_DICTIONARY("https://i.imgur.com/quPH023.png");
 	
 	private final String URL;
 	
