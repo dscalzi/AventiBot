@@ -17,6 +17,7 @@ import com.dscalzi.aventibot.cmdutil.CommandListener;
 import com.dscalzi.aventibot.cmdutil.CommandRegistry;
 import com.dscalzi.aventibot.commands.CmdAuthor;
 import com.dscalzi.aventibot.commands.CmdClear;
+import com.dscalzi.aventibot.commands.CmdGSettings;
 import com.dscalzi.aventibot.commands.CmdHardRestart;
 import com.dscalzi.aventibot.commands.CmdHelloWorld;
 import com.dscalzi.aventibot.commands.CmdHelp;
@@ -101,6 +102,7 @@ public class AventiBot {
 		this.registry.register("roleid", new CmdRoleId());
 		this.registry.register("permissions", new CmdPermissionsControl());
 		this.registry.register("settings", new CmdSettingsControl());
+		this.registry.register("gsettings", new CmdGSettings());
 		this.registry.register("softreload", new CmdSoftReload());
 		this.registry.register("hardrestart", new CmdHardRestart());
 		this.registry.register("urbandictionary", ud);

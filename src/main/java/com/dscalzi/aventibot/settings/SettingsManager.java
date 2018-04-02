@@ -200,7 +200,7 @@ public class SettingsManager {
 	 * @param g GlobalConfig object to serialize.
 	 * @throws IOException If the target file was not found/could not be created.
 	 */
-	public static void saveGlobalConfig(GlobalConfig g) throws IOException{
+	public static void saveGlobalConfig(GlobalConfig g) throws IOException {
 		File target = SettingsManager.getGlobalConfigurationFile();
 		if(target == null) throw new IOException();
 		
