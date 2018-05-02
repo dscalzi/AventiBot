@@ -74,9 +74,10 @@ public class CmdGSettings implements CommandExecutor{
 			return CommandResult.ERROR;
 		}
 		try {
-			setter.invoke(current, args[2]);
+			String newVal = InputUtils.parseFullTerm(args, 2).getValue();
+			setter.invoke(current, newVal);
 			if(key.equals("currentGame")) {
-				AventiBot.setCurrentGame(InputUtils.parseFullTerm(args, 2).getValue());
+				AventiBot.setCurrentGame(newVal);
 			}
 			SettingsManager.saveGlobalConfig(current);
 		} catch (IllegalArgumentException e1) {
