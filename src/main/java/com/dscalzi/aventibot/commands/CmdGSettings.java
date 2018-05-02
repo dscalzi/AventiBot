@@ -20,6 +20,7 @@ import com.dscalzi.aventibot.cmdutil.PermissionNode;
 import com.dscalzi.aventibot.cmdutil.PermissionNode.NodeType;
 import com.dscalzi.aventibot.settings.GlobalConfig;
 import com.dscalzi.aventibot.settings.SettingsManager;
+import com.dscalzi.aventibot.util.InputUtils;
 
 import javafx.util.Pair;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
@@ -75,7 +76,7 @@ public class CmdGSettings implements CommandExecutor{
 		try {
 			setter.invoke(current, args[2]);
 			if(key.equals("currentGame")) {
-				AventiBot.setCurrentGame(args[2]);
+				AventiBot.setCurrentGame(InputUtils.parseFullTerm(args, 2).getValue());
 			}
 			SettingsManager.saveGlobalConfig(current);
 		} catch (IllegalArgumentException e1) {
