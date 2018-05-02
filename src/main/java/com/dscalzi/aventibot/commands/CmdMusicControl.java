@@ -155,11 +155,8 @@ public class CmdMusicControl implements CommandExecutor{
 					if(playlist.getTracks().size() > 0){
 						scheduler.queue(new TrackMeta(playlist.getTracks().get(0), e.getAuthor(), e.getChannel()));
 					}
-				} else if(playlist.getSelectedTrack() != null){
-					scheduler.queuePlaylist(playlist, e.getAuthor(), e.getChannel());
-					scheduler.queue(new TrackMeta(playlist.getSelectedTrack(), e.getAuthor(), e.getChannel()));
 				} else {
-					scheduler.queuePlaylist(playlist, e.getAuthor(), e.getChannel());
+					scheduler.queuePlaylist(playlist, e.getAuthor(), e.getChannel(), playlist.getSelectedTrack() != null);
 				}
 				CommandDispatcher.displayResult(CommandResult.SUCCESS, e.getMessage());
 			}

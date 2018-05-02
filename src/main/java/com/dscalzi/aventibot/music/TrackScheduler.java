@@ -76,7 +76,7 @@ public class TrackScheduler extends AudioEventAdapter implements EventListener{
 		return true;
 	}
 	
-	public boolean queuePlaylist(AudioPlaylist playlist, User user, MessageChannel requestedIn){
+	public boolean queuePlaylist(AudioPlaylist playlist, User user, MessageChannel requestedIn, boolean selectedFirst){
 		if(playlist == null || playlist.getTracks() == null || playlist.getTracks().size() < 1) return false;
 		
 		requestedIn.sendTyping().queue((v) -> {
@@ -93,10 +93,21 @@ public class TrackScheduler extends AudioEventAdapter implements EventListener{
 				}
 			}
 			
-			for(int i=0; i<Math.min(PLAYLIST_LIMIT, playlist.getTracks().size()); ++i){
-				TrackMeta m = new TrackMeta(playlist.getTracks().get(i), user, requestedIn);
-				playlistLength += playlist.getTracks().get(i).getDuration();
+			int adjustedLimit = selectedFirst ? PLAYLIST_LIMIT-1 : PLAYLIST_LIMIT;
+			
+			if(selectedFirst) {
+				TrackMeta m = new TrackMeta(playlist.getSelectedTrack(), user, requestedIn);
+				playlistLength += playlist.getSelectedTrack().getDuration();
 				queue.add(m);
+			}
+			
+			for(int i=0; i<Math.min(adjustedLimit, playlist.getTracks().size()); ++i){
+				AudioTrack aT = playlist.getTracks().get(i);
+				if(!selectedFirst || aT != playlist.getSelectedTrack()) {
+					TrackMeta m = new TrackMeta(playlist.getTracks().get(i), user, requestedIn);
+					playlistLength += playlist.getTracks().get(i).getDuration();
+					queue.add(m);
+				}
 			}
 			
 			EmbedBuilder eb = new EmbedBuilder().setTitle("Added Playlist " + playlist.getName() + " to the Queue.", null);
