@@ -41,13 +41,13 @@ public class ConsoleMessageAction extends MessageAction {
     }
 	
 	@Override
-	public void queue(Consumer<Message> success) {
+	public void queue(Consumer<? super Message> success) {
         queue(success, null);
     }
 	
 	
 	@Override
-	public void queue(Consumer<Message> success, Consumer<Throwable> failure) {
+	public void queue(Consumer<? super Message> success, Consumer<? super Throwable> failure) {
         //Should never have a failure.
 		/*if(success == null)
 			success = DEFAULT_SUCCESS;
