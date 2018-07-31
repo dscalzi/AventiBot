@@ -96,41 +96,39 @@ public class CmdUrbanDictionary implements CommandExecutor {
 			
 			if(parsed.isJsonObject()) {
 				JsonObject root = parsed.getAsJsonObject();
-				if(root.has("result_type") && root.get("result_type").getAsString().equalsIgnoreCase("exact")) {
-					if(root.has("list") && root.get("list").isJsonArray()) {
-						JsonArray res = root.get("list").getAsJsonArray();
-						if(res.size() > 0) {
-							JsonObject def = res.get(0).getAsJsonObject();
-							EmbedBuilder b = new EmbedBuilder();
-							String ath = def.get("author").getAsString();
-							String athEncode = "";
-							try {
-								athEncode = URLEncoder.encode(ath, "UTF-8");
-							} catch (UnsupportedEncodingException ex) {
-								// Why would this ever happen?
-								athEncode = "whoops";
-								ex.printStackTrace();
-							}
-							b.setColor(Color.decode("#1d2439"));
-							b.setAuthor(ath, "https://www.urbandictionary.com/author.php?author=" + athEncode, IconUtil.URBAN_DICTIONARY.getURL());
-							b.setTitle(def.get("word").getAsString(), def.get("permalink").getAsString());
-							
-							String defString = def.get("definition").getAsString();
-							String exampleString = def.get("example").getAsString();
-							Field defField = new Field("Definition", defString.length() > MessageEmbed.VALUE_MAX_LENGTH ? defString.substring(0, MessageEmbed.VALUE_MAX_LENGTH-1) + '\u2026' : defString , false);
-							Field exField = new Field("Example", "*" + (exampleString.length() > MessageEmbed.VALUE_MAX_LENGTH-2 ? exampleString.substring(0, MessageEmbed.VALUE_MAX_LENGTH-3) + '\u2026' : exampleString) + "*", false);
-							b.addField(defField);
-							b.addField(exField);
-							b.setFooter("" + ((char)9650) + " " + def.get("thumbs_up").getAsInt() + " / " + ((char)9660) + " " + def.get("thumbs_down").getAsInt(), null);
-							
-							e.getChannel().sendMessage(b.build()).queue();;
-							
-							return CommandResult.SUCCESS;
+				if(root.has("list") && root.get("list").isJsonArray()) {
+					JsonArray res = root.get("list").getAsJsonArray();
+					if(res.size() > 0) {
+						JsonObject def = res.get(0).getAsJsonObject();
+						EmbedBuilder b = new EmbedBuilder();
+						String ath = def.get("author").getAsString();
+						String athEncode = "";
+						try {
+							athEncode = URLEncoder.encode(ath, "UTF-8");
+						} catch (UnsupportedEncodingException ex) {
+							// Why would this ever happen?
+							athEncode = "whoops";
+							ex.printStackTrace();
 						}
+						b.setColor(Color.decode("#1d2439"));
+						b.setAuthor(ath, "https://www.urbandictionary.com/author.php?author=" + athEncode, IconUtil.URBAN_DICTIONARY.getURL());
+						b.setTitle(def.get("word").getAsString(), def.get("permalink").getAsString());
+						
+						String defString = def.get("definition").getAsString();
+						String exampleString = def.get("example").getAsString();
+						Field defField = new Field("Definition", defString.length() > MessageEmbed.VALUE_MAX_LENGTH ? defString.substring(0, MessageEmbed.VALUE_MAX_LENGTH-1) + '\u2026' : defString , false);
+						Field exField = new Field("Example", "*" + (exampleString.length() > MessageEmbed.VALUE_MAX_LENGTH-2 ? exampleString.substring(0, MessageEmbed.VALUE_MAX_LENGTH-3) + '\u2026' : exampleString) + "*", false);
+						b.addField(defField);
+						b.addField(exField);
+						b.setFooter("" + ((char)9650) + " " + def.get("thumbs_up").getAsInt() + " / " + ((char)9660) + " " + def.get("thumbs_down").getAsInt(), null);
+						
+						e.getChannel().sendMessage(b.build()).queue();;
+						
+						return CommandResult.SUCCESS;
+					} else {
+					    e.getChannel().sendMessage("No definitions found for *" + term + "*.").queue();
+	                    return CommandResult.SUCCESS;
 					}
-				} else {
-					e.getChannel().sendMessage("No definitions found for *" + term + "*.").queue();
-					return CommandResult.SUCCESS;
 				}
 			}
 		}
