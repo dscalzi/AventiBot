@@ -122,7 +122,7 @@ public class AventiBot {
 					.setToken(g.getToken());
 			if(!g.getCurrentGame().isEmpty()) 
 				jdaBuilder.setGame(Game.playing(g.getCurrentGame()));
-			jda = jdaBuilder.buildBlocking();
+			jda = jdaBuilder.build().awaitReady();
 			status = BotStatus.CONNECTED;
 			postConntectionSetup();
 		} catch (LoginException | IllegalArgumentException | InterruptedException | IOException e) {
