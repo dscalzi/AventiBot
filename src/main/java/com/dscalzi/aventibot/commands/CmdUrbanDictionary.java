@@ -18,6 +18,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.dscalzi.aventibot.cmdutil.CommandExecutor;
 import com.dscalzi.aventibot.cmdutil.CommandResult;
@@ -37,6 +39,8 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 public class CmdUrbanDictionary implements CommandExecutor {
 
+    private static final Pattern SUB_DEF_REG = Pattern.compile("\\[(.+?)\\]");
+    
 	private final PermissionNode permUrbanDictionary = PermissionNode.get(NodeType.COMMAND, "urbandictionary");
 	
 	public final Set<PermissionNode> nodes;
@@ -114,8 +118,9 @@ public class CmdUrbanDictionary implements CommandExecutor {
 						b.setAuthor(ath, "https://www.urbandictionary.com/author.php?author=" + athEncode, IconUtil.URBAN_DICTIONARY.getURL());
 						b.setTitle(def.get("word").getAsString(), def.get("permalink").getAsString());
 						
-						String defString = def.get("definition").getAsString();
-						String exampleString = def.get("example").getAsString();
+						String defString = linkSubTerms(def.get("definition").getAsString());
+						String exampleString = linkSubTerms(def.get("example").getAsString());
+						
 						Field defField = new Field("Definition", defString.length() > MessageEmbed.VALUE_MAX_LENGTH ? defString.substring(0, MessageEmbed.VALUE_MAX_LENGTH-1) + '\u2026' : defString , false);
 						Field exField = new Field("Example", "*" + (exampleString.length() > MessageEmbed.VALUE_MAX_LENGTH-2 ? exampleString.substring(0, MessageEmbed.VALUE_MAX_LENGTH-3) + '\u2026' : exampleString) + "*", false);
 						b.addField(defField);
@@ -134,6 +139,22 @@ public class CmdUrbanDictionary implements CommandExecutor {
 		}
 		
 		return CommandResult.ERROR;
+	}
+	
+	private String linkSubTerms(String s) {
+	    final Matcher m = SUB_DEF_REG.matcher(s);
+	    final StringBuffer b = new StringBuffer();
+        while(m.find()) {
+            try {
+                String t = URLEncoder.encode(m.group(1), "UTF-8");
+                m.appendReplacement(b, "[" + m.group(1) + "](https://www.urbandictionary.com/define.php?term=" + t + ")");
+            } catch (UnsupportedEncodingException e1) {
+                // Won't happen?
+                e1.printStackTrace();
+            }
+        }
+        m.appendTail(b);
+        return b.toString();
 	}
 
 	@Override
