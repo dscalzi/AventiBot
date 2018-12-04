@@ -1,25 +1,15 @@
-/*
- * AventiBot
- * Copyright (C) 2016-2018 Daniel D. Scalzi
- * See LICENSE for license information.
- */
-
 plugins {
     id'java'
     id'application'
+    id 'net.minecrell.licenser' version '0.4.1'
     id'com.github.johnrengelman.shadow' version '4.0.3'
 }
 
 mainClassName = 'com.dscalzi.aventibot.LaunchWrapper'
 
-def versionObj = new Version(major: 0, minor: 80, revision: 1)
+def versionObj = new Version(major: 0, minor: 80, revision: 2)
 
-description = """\
-Highly customizable Discord Bot
-------------------------------------------
-Current Version: ${versionObj}
-------------------------------------------
-"""
+description = 'Highly customizable Discord Bot'
 
 group = 'com.dscalzi'
 archivesBaseName = 'AventiBot'
@@ -34,13 +24,35 @@ repositories {
 }
 
 dependencies {
-    compile group: 'net.dv8tion', name: 'JDA', version:'3.8.1_447'
-    compile group: 'com.sedmelluq', name:'lavaplayer', version:'1.3.10'
-    compile group: 'com.google.code.gson', name: 'gson', version:'2.8.5'
-    compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
+    implementation 'net.dv8tion:JDA:3.8.1_447'
+    implementation 'com.sedmelluq:lavaplayer:1.3.10'
+    implementation 'com.google.code.gson:gson:2.8.5'
+    implementation 'ch.qos.logback:logback-classic:1.2.3'
+    
+    implementation('net.sf.trove4j:trove4j:3.0.3') {
+    	because 'JDA implementation dependency is used in creating console messages.'
+    }
+    implementation('org.apache.commons:commons-collections4:4.1') {
+    	because 'JDA implementation dependency is used in RestFuture constructor.'
+    }
 }
 
 compileJava.options.encoding = 'UTF-8'
+
+processResources {
+
+	from 'LICENSE.txt'
+}
+
+license {
+    sourceSets = [project.sourceSets.main]
+    header = rootProject.file('HEADER.txt')
+    ext {
+        name = 'Daniel D. Scalzi'
+        year = '2016-2018'
+        url = 'https://github.com/dscalzi/AventiBot'
+    }
+}
 
 jar {
     baseName = project.name
@@ -50,14 +62,7 @@ jar {
 }
 
 shadowJar {
-    classifier = "shaded"
-}
-
-task('updateReadme') {
-	def readMe = new File(project.rootDir.toString() + '/README.md')
-	
-	def txt = readMe.text.replaceFirst(/JDA-(.+?)__(.+?)-/, 'JDA-' + getDepdencyVersion('JDA').replaceAll('_', '__') + '-')
-	readMe.text = txt.replaceFirst(/lavaplayer-(.+?)-/, 'lavaplayer-' + getDepdencyVersion('lavaplayer') + '-')
+    classifier = "dist"
 }
 
 build {
@@ -71,8 +76,8 @@ build {
 
 String getDepdencyVersion(name) {
 	def res = ''
-
-	configurations.runtime.resolvedConfiguration.resolvedArtifacts.each { artifact ->
+	
+	configurations.compileClasspath.resolvedConfiguration.resolvedArtifacts.each { artifact ->
 		def id = artifact.moduleVersion.id
 		if(id.name.equals(name)) {
 			res = id.version
@@ -81,6 +86,13 @@ String getDepdencyVersion(name) {
 	}
 	
 	return res
+}
+
+task updateReadme {
+	def readMe = new File(project.rootDir.toString() + '/README.md')
+	
+	def txt = readMe.text.replaceFirst(/JDA-(.*?)-/, "JDA-${getDepdencyVersion('JDA').replaceAll('_', '__')}-")
+	readMe.text = txt.replaceFirst(/lavaplayer-(.*?)-/, "lavaplayer-${getDepdencyVersion('lavaplayer')}-")
 }
 
 class Version {
