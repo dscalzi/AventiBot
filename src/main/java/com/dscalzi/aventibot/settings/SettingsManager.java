@@ -1,6 +1,6 @@
 /*
  * This file is part of AventiBot.
- * Copyright (C) 2016-2018 Daniel D. Scalzi
+ * Copyright (C) 2016-2019 Daniel D. Scalzi
  *
  * https://github.com/dscalzi/AventiBot
  *
@@ -34,6 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MarkerFactory;
 
+import com.dscalzi.aventibot.util.Pair;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
@@ -42,7 +43,6 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.stream.JsonReader;
 
-import javafx.util.Pair;
 import net.dv8tion.jda.core.entities.Guild;
 
 /**

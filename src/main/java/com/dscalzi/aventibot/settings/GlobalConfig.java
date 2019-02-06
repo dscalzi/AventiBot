@@ -1,6 +1,6 @@
 /*
  * This file is part of AventiBot.
- * Copyright (C) 2016-2018 Daniel D. Scalzi
+ * Copyright (C) 2016-2019 Daniel D. Scalzi
  *
  * https://github.com/dscalzi/AventiBot
  *
@@ -27,8 +27,7 @@ import java.util.Map;
 
 import com.dscalzi.aventibot.AventiBot;
 import com.dscalzi.aventibot.BotStatus;
-
-import javafx.util.Pair;
+import com.dscalzi.aventibot.util.Pair;
 
 public class GlobalConfig{
 	

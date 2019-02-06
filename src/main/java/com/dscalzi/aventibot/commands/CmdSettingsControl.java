@@ -1,6 +1,6 @@
 /*
  * This file is part of AventiBot.
- * Copyright (C) 2016-2018 Daniel D. Scalzi
+ * Copyright (C) 2016-2019 Daniel D. Scalzi
  *
  * https://github.com/dscalzi/AventiBot
  *
@@ -40,8 +40,8 @@ import com.dscalzi.aventibot.cmdutil.PermissionUtil;
 import com.dscalzi.aventibot.settings.GuildConfig;
 import com.dscalzi.aventibot.settings.SettingsManager;
 import com.dscalzi.aventibot.util.IconUtil;
+import com.dscalzi.aventibot.util.Pair;
 
-import javafx.util.Pair;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 

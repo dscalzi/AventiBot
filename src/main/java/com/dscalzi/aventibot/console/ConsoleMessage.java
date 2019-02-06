@@ -1,6 +1,6 @@
 /*
  * This file is part of AventiBot.
- * Copyright (C) 2016-2018 Daniel D. Scalzi
+ * Copyright (C) 2016-2019 Daniel D. Scalzi
  *
  * https://github.com/dscalzi/AventiBot
  *
@@ -39,7 +39,7 @@ public class ConsoleMessage extends ReceivedMessage {
 	
 	public ConsoleMessage(MessageChannel channel, String content, User author) {
 		super(-1L, channel, MessageType.DEFAULT, false, false, new TLongHashSet(), new TLongHashSet(), false, false, content, "-1", author, null,
-				new ArrayList<MessageReaction>(), new ArrayList<Attachment>(), new ArrayList<MessageEmbed>());
+				null, new ArrayList<MessageReaction>(), new ArrayList<Attachment>(), new ArrayList<MessageEmbed>());
 	}
 	
 	@Override
