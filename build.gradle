@@ -2,12 +2,12 @@ plugins {
     id 'java'
     id 'application'
     id 'net.minecrell.licenser' version '0.4.1'
-    id 'com.github.johnrengelman.shadow' version '4.0.4'
+    id 'com.github.johnrengelman.shadow' version '5.1.0'
 }
 
 mainClassName = 'com.dscalzi.aventibot.LaunchWrapper'
 
-def versionObj = new Version(major: 0, minor: 80, revision: 5)
+def versionObj = new Version(major: 0, minor: 80, revision: 6)
 
 description = 'Highly customizable Discord Bot'
 
@@ -25,8 +25,8 @@ repositories {
 }
 
 dependencies {
-    implementation 'net.dv8tion:JDA:3.8.3_462'
-    implementation 'com.sedmelluq:lavaplayer:1.3.16'
+    implementation 'net.dv8tion:JDA:3.8.3_464'
+    implementation 'com.sedmelluq:lavaplayer:1.3.17'
     implementation 'com.google.code.gson:gson:2.8.5'
     implementation 'ch.qos.logback:logback-classic:1.2.3'
     
@@ -56,14 +56,14 @@ license {
 }
 
 jar {
-    baseName = project.name
+    archiveBaseName = project.name
     manifest {
         attributes 'Implementation-Version': version, 'Specification-Version': version
     }
 }
 
 shadowJar {
-    classifier = "dist"
+    archiveClassifier = 'dist'
 }
 
 build {
@@ -75,7 +75,7 @@ build {
     shadowJar.mustRunAfter jar
 }
 
-String getDepdencyVersion(name) {
+String getDependencyVersion(name) {
 	def res = ''
 	
 	configurations.compileClasspath.resolvedConfiguration.resolvedArtifacts.each { artifact ->
@@ -92,8 +92,8 @@ String getDepdencyVersion(name) {
 task updateReadme {
 	def readMe = new File(project.rootDir.toString() + '/README.md')
 	
-	def txt = readMe.text.replaceFirst(/JDA-(.*?)-/, "JDA-${getDepdencyVersion('JDA').replaceAll('_', '__')}-")
-	readMe.text = txt.replaceFirst(/lavaplayer-(.*?)-/, "lavaplayer-${getDepdencyVersion('lavaplayer')}-")
+	def txt = readMe.text.replaceFirst(/JDA-(.*?)-/, "JDA-${getDependencyVersion('JDA').replaceAll('_', '__')}-")
+	readMe.text = txt.replaceFirst(/lavaplayer-(.*?)-/, "lavaplayer-${getDependencyVersion('lavaplayer')}-")
 }
 
 class Version {
