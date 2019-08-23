@@ -31,8 +31,9 @@ import com.dscalzi.aventibot.cmdutil.PermissionUtil;
 import com.dscalzi.aventibot.cmdutil.PermissionNode.NodeType;
 import com.dscalzi.aventibot.console.ConsoleUser;
 import com.dscalzi.aventibot.settings.SettingsManager;
+import com.dscalzi.aventibot.util.JDAUtils;
 
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 public class CmdSoftReload implements CommandExecutor {
 
@@ -56,10 +57,11 @@ private final PermissionNode permSoftReload = PermissionNode.get(NodeType.COMMAN
 			return CommandResult.SUCCESS;
 		}
 		
-		if(!PermissionUtil.hasPermission(e.getAuthor(), permSoftReload, e.getGuild(), false)){
+		if(!PermissionUtil.hasPermission(e.getAuthor(), permSoftReload, JDAUtils.getGuildFromCombinedEvent(e), false)){
 			return CommandResult.NO_PERMISSION;
 		}
 		
+		// Private not allowed, e.getGuild() calls are safe.
 		PermissionUtil.reload(e.getGuild());
 		SettingsManager.reload(e.getGuild());
 		e.getChannel().sendMessage("I've reloaded the settings and permissions for " + e.getGuild().getName() + ".").queue();

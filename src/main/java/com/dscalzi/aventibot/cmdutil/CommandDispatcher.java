@@ -30,11 +30,12 @@ import org.slf4j.LoggerFactory;
 
 import com.dscalzi.aventibot.AventiBot;
 import com.dscalzi.aventibot.settings.SettingsManager;
+import com.dscalzi.aventibot.util.JDAUtils;
 
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 public class CommandDispatcher {
 
@@ -53,8 +54,8 @@ public class CommandDispatcher {
 			String fakeCmd = cmd;
 			String msg = e.getMessage().getContentDisplay();
 			if(cmd.equals(AventiBot.getInstance().getJDA().getSelfUser().getAsMention()) &&
-				msg.startsWith(getDisplayedMention(e.getGuild()))){
-				fakeCmd = getDisplayedMention(e.getGuild());
+				msg.startsWith(getDisplayedMention(JDAUtils.getGuildFromCombinedEvent(e)))){
+				fakeCmd = getDisplayedMention(JDAUtils.getGuildFromCombinedEvent(e));
 			}
 			String argStr = msg.substring(msg.indexOf(fakeCmd) + fakeCmd.length()).trim();
 			String[] args = cleanArgsArray((argStr.length() > 0) ? argStr.split("\\s") : new String[0]);
@@ -65,7 +66,7 @@ public class CommandDispatcher {
 			
 			String fullArgs = String.join(" ", args).trim();
 			
-			String cmdPrefix = SettingsManager.getCommandPrefix(e.getGuild());
+			String cmdPrefix = SettingsManager.getCommandPrefix(JDAUtils.getGuildFromCombinedEvent(e));
 			if(cmdPrefix.equals(AventiBot.getInstance().getJDA().getSelfUser().getAsMention()))
 				cmdPrefix = cmdPrefix + " ";
 			
@@ -86,12 +87,12 @@ public class CommandDispatcher {
 	
 	public static String parseMessage(MessageReceivedEvent e){
 		String c = e.getMessage().getContentRaw();
-		String prefix = SettingsManager.getCommandPrefix(e.getGuild()).trim();
+		String prefix = SettingsManager.getCommandPrefix(JDAUtils.getGuildFromCombinedEvent(e)).trim();
 		if(c.length() <= prefix.length()) {
 			return null;
 		}
 		c = c.substring(prefix.length());
-		if(prefix.equals(e.getGuild() == null ? AventiBot.getInstance().getJDA().getSelfUser().getAsMention() : e.getGuild().getMember(AventiBot.getInstance().getJDA().getSelfUser()).getAsMention()))
+		if(prefix.equals(!e.isFromGuild() ? AventiBot.getInstance().getJDA().getSelfUser().getAsMention() : e.getGuild().getMember(AventiBot.getInstance().getJDA().getSelfUser()).getAsMention()))
 			c = c.trim();
 		
 		try{

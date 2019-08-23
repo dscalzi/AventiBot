@@ -22,15 +22,15 @@ package com.dscalzi.aventibot.console;
 
 import org.slf4j.LoggerFactory;
 
-import net.dv8tion.jda.client.entities.Call;
-import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.entities.ChannelType;
-import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.MessageEmbed;
-import net.dv8tion.jda.core.entities.PrivateChannel;
-import net.dv8tion.jda.core.entities.User;
-import net.dv8tion.jda.core.requests.RestAction;
-import net.dv8tion.jda.core.requests.restaction.MessageAction;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.ChannelType;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.PrivateChannel;
+import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.requests.restaction.MessageAction;
+import net.dv8tion.jda.internal.requests.EmptyRestAction;
 
 public class ConsolePrivateChannel implements PrivateChannel {
 	
@@ -92,19 +92,7 @@ public class ConsolePrivateChannel implements PrivateChannel {
 	@Override
 	public RestAction<Void> close() {
 		// Not Supported
-		return new RestAction.EmptyRestAction<Void>(api, null);
-	}
-
-	@Override
-	public RestAction<Call> startCall() {
-		// Not supported
-		return null;
-	}
-
-	@Override
-	public Call getCurrentCall() {
-		// Not supported
-		return null;
+		return new EmptyRestAction<Void>(api);
 	}
 
 	@Override

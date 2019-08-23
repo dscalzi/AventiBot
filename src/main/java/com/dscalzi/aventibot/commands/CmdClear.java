@@ -36,14 +36,15 @@ import com.dscalzi.aventibot.cmdutil.PermissionNode;
 import com.dscalzi.aventibot.cmdutil.PermissionUtil;
 import com.dscalzi.aventibot.cmdutil.PermissionNode.NodeType;
 import com.dscalzi.aventibot.util.InputUtils;
+import com.dscalzi.aventibot.util.JDAUtils;
 import com.dscalzi.aventibot.util.TimeUtils;
 
-import net.dv8tion.jda.core.entities.ChannelType;
-import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.MessageChannel;
-import net.dv8tion.jda.core.entities.TextChannel;
-import net.dv8tion.jda.core.entities.User;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.entities.ChannelType;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 public class CmdClear implements CommandExecutor{
 
@@ -63,7 +64,7 @@ public class CmdClear implements CommandExecutor{
 	@Override
 	public CommandResult onCommand(MessageReceivedEvent e, String cmd, String[] args, String[] rawArgs) {
 		
-		if(!PermissionUtil.hasPermission(e.getAuthor(), permClear, e.getGuild())) return CommandResult.NO_PERMISSION;
+		if(!PermissionUtil.hasPermission(e.getAuthor(), permClear, JDAUtils.getGuildFromCombinedEvent(e))) return CommandResult.NO_PERMISSION;
 		
 		if(processing){
 			e.getChannel().sendMessage("I'm currently clearing out a channel, try again later!").queue();
@@ -182,7 +183,7 @@ public class CmdClear implements CommandExecutor{
 		int deleted = 0;
 		for(int i=0; i<history.size(); ++i){
 			Message msg = history.get(i);
-			if(msg.getCreationTime().toEpochSecond() < threshold)
+			if(msg.getTimeCreated().toEpochSecond() < threshold)
 				break;
 			if(target != null && !msg.getAuthor().equals(target))
 				continue;

@@ -32,12 +32,12 @@ import com.dscalzi.aventibot.cmdutil.PermissionNode.NodeType;
 import com.dscalzi.aventibot.console.ConsoleUser;
 import com.dscalzi.aventibot.settings.SettingsManager;
 import com.dscalzi.aventibot.util.InputUtils;
+import com.dscalzi.aventibot.util.JDAUtils;
 import com.dscalzi.aventibot.util.Pair;
 
-import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.entities.ChannelType;
-import net.dv8tion.jda.core.entities.Role;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 public class CmdRoleId implements CommandExecutor{
 
@@ -54,9 +54,9 @@ public class CmdRoleId implements CommandExecutor{
 	@Override
 	public CommandResult onCommand(MessageReceivedEvent e, String cmd, String[] args, String[] rawArgs) {
 		
-		if(!PermissionUtil.hasPermission(e.getAuthor(), permRoleId, e.getGuild())) return CommandResult.NO_PERMISSION;
+		if(!PermissionUtil.hasPermission(e.getAuthor(), permRoleId, JDAUtils.getGuildFromCombinedEvent(e))) return CommandResult.NO_PERMISSION;
 		
-		if(e.getChannelType().equals(ChannelType.PRIVATE)){
+		if(!e.isFromGuild()){
 			e.getPrivateChannel().sendMessage("You must use this command in a guild.").queue();
 			return CommandResult.ERROR;
 		}

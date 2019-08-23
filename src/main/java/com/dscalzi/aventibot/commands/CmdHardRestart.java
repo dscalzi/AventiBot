@@ -33,8 +33,9 @@ import com.dscalzi.aventibot.cmdutil.CommandExecutor;
 import com.dscalzi.aventibot.cmdutil.CommandResult;
 import com.dscalzi.aventibot.cmdutil.PermissionNode;
 import com.dscalzi.aventibot.cmdutil.PermissionNode.NodeType;
+import com.dscalzi.aventibot.util.JDAUtils;
 import com.dscalzi.aventibot.cmdutil.PermissionUtil;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 public class CmdHardRestart implements CommandExecutor{
 
@@ -50,7 +51,7 @@ public class CmdHardRestart implements CommandExecutor{
 	
 	@Override
 	public CommandResult onCommand(MessageReceivedEvent e, String cmd, String[] args, String[] rawArgs) {
-		if(!PermissionUtil.hasPermission(e.getAuthor(), permHardRestart, e.getGuild(), false)){
+		if(!PermissionUtil.hasPermission(e.getAuthor(), permHardRestart, JDAUtils.getGuildFromCombinedEvent(e), false)){
 			return CommandResult.NO_PERMISSION;
 		}
 		

@@ -35,12 +35,13 @@ import com.dscalzi.aventibot.cmdutil.CommandExecutor;
 import com.dscalzi.aventibot.cmdutil.CommandResult;
 import com.dscalzi.aventibot.cmdutil.PermissionNode;
 import com.dscalzi.aventibot.cmdutil.PermissionUtil;
+import com.dscalzi.aventibot.util.JDAUtils;
 import com.dscalzi.aventibot.util.TimeUtils;
 import com.dscalzi.aventibot.cmdutil.PermissionNode.NodeType;
 
-import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.entities.User;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 
 public class CmdAuthor implements CommandExecutor {
@@ -59,7 +60,7 @@ public class CmdAuthor implements CommandExecutor {
 	@Override
 	public CommandResult onCommand(MessageReceivedEvent e, String cmd, String[] args, String[] rawArgs) {
 		
-		if(!PermissionUtil.hasPermission(e.getAuthor(), permAuthor, e.getGuild(), true)) return CommandResult.NO_PERMISSION;
+		if(!PermissionUtil.hasPermission(e.getAuthor(), permAuthor, JDAUtils.getGuildFromCombinedEvent(e), true)) return CommandResult.NO_PERMISSION;
 		
 		User author = AventiBot.getInstance().getJDA().getUserById("169197209630277642");
 		String avatar = author.getAvatarUrl();

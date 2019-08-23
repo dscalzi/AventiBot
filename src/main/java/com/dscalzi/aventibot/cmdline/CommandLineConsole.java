@@ -31,9 +31,9 @@ import com.dscalzi.aventibot.cmdutil.CommandDispatcher;
 import com.dscalzi.aventibot.console.ConsoleMessage;
 import com.dscalzi.aventibot.console.ConsoleUser;
 
-import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.entities.impl.JDAImpl;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.internal.JDAImpl;
 
 public class CommandLineConsole {
 

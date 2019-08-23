@@ -20,16 +20,16 @@
 
 package com.dscalzi.aventibot.console;
 
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
-import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.MessageChannel;
-import net.dv8tion.jda.core.requests.RequestFuture;
-import net.dv8tion.jda.core.requests.RestFuture;
-import net.dv8tion.jda.core.requests.Route;
-import net.dv8tion.jda.core.requests.Route.CompiledRoute;
-import net.dv8tion.jda.core.requests.restaction.MessageAction;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.requests.RestFuture;
+import net.dv8tion.jda.internal.requests.Route;
+import net.dv8tion.jda.internal.requests.Route.CompiledRoute;
+import net.dv8tion.jda.internal.requests.restaction.MessageActionImpl;
 
 /**
  * Class to avoid queuing messages sent to the console.
@@ -37,7 +37,7 @@ import net.dv8tion.jda.core.requests.restaction.MessageAction;
  * @author Daniel D. Scalzi
  *
  */
-public class ConsoleMessageAction extends MessageAction {
+public class ConsoleMessageAction extends MessageActionImpl {
 
 	private Message message;
 	
@@ -73,12 +73,12 @@ public class ConsoleMessageAction extends MessageAction {
     }
 	
 	@Override
-	public RequestFuture<Message> submit() {
+	public CompletableFuture<Message> submit() {
         return submit(true);
     }
 
     @Override
-    public RequestFuture<Message> submit(boolean shouldQueue) {
+    public CompletableFuture<Message> submit(boolean shouldQueue) {
         return new RestFuture<>(message);
     }
 }

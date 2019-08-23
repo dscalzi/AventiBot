@@ -20,9 +20,9 @@
 
 package com.dscalzi.aventibot.console;
 
-import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.entities.impl.JDAImpl;
-import net.dv8tion.jda.core.entities.impl.UserImpl;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.internal.entities.UserImpl;
 
 public class ConsoleUser extends UserImpl {
 

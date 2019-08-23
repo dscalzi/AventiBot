@@ -49,11 +49,14 @@ import com.dscalzi.aventibot.music.LavaWrapper;
 import com.dscalzi.aventibot.settings.GlobalConfig;
 import com.dscalzi.aventibot.settings.SettingsManager;
 
-import net.dv8tion.jda.core.AccountType;
-import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.JDABuilder;
-import net.dv8tion.jda.core.entities.Game;
-import net.dv8tion.jda.core.entities.impl.JDAImpl;
+import net.dv8tion.jda.api.AccountType;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.entities.PrivateChannel;
+import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.internal.utils.UnlockHook;
+import net.dv8tion.jda.internal.utils.cache.SnowflakeCacheViewImpl;
 
 public class AventiBot {
 	
@@ -93,7 +96,10 @@ public class AventiBot {
 		registerListeners();
 		LavaWrapper.initialize();
 		this.console = ConsoleUser.build(jda);
-		((JDAImpl)jda).getPrivateChannelMap().put(console.getIdLong(), console.getPrivateChannel());
+		SnowflakeCacheViewImpl<PrivateChannel> pcCache = ((SnowflakeCacheViewImpl<PrivateChannel>)((JDAImpl)jda).getPrivateChannelCache());
+		try(UnlockHook lock = pcCache.writeLock()) {
+		    pcCache.getMap().put(console.getIdLong(), console.getPrivateChannel());
+		}
 		launchTime = System.currentTimeMillis();
 	}
 	
@@ -136,7 +142,7 @@ public class AventiBot {
 					.setAutoReconnect(true)
 					.setToken(g.getToken());
 			if(!g.getCurrentGame().isEmpty()) 
-				jdaBuilder.setGame(Game.playing(g.getCurrentGame()));
+				jdaBuilder.setActivity(Activity.playing(g.getCurrentGame()));
 			jda = jdaBuilder.build().awaitReady();
 			status = BotStatus.CONNECTED;
 			postConntectionSetup();
@@ -165,7 +171,7 @@ public class AventiBot {
 	
 	public static void setCurrentGame(String name){
 		if(AventiBot.getStatus() == BotStatus.CONNECTED && getInstance() != null)
-			getInstance().getJDA().getPresence().setGame(name != null && !name.isEmpty() ? Game.playing(name) : null);
+			getInstance().getJDA().getPresence().setActivity(name != null && !name.isEmpty() ? Activity.playing(name) : null);
 	}
 	
 	

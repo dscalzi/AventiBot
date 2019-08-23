@@ -42,15 +42,16 @@ import com.dscalzi.aventibot.cmdutil.PermissionNode;
 import com.dscalzi.aventibot.cmdutil.PermissionUtil;
 import com.dscalzi.aventibot.cmdutil.PermissionNode.NodeType;
 import com.dscalzi.aventibot.util.IconUtil;
+import com.dscalzi.aventibot.util.JDAUtils;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.entities.MessageEmbed;
-import net.dv8tion.jda.core.entities.MessageEmbed.Field;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.MessageEmbed.Field;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 public class CmdUrbanDictionary implements CommandExecutor {
 
@@ -69,7 +70,7 @@ public class CmdUrbanDictionary implements CommandExecutor {
 	@Override
 	public CommandResult onCommand(MessageReceivedEvent e, String cmd, String[] args, String[] rawArgs) {
 		
-		if(!PermissionUtil.hasPermission(e.getAuthor(), permUrbanDictionary, e.getGuild(), true)) return CommandResult.NO_PERMISSION;
+		if(!PermissionUtil.hasPermission(e.getAuthor(), permUrbanDictionary, JDAUtils.getGuildFromCombinedEvent(e), true)) return CommandResult.NO_PERMISSION;
 		
 		String term = String.join(" ", args);
 		String strURL = "";

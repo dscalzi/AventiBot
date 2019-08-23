@@ -31,11 +31,12 @@ import com.dscalzi.aventibot.cmdutil.PermissionUtil;
 import com.dscalzi.aventibot.cmdutil.PermissionNode.NodeType;
 import com.dscalzi.aventibot.console.ConsoleUser;
 import com.dscalzi.aventibot.util.InputUtils;
+import com.dscalzi.aventibot.util.JDAUtils;
 
-import net.dv8tion.jda.core.MessageBuilder;
-import net.dv8tion.jda.core.entities.ChannelType;
-import net.dv8tion.jda.core.entities.MessageChannel;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.MessageBuilder;
+import net.dv8tion.jda.api.entities.ChannelType;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 public class CmdSay implements CommandExecutor{
 	
@@ -52,7 +53,7 @@ public class CmdSay implements CommandExecutor{
 	@Override
 	public CommandResult onCommand(MessageReceivedEvent e, String cmd, String[] args, String[] rawArgs) {
 		
-		if(!PermissionUtil.hasPermission(e.getAuthor(), permSay, e.getGuild())) return CommandResult.NO_PERMISSION;
+		if(!PermissionUtil.hasPermission(e.getAuthor(), permSay, JDAUtils.getGuildFromCombinedEvent(e))) return CommandResult.NO_PERMISSION;
 		
 		if(args.length == 0){
 			e.getChannel().sendMessage("Why are you trying to get me to say nothing.. lol").queue();
@@ -61,7 +62,7 @@ public class CmdSay implements CommandExecutor{
 		
 		MessageChannel ch = (args.length > 0) ? InputUtils.parseChannel(e.getMessage(), args[0]) : null;
 		
-		if(ch != null && e.getGuild() != null){
+		if(ch != null && e.isFromGuild()){
 			if(!e.getGuild().getTextChannels().contains(ch)){
 				e.getChannel().sendMessage("I cannot message other guilds for you, sorry!").queue();
 				return CommandResult.ERROR;

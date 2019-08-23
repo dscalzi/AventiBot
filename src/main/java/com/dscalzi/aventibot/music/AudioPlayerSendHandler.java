@@ -20,10 +20,12 @@
 
 package com.dscalzi.aventibot.music;
 
+import java.nio.ByteBuffer;
+
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.track.playback.AudioFrame;
 
-import net.dv8tion.jda.core.audio.AudioSendHandler;
+import net.dv8tion.jda.api.audio.AudioSendHandler;
 
 public class AudioPlayerSendHandler implements AudioSendHandler {
 	
@@ -41,8 +43,8 @@ public class AudioPlayerSendHandler implements AudioSendHandler {
 	}
 
 	@Override
-	public byte[] provide20MsAudio() {
-		return lastFrame.getData();
+	public ByteBuffer provide20MsAudio() {
+		return ByteBuffer.wrap(lastFrame.getData());
 	}
 
 	@Override

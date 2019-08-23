@@ -33,9 +33,9 @@ import com.dscalzi.aventibot.AventiBot;
 import com.dscalzi.aventibot.BotStatus;
 import com.dscalzi.aventibot.settings.GlobalConfig;
 import com.dscalzi.aventibot.settings.SettingsManager;
-import net.dv8tion.jda.core.events.Event;
-import net.dv8tion.jda.core.events.ShutdownEvent;
-import net.dv8tion.jda.core.hooks.EventListener;
+import net.dv8tion.jda.api.events.GenericEvent;
+import net.dv8tion.jda.api.events.ShutdownEvent;
+import net.dv8tion.jda.api.hooks.EventListener;
 
 public class CommandLineExecutor {
 	
@@ -76,7 +76,7 @@ public class CommandLineExecutor {
 		if(success){
 			AventiBot.getInstance().getJDA().addEventListener(new EventListener(){
 				@Override
-				public void onEvent(Event e){
+				public void onEvent(GenericEvent e){
 					if(e instanceof ShutdownEvent){
 						if(console != null)	console.shutdown();
 						LOG.info("===================================");

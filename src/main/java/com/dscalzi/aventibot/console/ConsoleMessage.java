@@ -23,17 +23,18 @@ package com.dscalzi.aventibot.console;
 import java.util.ArrayList;
 
 import gnu.trove.set.hash.TLongHashSet;
-import net.dv8tion.jda.core.entities.Emote;
-import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.MessageChannel;
-import net.dv8tion.jda.core.entities.MessageEmbed;
-import net.dv8tion.jda.core.entities.MessageReaction;
-import net.dv8tion.jda.core.entities.MessageType;
-import net.dv8tion.jda.core.entities.User;
-import net.dv8tion.jda.core.entities.impl.ReceivedMessage;
-import net.dv8tion.jda.core.requests.RestAction;
-import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
-import net.dv8tion.jda.core.requests.restaction.MessageAction;
+import net.dv8tion.jda.api.entities.Emote;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.MessageReaction;
+import net.dv8tion.jda.api.entities.MessageType;
+import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
+import net.dv8tion.jda.api.requests.restaction.MessageAction;
+import net.dv8tion.jda.internal.entities.ReceivedMessage;
+import net.dv8tion.jda.internal.requests.EmptyRestAction;
 
 public class ConsoleMessage extends ReceivedMessage {
 	
@@ -45,31 +46,31 @@ public class ConsoleMessage extends ReceivedMessage {
 	@Override
 	public RestAction<Void> pin() {
 		// Unsupported
-		return new RestAction.EmptyRestAction<Void>(getJDA(), null);
+		return new EmptyRestAction<Void>(getJDA());
 	}
 	
 	@Override
 	public RestAction<Void> unpin() {
 		// Unsupported
-		return new RestAction.EmptyRestAction<Void>(getJDA(), null);
+	    return new EmptyRestAction<Void>(getJDA());
 	}
 	
 	@Override
 	public RestAction<Void> addReaction(Emote emote) {
 		// Unsupported
-		return new RestAction.EmptyRestAction<Void>(getJDA(), null);
+	    return new EmptyRestAction<Void>(getJDA());
 	}
 	
 	@Override
 	public RestAction<Void> addReaction(String unicode) {
 		// Unsupported
-		return new RestAction.EmptyRestAction<Void>(getJDA(), null);
+	    return new EmptyRestAction<Void>(getJDA());
 	}
 	
 	@Override
 	public RestAction<Void> clearReactions() {
 		// Unsupported
-		return new RestAction.EmptyRestAction<Void>(getJDA(), null);
+	    return new EmptyRestAction<Void>(getJDA());
 	}
 	
 	@Override
@@ -99,7 +100,7 @@ public class ConsoleMessage extends ReceivedMessage {
     @Override
     public AuditableRestAction<Void> delete() {
     	// Unsupported
-        return new AuditableRestAction.EmptyRestAction<Void>(getJDA());
+        return new EmptyRestAction<Void>(getJDA());
     }
 
 	@Override

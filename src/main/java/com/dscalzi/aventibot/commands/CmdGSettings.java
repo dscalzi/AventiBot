@@ -36,9 +36,10 @@ import com.dscalzi.aventibot.cmdutil.PermissionNode.NodeType;
 import com.dscalzi.aventibot.settings.GlobalConfig;
 import com.dscalzi.aventibot.settings.SettingsManager;
 import com.dscalzi.aventibot.util.InputUtils;
+import com.dscalzi.aventibot.util.JDAUtils;
 import com.dscalzi.aventibot.util.Pair;
 
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 public class CmdGSettings implements CommandExecutor{
 
@@ -73,7 +74,7 @@ public class CmdGSettings implements CommandExecutor{
 					e.getChannel().sendMessage("Unknown settings key: `" + prop + "`.").queue();
 					return CommandResult.ERROR;
 				}
-				e.getChannel().sendMessage("Proper usage is `" + SettingsManager.getCommandPrefix(e.getGuild()) + "gsettings update <key> <value>`").queue();
+				e.getChannel().sendMessage("Proper usage is `" + SettingsManager.getCommandPrefix(JDAUtils.getGuildFromCombinedEvent(e)) + "gsettings update <key> <value>`").queue();
 				return CommandResult.IGNORE;
 			}
 			
@@ -85,7 +86,7 @@ public class CmdGSettings implements CommandExecutor{
 		GlobalConfig current = SettingsManager.getGlobalConfig();
 		
 		if(args.length < 3){
-			e.getChannel().sendMessage("Proper usage is " + SettingsManager.getCommandPrefix(e.getGuild()) + "gsettings update " + key.toLowerCase() + " <value>").queue();
+			e.getChannel().sendMessage("Proper usage is " + SettingsManager.getCommandPrefix(JDAUtils.getGuildFromCombinedEvent(e)) + "gsettings update " + key.toLowerCase() + " <value>").queue();
 			return CommandResult.ERROR;
 		}
 		try {

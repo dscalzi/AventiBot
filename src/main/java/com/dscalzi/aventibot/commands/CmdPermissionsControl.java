@@ -36,14 +36,15 @@ import com.dscalzi.aventibot.cmdutil.PermissionNode.NodeType;
 import com.dscalzi.aventibot.cmdutil.PermissionResult;
 import com.dscalzi.aventibot.util.IconUtil;
 import com.dscalzi.aventibot.util.InputUtils;
+import com.dscalzi.aventibot.util.JDAUtils;
 import com.dscalzi.aventibot.util.Pair;
 
-import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.entities.Role;
-import net.dv8tion.jda.core.entities.User;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.MessageEmbed;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 
 public class CmdPermissionsControl implements CommandExecutor{
 	
@@ -80,7 +81,7 @@ public class CmdPermissionsControl implements CommandExecutor{
 	public CommandResult onCommand(MessageReceivedEvent e, String cmd, String[] args, String[] rawArgs) {
 		
 		if(args.length == 0){
-			e.getChannel().sendMessage(constructSubcommandTree(e.getGuild())).queue();
+			e.getChannel().sendMessage(constructSubcommandTree(JDAUtils.getGuildFromCombinedEvent(e))).queue();
 			return CommandResult.ERROR;
 		}
 		
@@ -112,7 +113,7 @@ public class CmdPermissionsControl implements CommandExecutor{
 	}
 	
 	private CommandResult cmdWritePermissionChange(MessageReceivedEvent e, String label, boolean add, String[] rawArgs){
-		if(!PermissionUtil.hasPermission(e.getAuthor(), add ? permGrant : permRevoke, e.getGuild(), false)){
+		if(!PermissionUtil.hasPermission(e.getAuthor(), add ? permGrant : permRevoke, JDAUtils.getGuildFromCombinedEvent(e), false)){
 			return CommandResult.NO_PERMISSION;
 		}
 		
@@ -123,10 +124,10 @@ public class CmdPermissionsControl implements CommandExecutor{
 		Pair<String[], String[]> ps = partition(terms, add ? "to" : "from");
 		if(ps == null) return cmdWritePermissionFormat(e, label, add);
 			
-		Pair<Set<Role>,Set<String>> roles = InputUtils.parseBulkRoles(ps.getValue(), e.getGuild());
+		Pair<Set<Role>,Set<String>> roles = InputUtils.parseBulkRoles(ps.getValue(), JDAUtils.getGuildFromCombinedEvent(e));
 		Pair<Set<PermissionNode>,Set<String>> nodes = PermissionUtil.validateNodes(new HashSet<String>(Arrays.asList(ps.getKey())));
 		try {
-			PermissionResult r = PermissionUtil.writePermissionChange(e.getGuild(), roles.getKey(), nodes.getKey(), add);
+			PermissionResult r = PermissionUtil.writePermissionChange(JDAUtils.getGuildFromCombinedEvent(e), roles.getKey(), nodes.getKey(), add);
 			for(String s : roles.getValue()) r.addInvalidRole(s);
 			for(String s : nodes.getValue()) r.addInvalidNode(s);
 			for(Role ro : roles.getKey()) r.addMentionable(ro);
@@ -145,12 +146,12 @@ public class CmdPermissionsControl implements CommandExecutor{
 	}
 	
 	private CommandResult cmdWritePermissionFormat(MessageReceivedEvent e, String label, boolean add){
-		e.getChannel().sendMessage("Proper format is `" + SettingsManager.getCommandPrefix(e.getGuild()) + "permissions " + label + " <node(s)> " + (add ? "to" : "from") + " <role(s)>`").queue();
+		e.getChannel().sendMessage("Proper format is `" + SettingsManager.getCommandPrefix(JDAUtils.getGuildFromCombinedEvent(e)) + "permissions " + label + " <node(s)> " + (add ? "to" : "from") + " <role(s)>`").queue();
 		return CommandResult.ERROR;
 	}
 	
 	private CommandResult cmdWriteBlacklistChange(MessageReceivedEvent e, String label, boolean add, String[] rawArgs){
-		if(!PermissionUtil.hasPermission(e.getAuthor(), add ? permBlacklist : permUnblacklist, e.getGuild(), false)){
+		if(!PermissionUtil.hasPermission(e.getAuthor(), add ? permBlacklist : permUnblacklist, JDAUtils.getGuildFromCombinedEvent(e), false)){
 			return CommandResult.NO_PERMISSION;
 		}
 		
@@ -161,11 +162,11 @@ public class CmdPermissionsControl implements CommandExecutor{
 		Pair<String[], String[]> ps = partition(terms, "for");
 		if(ps == null) return cmdWriteBlacklistFormat(e, label, add);
 		
-		Pair<Set<User>,Set<String>> users = InputUtils.parseBulkMembers(ps.getValue(), e.getGuild());
+		Pair<Set<User>,Set<String>> users = InputUtils.parseBulkMembers(ps.getValue(), JDAUtils.getGuildFromCombinedEvent(e));
 		Pair<Set<PermissionNode>,Set<String>> nodes = PermissionUtil.validateNodes(new HashSet<String>(Arrays.asList(ps.getKey())));
 		
 		try {
-			PermissionResult r = PermissionUtil.writeBlacklistChange(e.getGuild(), users.getKey(), nodes.getKey(), add);
+			PermissionResult r = PermissionUtil.writeBlacklistChange(JDAUtils.getGuildFromCombinedEvent(e), users.getKey(), nodes.getKey(), add);
 			for(String s : users.getValue()) r.addInvalidUser(s);
 			for(String s : nodes.getValue()) r.addInvalidNode(s);
 			for(User u : users.getKey()) r.addMentionable(u);
@@ -184,7 +185,7 @@ public class CmdPermissionsControl implements CommandExecutor{
 	}
 	
 	private CommandResult cmdWriteBlacklistFormat(MessageReceivedEvent e, String label, boolean add){
-		e.getChannel().sendMessage("Proper format is `" + SettingsManager.getCommandPrefix(e.getGuild()) + "permissions " + label + " <node(s)> for <users(s)>`").queue();
+		e.getChannel().sendMessage("Proper format is `" + SettingsManager.getCommandPrefix(JDAUtils.getGuildFromCombinedEvent(e)) + "permissions " + label + " <node(s)> for <users(s)>`").queue();
 		return CommandResult.ERROR;
 	}
 	
@@ -208,21 +209,21 @@ public class CmdPermissionsControl implements CommandExecutor{
 	}
 	
 	private CommandResult cmdWriteNodePermissionChange(MessageReceivedEvent e, String label, boolean enable, String[] rawArgs){
-		if(!PermissionUtil.hasPermission(e.getAuthor(), enable ? permEnable : permDisable, e.getGuild(), false)){
+		if(!PermissionUtil.hasPermission(e.getAuthor(), enable ? permEnable : permDisable, JDAUtils.getGuildFromCombinedEvent(e), false)){
 			return CommandResult.NO_PERMISSION;
 		}
 		
 		String[] terms = new String[rawArgs.length-1];
 		for(int i=0; i<terms.length; ++i) terms[i] = rawArgs[i+1];
 		if(rawArgs.length < 2){
-			e.getChannel().sendMessage("Proper format is `" + SettingsManager.getCommandPrefix(e.getGuild()) + "permissions " + label + " <node(s)>`").queue();
+			e.getChannel().sendMessage("Proper format is `" + SettingsManager.getCommandPrefix(JDAUtils.getGuildFromCombinedEvent(e)) + "permissions " + label + " <node(s)>`").queue();
 			return CommandResult.ERROR;
 		}
 		
 		Pair<Set<PermissionNode>,Set<String>> nodes = PermissionUtil.validateNodes(new HashSet<String>(Arrays.asList(terms)));
 		
 		try {
-			PermissionResult r = PermissionUtil.writeNodeChange(e.getGuild(), nodes.getKey(), enable);
+			PermissionResult r = PermissionUtil.writeNodeChange(JDAUtils.getGuildFromCombinedEvent(e), nodes.getKey(), enable);
 			for(String s : nodes.getValue()) r.addInvalidNode(s);
 			e.getChannel().sendMessage(r.construct(true)).queue();
 			if(r.hasLog()){
@@ -239,12 +240,12 @@ public class CmdPermissionsControl implements CommandExecutor{
 	}
 	
 	private CommandResult cmdInfo(MessageReceivedEvent e, String[] rawArgs){
-		if(!PermissionUtil.hasPermission(e.getAuthor(), permInfo, e.getGuild(), false)){
+		if(!PermissionUtil.hasPermission(e.getAuthor(), permInfo, JDAUtils.getGuildFromCombinedEvent(e), false)){
 			return CommandResult.NO_PERMISSION;
 		}
 		
 		if(rawArgs.length < 2){
-			e.getChannel().sendMessage("Proper format is `" + SettingsManager.getCommandPrefix(e.getGuild()) + "permissions info <node>`").queue();
+			e.getChannel().sendMessage("Proper format is `" + SettingsManager.getCommandPrefix(JDAUtils.getGuildFromCombinedEvent(e)) + "permissions info <node>`").queue();
 			return CommandResult.ERROR;
 		}
 		
@@ -254,10 +255,10 @@ public class CmdPermissionsControl implements CommandExecutor{
 			EmbedBuilder eb = new EmbedBuilder();
 			
 			eb.setAuthor(node, null, IconUtil.INFO.getURL());
-			eb.setColor(SettingsManager.getColorAWT(e.getGuild()));
+			eb.setColor(SettingsManager.getColorAWT(JDAUtils.getGuildFromCombinedEvent(e)));
 			
-			List<String> roles = PermissionUtil.getAllowedRoles(n, e.getGuild());
-			List<String> blacklisted = PermissionUtil.getBlacklistedUsers(n, e.getGuild());
+			List<String> roles = PermissionUtil.getAllowedRoles(n, JDAUtils.getGuildFromCombinedEvent(e));
+			List<String> blacklisted = PermissionUtil.getBlacklistedUsers(n, JDAUtils.getGuildFromCombinedEvent(e));
 			
 			eb.setDescription(BULLET + " " + (roles == null ? "`Does not require`" : "`Requires`") + " permission.\n"
 					+ (roles != null ? "  " + ANGLE + " Currently `" + roles.size() + "` role" + (roles.size() == 1 ? "" : "s") + " allowed.\n" : "")
@@ -286,30 +287,30 @@ public class CmdPermissionsControl implements CommandExecutor{
 	}
 	
 	private CommandResult cmdUserInfo(MessageReceivedEvent e, String[] rawArgs){
-		if(!PermissionUtil.hasPermission(e.getAuthor(), permUserInfo, e.getGuild(), false)){
+		if(!PermissionUtil.hasPermission(e.getAuthor(), permUserInfo, JDAUtils.getGuildFromCombinedEvent(e), false)){
 			return CommandResult.NO_PERMISSION;
 		}
 		
 		if(rawArgs.length < 2){
-			e.getChannel().sendMessage("Proper format is `" + SettingsManager.getCommandPrefix(e.getGuild()) + "permissions userinfo <user>`").queue();
+			e.getChannel().sendMessage("Proper format is `" + SettingsManager.getCommandPrefix(JDAUtils.getGuildFromCombinedEvent(e)) + "permissions userinfo <user>`").queue();
 			return CommandResult.ERROR;
 		}
 		
 		String[] terms = new String[rawArgs.length-1];
 		for(int i=0; i<terms.length; ++i) terms[i] = rawArgs[i+1];
 		
-		Pair<Set<User>, Set<String>> temp = InputUtils.parseBulkMembers(rawArgs, e.getGuild());
+		Pair<Set<User>, Set<String>> temp = InputUtils.parseBulkMembers(rawArgs, JDAUtils.getGuildFromCombinedEvent(e));
 		if(temp.getKey().isEmpty()){
 			e.getChannel().sendMessage("Unknown User: `" + temp.getValue().iterator().next() + "`.").queue();
 			return CommandResult.ERROR;
 		}
 		
 		User target = temp.getKey().iterator().next();
-		List<String> r = PermissionUtil.getNodesForUser(target, e.getGuild());
+		List<String> r = PermissionUtil.getNodesForUser(target, JDAUtils.getGuildFromCombinedEvent(e));
 		
 		EmbedBuilder eb = new EmbedBuilder();
 		eb.setAuthor("User Information", null, IconUtil.INFO.getURL());
-		eb.setColor(SettingsManager.getColorAWT(e.getGuild()));
+		eb.setColor(SettingsManager.getColorAWT(JDAUtils.getGuildFromCombinedEvent(e)));
 		
 		eb.setDescription(target.getAsMention() + "\n" + BULLET + " Currently blacklisted from `" + r.size() + "` permission" + (r.size() == 1 ? "" : "s") + ".");
 		
@@ -324,30 +325,30 @@ public class CmdPermissionsControl implements CommandExecutor{
 	}
 	
 	private CommandResult cmdRoleInfo(MessageReceivedEvent e, String[] rawArgs){
-		if(!PermissionUtil.hasPermission(e.getAuthor(), permRoleInfo, e.getGuild(), false)){
+		if(!PermissionUtil.hasPermission(e.getAuthor(), permRoleInfo, JDAUtils.getGuildFromCombinedEvent(e), false)){
 			return CommandResult.NO_PERMISSION;
 		}
 		
 		if(rawArgs.length < 2){
-			e.getChannel().sendMessage("Proper format is `" + SettingsManager.getCommandPrefix(e.getGuild()) + "permissions roleinfo <role>`").queue();
+			e.getChannel().sendMessage("Proper format is `" + SettingsManager.getCommandPrefix(JDAUtils.getGuildFromCombinedEvent(e)) + "permissions roleinfo <role>`").queue();
 			return CommandResult.ERROR;
 		}
 		
 		String[] terms = new String[rawArgs.length-1];
 		for(int i=0; i<terms.length; ++i) terms[i] = rawArgs[i+1];
 		
-		Pair<Set<Role>, Set<String>> temp = InputUtils.parseBulkRoles(terms, e.getGuild());
+		Pair<Set<Role>, Set<String>> temp = InputUtils.parseBulkRoles(terms, JDAUtils.getGuildFromCombinedEvent(e));
 		if(temp.getKey().isEmpty()){
 			e.getChannel().sendMessage("Unknown Role: `" + temp.getValue().iterator().next() + "`.").queue();
 			return CommandResult.ERROR;
 		}
 		
 		Role target = temp.getKey().iterator().next();
-		Set<PermissionNode> r = PermissionUtil.getNodesForRole(target, e.getGuild());
+		Set<PermissionNode> r = PermissionUtil.getNodesForRole(target, JDAUtils.getGuildFromCombinedEvent(e));
 		
 		EmbedBuilder eb = new EmbedBuilder();
 		eb.setAuthor("Role Information", null, IconUtil.INFO.getURL());
-		eb.setColor(SettingsManager.getColorAWT(e.getGuild()));
+		eb.setColor(SettingsManager.getColorAWT(JDAUtils.getGuildFromCombinedEvent(e)));
 		
 		eb.setDescription(target.getAsMention() + "\n" + BULLET + " Currently granted `" + r.size() + "` permission" + (r.size() == 1 ? "" : "s") + ".");
 		

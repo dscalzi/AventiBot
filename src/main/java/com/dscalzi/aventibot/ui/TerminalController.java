@@ -58,9 +58,10 @@ import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import net.dv8tion.jda.core.events.Event;
-import net.dv8tion.jda.core.events.ShutdownEvent;
-import net.dv8tion.jda.core.hooks.EventListener;
+
+import net.dv8tion.jda.api.events.GenericEvent;
+import net.dv8tion.jda.api.events.ShutdownEvent;
+import net.dv8tion.jda.api.hooks.EventListener;
 
 public class TerminalController implements Initializable {
 
@@ -158,7 +159,7 @@ public class TerminalController implements Initializable {
 					launch_button.setManaged(false);
 					AventiBot.getInstance().getJDA().addEventListener(new EventListener(){
 						@Override
-						public void onEvent(Event e){
+						public void onEvent(GenericEvent e){
 							if(e instanceof ShutdownEvent){
 								LOG.info("===================================");
 								LOG.info("AventiBot JDA has been shutdown..");

@@ -25,16 +25,17 @@ import org.slf4j.MarkerFactory;
 
 import com.dscalzi.aventibot.AventiBot;
 import com.dscalzi.aventibot.settings.SettingsManager;
+import com.dscalzi.aventibot.util.JDAUtils;
 
-import net.dv8tion.jda.core.entities.ChannelType;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.core.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.entities.ChannelType;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 public class CommandListener extends ListenerAdapter {
 
 	@Override
 	public void onMessageReceived(MessageReceivedEvent e){
-		if(e.getMessage().getContentRaw().trim().startsWith(SettingsManager.getCommandPrefix(e.getGuild()))){
+		if(e.getMessage().getContentRaw().trim().startsWith(SettingsManager.getCommandPrefix(JDAUtils.getGuildFromCombinedEvent(e)))){
 			if(e.getChannelType() != ChannelType.PRIVATE)
 				if(!PermissionUtil.isInitialized(e.getGuild())){
 					try{
