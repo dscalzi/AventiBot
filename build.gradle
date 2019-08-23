@@ -56,14 +56,14 @@ license {
 }
 
 jar {
-    baseName = project.name
+    archiveBaseName = project.name
     manifest {
         attributes 'Implementation-Version': version, 'Specification-Version': version
     }
 }
 
 shadowJar {
-    classifier = "dist"
+    archiveClassifier = 'dist'
 }
 
 build {
@@ -75,7 +75,7 @@ build {
     shadowJar.mustRunAfter jar
 }
 
-String getDepdencyVersion(name) {
+String getDependencyVersion(name) {
 	def res = ''
 	
 	configurations.compileClasspath.resolvedConfiguration.resolvedArtifacts.each { artifact ->
@@ -92,8 +92,8 @@ String getDepdencyVersion(name) {
 task updateReadme {
 	def readMe = new File(project.rootDir.toString() + '/README.md')
 	
-	def txt = readMe.text.replaceFirst(/JDA-(.*?)-/, "JDA-${getDepdencyVersion('JDA').replaceAll('_', '__')}-")
-	readMe.text = txt.replaceFirst(/lavaplayer-(.*?)-/, "lavaplayer-${getDepdencyVersion('lavaplayer')}-")
+	def txt = readMe.text.replaceFirst(/JDA-(.*?)-/, "JDA-${getDependencyVersion('JDA').replaceAll('_', '__')}-")
+	readMe.text = txt.replaceFirst(/lavaplayer-(.*?)-/, "lavaplayer-${getDependencyVersion('lavaplayer')}-")
 }
 
 class Version {
