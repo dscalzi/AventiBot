@@ -3,11 +3,12 @@ plugins {
     id 'application'
     id 'net.minecrell.licenser' version '0.4.1'
     id 'com.github.johnrengelman.shadow' version '5.1.0'
+    id 'org.openjfx.javafxplugin' version '0.0.8'
 }
 
 mainClassName = 'com.dscalzi.aventibot.LaunchWrapper'
 
-def versionObj = new Version(major: 0, minor: 81, revision: 0)
+def versionObj = new Version(major: 0, minor: 82, revision: 0)
 
 description = 'Highly customizable Discord Bot'
 
@@ -15,8 +16,8 @@ group = 'com.dscalzi'
 archivesBaseName = 'AventiBot'
 version = "$versionObj"
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+sourceCompatibility = JavaVersion.VERSION_11
+targetCompatibility = JavaVersion.VERSION_11
 
 repositories {
     jcenter()
@@ -25,8 +26,8 @@ repositories {
 }
 
 dependencies {
-    implementation 'net.dv8tion:JDA:4.0.0_45'
-    implementation 'com.sedmelluq:lavaplayer:1.3.20'
+    implementation 'net.dv8tion:JDA:4.0.0_50'
+    implementation 'com.sedmelluq:lavaplayer:1.3.22'
     implementation 'com.google.code.gson:gson:2.8.5'
     implementation 'ch.qos.logback:logback-classic:1.2.3'
     
@@ -53,6 +54,11 @@ license {
         year = '2016-2019'
         url = 'https://github.com/dscalzi/AventiBot'
     }
+}
+
+javafx {
+    version = "11"
+    modules = [ 'javafx.controls',  'javafx.fxml' ]
 }
 
 jar {
