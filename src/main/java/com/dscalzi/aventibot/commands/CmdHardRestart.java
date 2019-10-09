@@ -21,7 +21,7 @@
 package com.dscalzi.aventibot.commands;
 
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -44,9 +44,9 @@ public class CmdHardRestart implements CommandExecutor{
 	public final Set<PermissionNode> nodes;
 	
 	public CmdHardRestart(){
-		nodes = new HashSet<PermissionNode>(Arrays.asList(
+		nodes = new HashSet<>(Collections.singletonList(
 				permHardRestart
-			));
+		));
 	}
 	
 	@Override

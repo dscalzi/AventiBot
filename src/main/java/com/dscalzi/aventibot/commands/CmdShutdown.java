@@ -20,7 +20,7 @@
 
 package com.dscalzi.aventibot.commands;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -42,9 +42,9 @@ public class CmdShutdown implements CommandExecutor{
 	public final Set<PermissionNode> nodes;
 	
 	public CmdShutdown(){
-		nodes = new HashSet<PermissionNode>(Arrays.asList(
-					permShutdown
-				));
+		nodes = new HashSet<>(Collections.singletonList(
+				permShutdown
+		));
 	}
 	
 	@Override

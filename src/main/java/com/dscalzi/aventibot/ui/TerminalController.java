@@ -92,7 +92,7 @@ public class TerminalController implements Initializable {
 		Scene root;
 		
 		try(InputStream fxmlStream = getClass().getResourceAsStream("/assets/fxml/SettingsFXML.fxml")){
-			root = (Scene) loader.load(fxmlStream);
+			root = loader.load(fxmlStream);
 			root.getStylesheets().add(getClass().getResource("/assets/styles/settings.css").toExternalForm());
 		} catch (IOException e1) {
 			LOG.error(MarkerFactory.getMarker("FATAL"), "Unable to open settings window..");
@@ -106,7 +106,7 @@ public class TerminalController implements Initializable {
 		Stage stage = new Stage();
 		
 		stage.setOnCloseRequest(event -> {
-			SettingsController c = loader.<SettingsController>getController();
+			SettingsController c = loader.getController();
 			
 			if(c.getState() == SettingsController.SettingsState.NOT_SAVED){
 				Alert alert = new Alert(AlertType.WARNING);
@@ -147,7 +147,7 @@ public class TerminalController implements Initializable {
 		Platform.runLater(() -> {
 			synchronized(this){
 				launch_button.setDisable(true);
-				boolean success = false;
+				boolean success;
 				if(AventiBot.getStatus() == BotStatus.NULL){
 					AventiBot.launch();
 					success = AventiBot.getStatus() == BotStatus.CONNECTED;
@@ -220,8 +220,8 @@ public class TerminalController implements Initializable {
 		System.setErr(ps);
 	}
 	
-	/**
-     * Hack TooltipBehavior 
+	/*
+     * Hack TooltipBehavior
      */
     static {
     	try {
@@ -252,5 +252,5 @@ public class TerminalController implements Initializable {
     		LoggerFactory.getLogger("Launcher").warn("Could not change tooltip behavior, running on unsupported java version.");
     	}
     }
-	
+
 }

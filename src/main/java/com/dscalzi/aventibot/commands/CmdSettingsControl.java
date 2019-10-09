@@ -53,7 +53,7 @@ public class CmdSettingsControl implements CommandExecutor{
 	public final Set<PermissionNode> nodes;
 	
 	public CmdSettingsControl(){
-		nodes = new HashSet<PermissionNode>(Arrays.asList(
+		nodes = new HashSet<>(Arrays.asList(
 					permUpdate,
 					permInfo
 				));

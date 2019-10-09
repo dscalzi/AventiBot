@@ -40,7 +40,7 @@ public class TrackMeta{
 		this.track = track;
 		this.requester = requester;
 		this.requestedIn = requestedIn;
-		this.requestedSkips = new HashMap<User, Integer>();
+		this.requestedSkips = new HashMap<>();
 	}
 
 	public AudioTrack getTrack() {
@@ -81,7 +81,7 @@ public class TrackMeta{
 	
 	public int getNumSkips(){
 		int sks = 0;
-		for(Integer i : requestedSkips.values()) sks += i.intValue();
+		for(Integer i : requestedSkips.values()) sks += i;
 		return sks;
 	}
 	

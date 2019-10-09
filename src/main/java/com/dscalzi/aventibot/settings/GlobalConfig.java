@@ -34,12 +34,12 @@ public class GlobalConfig{
 	public static final Map<Pair<String, Object>, Method> keyMap;
 	
 	static {
-		keyMap = new HashMap<Pair<String, Object>, Method>();
+		keyMap = new HashMap<>();
 		try {
-			keyMap.put(new Pair<String, Object>("token", "NULL"), GlobalConfig.class.getMethod("setToken", String.class));
-			keyMap.put(new Pair<String, Object>("currentGame", "Developed by Dan"), GlobalConfig.class.getMethod("setCurrentGame", String.class));
-			keyMap.put(new Pair<String, Object>("defaultColorHex", "#0f579d"), GlobalConfig.class.getMethod("setDefaultColor", String.class));
-			keyMap.put(new Pair<String, Object>("defaultCommandPrefix", "--"), GlobalConfig.class.getMethod("setDefaultCommandPrefix", String.class));
+			keyMap.put(new Pair<>("token", "NULL"), GlobalConfig.class.getMethod("setToken", String.class));
+			keyMap.put(new Pair<>("currentGame", "Developed by Dan"), GlobalConfig.class.getMethod("setCurrentGame", String.class));
+			keyMap.put(new Pair<>("defaultColorHex", "#0f579d"), GlobalConfig.class.getMethod("setDefaultColor", String.class));
+			keyMap.put(new Pair<>("defaultCommandPrefix", "--"), GlobalConfig.class.getMethod("setDefaultCommandPrefix", String.class));
 		} catch (NoSuchMethodException | SecurityException e) {
 			//Shouldn't happen since this is hard coded.
 			e.printStackTrace();

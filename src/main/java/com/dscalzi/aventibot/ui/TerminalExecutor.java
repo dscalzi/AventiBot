@@ -53,7 +53,7 @@ public class TerminalExecutor extends Application {
 		Scene root;
 		
 		try(InputStream fxmlStream = getClass().getResourceAsStream("/assets/fxml/TerminalFXML.fxml")){
-			root = (Scene) loader.load(fxmlStream);
+			root = loader.load(fxmlStream);
 		}
 		
 		LOG.info("Starting terminal..");

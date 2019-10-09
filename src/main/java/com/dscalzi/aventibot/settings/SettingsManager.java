@@ -57,7 +57,7 @@ public class SettingsManager {
 	private static final Logger LOG = LoggerFactory.getLogger("SettingsManager");
 	
 	private static GlobalConfig configCache = null;
-	private static Map<String, GuildConfig> gConfigCache = new HashMap<String, GuildConfig>();
+	private static Map<String, GuildConfig> gConfigCache = new HashMap<>();
 	
 	public static void reload(){
 		configCache = null;
@@ -242,7 +242,7 @@ public class SettingsManager {
 		boolean requiresSave = false;
 		
 		try(JsonReader file = new JsonReader(new FileReader(target))){
-			JsonObject result = null;
+			JsonObject result;
 			JsonElement parsed = p.parse(file);
 			if(parsed.isJsonNull()) return generateDefaultGlobal();
 			if(parsed.isJsonObject()){
@@ -354,7 +354,7 @@ public class SettingsManager {
 		boolean requiresSave = false;
 		
 		try(JsonReader file = new JsonReader(new FileReader(target))){
-			JsonObject result = null;
+			JsonObject result;
 			JsonElement parsed = p.parse(file);
 			if(parsed.isJsonNull()) return generateDefaultGuild(id);
 			if(parsed.isJsonObject()){
@@ -387,7 +387,7 @@ public class SettingsManager {
 	/**
 	 * Generates a default configuration file for the specified guild and serializes it to JSON.
 	 * 
-	 * @param id Guild to generate the settings for.
+	 * @param g Guild to generate the settings for.
 	 * 
 	 * @return The GuildConfig object with default assigned values which was serialized.
 	 * @throws IOException If the target file was not found/could not be created.

@@ -32,6 +32,8 @@ import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import net.dv8tion.jda.internal.requests.EmptyRestAction;
 
+import javax.annotation.Nonnull;
+
 public class ConsolePrivateChannel implements PrivateChannel {
 	
     private final long id;
@@ -43,7 +45,8 @@ public class ConsolePrivateChannel implements PrivateChannel {
         this.api = api;
         this.id = user.getIdLong();
     }
-	
+
+	@Nonnull
     @Override
 	public MessageAction sendMessage(CharSequence text) {
     	LoggerFactory.getLogger("??? -> Me").info(text.toString());
@@ -51,48 +54,56 @@ public class ConsolePrivateChannel implements PrivateChannel {
     	return new ConsoleMessageAction(api, null, this, msg);
 	}
 
+	@Nonnull
 	@Override
 	public MessageAction sendMessage(Message msg) {
 		LoggerFactory.getLogger(msg.getAuthor().getDiscriminator() + " -> Me").info(msg.getContentRaw());
 		return new ConsoleMessageAction(api, null, this, msg);
 	}
-	
+
+	@Nonnull
 	@Override
-	public MessageAction sendMessage(MessageEmbed embed) {
+	public MessageAction sendMessage(@Nonnull MessageEmbed embed) {
 		LoggerFactory.getLogger("Embeded Message").info("Unable to display embed on terminal.");
 		ConsoleMessage msg = new ConsoleMessage(this, null, user);
 		return new ConsoleMessageAction(api, null, this, msg);
 	}
 
+	@Nonnull
 	@Override
 	public String getId() {
 		return user.getId();
 	}
 
+	@Nonnull
 	@Override
 	public User getUser() {
 		return this.user;
 	}
 
+	@Nonnull
 	@Override
 	public JDA getJDA() {
 		return this.api;
 	}
 
+	@Nonnull
 	@Override
 	public String getName() {
 		return getUser().getName();
 	}
 
+	@Nonnull
 	@Override
 	public ChannelType getType() {
 		return ChannelType.PRIVATE;
 	}
 
+	@Nonnull
 	@Override
 	public RestAction<Void> close() {
 		// Not Supported
-		return new EmptyRestAction<Void>(api);
+		return new EmptyRestAction<>(api);
 	}
 
 	@Override

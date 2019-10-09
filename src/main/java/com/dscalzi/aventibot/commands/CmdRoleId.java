@@ -20,7 +20,7 @@
 
 package com.dscalzi.aventibot.commands;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -46,9 +46,9 @@ public class CmdRoleId implements CommandExecutor{
 	public final Set<PermissionNode> nodes;
 	
 	public CmdRoleId(){
-		nodes = new HashSet<PermissionNode>(Arrays.asList(
-					permRoleId
-				));
+		nodes = new HashSet<>(Collections.singletonList(
+				permRoleId
+		));
 	}
 	
 	@Override
@@ -83,11 +83,11 @@ public class CmdRoleId implements CommandExecutor{
 		} else {
 			EmbedBuilder eb = new EmbedBuilder();
 			eb.setColor(roles.size() == 1 ? roles.iterator().next().getColor() : SettingsManager.getColorAWT(e.getGuild()));
-			String desc = "";
+			StringBuilder desc = new StringBuilder();
 			for(Role r : roles){
-				desc += r.getAsMention() + "\n`" + r.getId() + "`\n";
+				desc.append(r.getAsMention()).append("\n`").append(r.getId()).append("`\n");
 			}
-			eb.setDescription(desc);
+			eb.setDescription(desc.toString());
 			e.getChannel().sendMessage(eb.build()).queue();
 		}
 		

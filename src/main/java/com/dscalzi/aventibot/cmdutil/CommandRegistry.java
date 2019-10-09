@@ -32,7 +32,7 @@ public class CommandRegistry {
 	private Map<String, CommandExecutor> registry;
 	
 	public CommandRegistry(){
-		this.registry = new HashMap<String, CommandExecutor>();
+		this.registry = new HashMap<>();
 	}
 	
 	public boolean register(String cmd, CommandExecutor executor){
@@ -49,7 +49,7 @@ public class CommandRegistry {
 	}
 	
 	public Set<PermissionNode> getAllRegisteredNodes(){
-		Set<PermissionNode> a = new HashSet<PermissionNode>();
+		Set<PermissionNode> a = new HashSet<>();
 		for(CommandExecutor e : registry.values()){
 			for(PermissionNode pn : e.provideNodes()) a.add(pn);
 		}

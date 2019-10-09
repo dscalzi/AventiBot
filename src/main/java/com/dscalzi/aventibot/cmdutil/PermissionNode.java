@@ -58,9 +58,10 @@ public class PermissionNode {
 		if (getClass() != obj.getClass()) return false;
 		PermissionNode other = (PermissionNode) obj;
 		if (nodeText == null) {
-			if (other.nodeText != null) return false;
-		} else if (!nodeText.equals(other.nodeText)) return false;
-		return true;
+			return other.nodeText == null;
+		} else {
+			return nodeText.equals(other.nodeText);
+		}
 	}
 	
 	/**

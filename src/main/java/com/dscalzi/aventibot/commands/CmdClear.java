@@ -24,11 +24,7 @@ import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
+import java.util.*;
 
 import com.dscalzi.aventibot.cmdutil.CommandExecutor;
 import com.dscalzi.aventibot.cmdutil.CommandResult;
@@ -56,9 +52,9 @@ public class CmdClear implements CommandExecutor{
 	public final Set<PermissionNode> nodes;
 	
 	public CmdClear(){
-		nodes = new HashSet<PermissionNode>(Arrays.asList(
-					permClear
-				));
+		nodes = new HashSet<>(Collections.singletonList(
+				permClear
+		));
 	}
 	
 	@Override
@@ -137,8 +133,8 @@ public class CmdClear implements CommandExecutor{
 			return CommandResult.ERROR;
 		}
 		
-		if(e.getChannel().equals(channel))
-			e.getMessage().delete();
+//		if(e.getChannel().equals(channel))
+//			e.getMessage().delete().queue();
 		
 		this.clear(limit, threshold, channel, target, e.getChannel());
 		
@@ -152,8 +148,8 @@ public class CmdClear implements CommandExecutor{
 		channel.getHistory().retrievePast(limit).queue((history) -> {
 			int deleted = delete(history, threshold, target);	
 			
-			//TODO Make the timestamp more user-friendly. Rather than "sice x GMT", "in the past hour";
-			String successPt1 = "";
+			//TODO Make the timestamp more user-friendly. Rather than "since x GMT", "in the past hour";
+			String successPt1;
 			String successPt2 = "";
 			if(deleted > 0){
 				DateTimeFormatter format = DateTimeFormatter.RFC_1123_DATE_TIME.withLocale(Locale.US).withZone(ZoneOffset.UTC);
@@ -165,7 +161,7 @@ public class CmdClear implements CommandExecutor{
 			}
 			
 			if(!origin.equals(channel)){
-				if(deleted > 0) channel.sendMessage(successPt1 + successPt2);
+				if(deleted > 0) channel.sendMessage(successPt1 + successPt2).queue();
 				origin.sendMessage(successPt1 + " from "+ channel.getAsMention() + successPt2).queue();
 			} else {
 				channel.sendMessage(successPt1 + successPt2).queue();

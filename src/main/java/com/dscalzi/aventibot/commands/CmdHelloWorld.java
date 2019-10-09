@@ -20,7 +20,7 @@
 
 package com.dscalzi.aventibot.commands;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -40,9 +40,9 @@ public class CmdHelloWorld implements CommandExecutor{
 	public final Set<PermissionNode> nodes;
 	
 	public CmdHelloWorld(){
-		nodes = new HashSet<PermissionNode>(Arrays.asList(
-					permHelloWorld
-				));
+		nodes = new HashSet<>(Collections.singletonList(
+				permHelloWorld
+		));
 	}
 	
 	@Override

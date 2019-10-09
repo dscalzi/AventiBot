@@ -54,13 +54,13 @@ public class PermissionResult {
 	public PermissionResult(Type type, Guild g){
 		this.type = type;
 		this.g = g;
-		this.entities = new HashSet<IMentionable>();
-		this.nodes = new HashSet<String>();
-		this.failedNodes = new HashSet<String>();
-		this.invalidNodes = new HashSet<String>();
-		this.invalidRoles = new HashSet<String>();
-		this.invalidUsers = new HashSet<String>();
-		this.log = new ArrayList<String>();
+		this.entities = new HashSet<>();
+		this.nodes = new HashSet<>();
+		this.failedNodes = new HashSet<>();
+		this.invalidNodes = new HashSet<>();
+		this.invalidRoles = new HashSet<>();
+		this.invalidUsers = new HashSet<>();
+		this.log = new ArrayList<>();
 		log.add(0, "");
 		this.pointer = 0;
 	}
@@ -113,17 +113,17 @@ public class PermissionResult {
 		
 		//Construct pieces
 		if(entities.size() > 0){
-			String allEntities = "";
-			for(IMentionable m : entities) allEntities += m.getAsMention() + " ";
-			eb.setDescription(allEntities.trim());
+			StringBuilder allEntities = new StringBuilder();
+			for(IMentionable m : entities) allEntities.append(m.getAsMention()).append(" ");
+			eb.setDescription(allEntities.toString().trim());
 		}
 		if(nodes.size() > 0){
-			List<String> nCopy = new ArrayList<String>(nodes);
+			List<String> nCopy = new ArrayList<>(nodes);
 			nCopy.replaceAll(s -> "`" + s + "`");
 			eb.addField(type.getSuccessMsg(), nCopy.toString(), true);
 		}
 		if(failedNodes.size() > 0){
-			List<String> nCopy = new ArrayList<String>(failedNodes);
+			List<String> nCopy = new ArrayList<>(failedNodes);
 			nCopy.replaceAll(s -> "`" + s + "`");
 			eb.addField(type.getFailedMsg(), nCopy.toString(), true);
 		}
@@ -145,7 +145,7 @@ public class PermissionResult {
 	}
 	
 	public List<String> constructLog(){
-		List<String> lCopy = new ArrayList<String>(log);
+		List<String> lCopy = new ArrayList<>(log);
 		lCopy.replaceAll(s -> "```scheme\n" + s + "```");
 		return lCopy;
 	}

@@ -64,7 +64,7 @@ public class CmdMusicControl implements CommandExecutor{
 	public final Set<PermissionNode> nodes;
 	
 	public CmdMusicControl(){
-		nodes = new HashSet<PermissionNode>(Arrays.asList(
+		nodes = new HashSet<>(Arrays.asList(
 					permForceSkip,
 					permPause,
 					permPlay,
@@ -209,10 +209,10 @@ public class CmdMusicControl implements CommandExecutor{
 		}
 		
 		e.getChannel().sendTyping().queue((v) -> {
-			List<TrackMeta> queued = new ArrayList<TrackMeta>(Arrays.asList(q.toArray(new TrackMeta[0])));
+			List<TrackMeta> queued = new ArrayList<>(Arrays.asList(q.toArray(new TrackMeta[0])));
 			TrackMeta current = queued.get(0);
 			queued.remove(0);
-			PageList<TrackMeta> tracks = new PageList<TrackMeta>(queued);
+			PageList<TrackMeta> tracks = new PageList<>(queued);
 			int page;
 			try{
 				page = args.length == 0 ? 0 : Integer.parseInt(args[0])-1;

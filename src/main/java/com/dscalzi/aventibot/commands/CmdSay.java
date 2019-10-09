@@ -20,7 +20,7 @@
 
 package com.dscalzi.aventibot.commands;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -45,9 +45,9 @@ public class CmdSay implements CommandExecutor{
 	public final Set<PermissionNode> nodes;
 	
 	public CmdSay(){
-		nodes = new HashSet<PermissionNode>(Arrays.asList(
-					permSay
-				));
+		nodes = new HashSet<>(Collections.singletonList(
+				permSay
+		));
 	}
 	
 	@Override
@@ -60,7 +60,7 @@ public class CmdSay implements CommandExecutor{
 			return CommandResult.ERROR;
 		}
 		
-		MessageChannel ch = (args.length > 0) ? InputUtils.parseChannel(e.getMessage(), args[0]) : null;
+		MessageChannel ch = InputUtils.parseChannel(e.getMessage(), args[0]);
 		
 		if(ch != null && e.isFromGuild()){
 			if(!e.getGuild().getTextChannels().contains(ch)){

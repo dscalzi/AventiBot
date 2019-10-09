@@ -40,7 +40,7 @@ public interface CommandExecutor {
 	 * @param rawArgs The <strong>raw</strong> message contents split into arguments.
 	 * @return The result of the command operation.
 	 */
-	public CommandResult onCommand(MessageReceivedEvent e, String cmd, String[] args, String[] rawArgs);
+	CommandResult onCommand(MessageReceivedEvent e, String cmd, String[] args, String[] rawArgs);
 	
 	/**
 	 * This method should provide a Set of PermissionNode objects, which are the
@@ -49,6 +49,6 @@ public interface CommandExecutor {
 	 * 
 	 * @return Never null Set of PermissionNode objects used by this command executor.
 	 */
-	public Set<PermissionNode> provideNodes();
+	Set<PermissionNode> provideNodes();
 	
 }

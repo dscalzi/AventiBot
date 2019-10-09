@@ -33,7 +33,6 @@ import com.dscalzi.aventibot.console.ConsoleUser;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.internal.JDAImpl;
 
 public class CommandLineConsole {
 
@@ -63,7 +62,7 @@ public class CommandLineConsole {
 				
 				LOG.info(line);
 				
-				ConsoleMessage m = new ConsoleMessage(((JDAImpl)api).getPrivateChannelById(-1L), line, console);
+				ConsoleMessage m = new ConsoleMessage(api.getPrivateChannelById(-1L), line, console);
 				MessageReceivedEvent mre = new MessageReceivedEvent(api, -1, m);
 				CommandDispatcher.dispatchCommand(mre, CommandDispatcher.parseMessage(mre));
 			}

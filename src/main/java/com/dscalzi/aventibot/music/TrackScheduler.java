@@ -45,6 +45,7 @@ import net.dv8tion.jda.api.events.guild.voice.GuildVoiceJoinEvent;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceLeaveEvent;
 import net.dv8tion.jda.api.hooks.EventListener;
 import net.dv8tion.jda.api.managers.AudioManager;
+import org.jetbrains.annotations.NotNull;
 
 public class TrackScheduler extends AudioEventAdapter implements EventListener{
 
@@ -56,7 +57,7 @@ public class TrackScheduler extends AudioEventAdapter implements EventListener{
 	private final Guild associatedGuild;
 	
 	public TrackScheduler(AudioPlayer player, Guild associatedGuild){
-		this.queue = new LinkedBlockingQueue<TrackMeta>();
+		this.queue = new LinkedBlockingQueue<>();
 		this.player = player;
 		this.associatedGuild = associatedGuild;
 		AventiBot.getInstance().getJDA().addEventListener(this);
@@ -104,7 +105,6 @@ public class TrackScheduler extends AudioEventAdapter implements EventListener{
 				AudioTrack t = it.next().getTrack();
 				if(t.equals(player.getPlayingTrack())){
 					waitTime += t.getDuration() - t.getPosition();
-					continue;
 				}
 			}
 			
@@ -164,18 +164,18 @@ public class TrackScheduler extends AudioEventAdapter implements EventListener{
 		
 		if(am.isConnected() && am.getConnectedChannel().getMembers().size() == 1){
 			clearQueue();
-			new Thread(() -> am.closeAudioConnection()).start();
+			new Thread(am::closeAudioConnection).start();
 			return;
 		}
 		
 		if(!queue.isEmpty()) player.playTrack(queue.element().getTrack());
 		else {
-			new Thread(() -> am.closeAudioConnection()).start();
+			new Thread(am::closeAudioConnection).start();
 		}
 	}
 	
 	@Override
-	public void onEvent(GenericEvent event){
+	public void onEvent(@NotNull GenericEvent event){
 		if(event instanceof GuildVoiceLeaveEvent){
 			GuildVoiceLeaveEvent e = (GuildVoiceLeaveEvent)event;
 			Optional<VoiceChannel> vcOpt = getCurrentChannel();

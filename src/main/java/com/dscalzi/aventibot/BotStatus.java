@@ -37,6 +37,6 @@ public enum BotStatus {
 	/**
 	 * Bot has not yet been launched.
 	 */
-	NULL();
+	NULL()
 	
 }

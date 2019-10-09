@@ -26,7 +26,7 @@ import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -52,9 +52,9 @@ public class CmdAuthor implements CommandExecutor {
 	public final Set<PermissionNode> nodes;
 	
 	public CmdAuthor(){
-		nodes = new HashSet<PermissionNode>(Arrays.asList(
-					permAuthor
-				));
+		nodes = new HashSet<>(Collections.singletonList(
+				permAuthor
+		));
 	}
 	
 	@Override

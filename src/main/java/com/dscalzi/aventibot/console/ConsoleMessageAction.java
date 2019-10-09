@@ -31,6 +31,8 @@ import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.Route.CompiledRoute;
 import net.dv8tion.jda.internal.requests.restaction.MessageActionImpl;
 
+import javax.annotation.Nonnull;
+
 /**
  * Class to avoid queuing messages sent to the console.
  * 
@@ -71,12 +73,14 @@ public class ConsoleMessageAction extends MessageActionImpl {
 		if(success != null)
 			success.accept(message);
     }
-	
+
+	@Nonnull
 	@Override
 	public CompletableFuture<Message> submit() {
         return submit(true);
     }
 
+	@Nonnull
     @Override
     public CompletableFuture<Message> submit(boolean shouldQueue) {
         return new RestFuture<>(message);

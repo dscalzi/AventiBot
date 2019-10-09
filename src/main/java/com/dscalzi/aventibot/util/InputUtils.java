@@ -42,7 +42,7 @@ public class InputUtils {
 	private static final Pattern USER_EXCESS = Pattern.compile("[<@!?>]");
 	
 	public static TextChannel parseChannel(Message m, String reference){
-		TextChannel chnl = null;
+		TextChannel chnl;
 		try { chnl = AventiBot.getInstance().getJDA().getTextChannelById(reference); } catch (NumberFormatException e){ chnl = null; }
 		if(chnl != null) return chnl;
 		List<TextChannel> channels = m.getMentionedChannels();
@@ -55,7 +55,7 @@ public class InputUtils {
 	}
 	
 	public static User parseUser(Message m, String reference){
-		User usr = null;
+		User usr;
 		try { usr = AventiBot.getInstance().getJDA().getUserById(reference); } catch (NumberFormatException e) { usr = null; }
 		if(usr != null) return usr;
 		List<User> users = m.getMentionedUsers();
@@ -87,13 +87,13 @@ public class InputUtils {
 	public static Pair<Set<User>, Set<String>> parseBulkMembers(String[] rawArgs, Guild g){
 		if(g == null) return null;
 		if(rawArgs.length == 0) return null;
-		Set<User> fMembers = new LinkedHashSet<User>();
-		Set<String> failedTerms = new LinkedHashSet<String>();
+		Set<User> fMembers = new LinkedHashSet<>();
+		Set<String> failedTerms = new LinkedHashSet<>();
 		for(int i=0; i<rawArgs.length; ++i){
 			String s = rawArgs[i];
 			if(RAW_USER.matcher(s).matches()){
 				String id = USER_EXCESS.matcher(s).replaceAll("");
-				Member m = null;
+				Member m;
 				try{ m = g.getMemberById(id); } catch (NumberFormatException e) { m = null; }
 				if(m != null) fMembers.add(m.getUser());
 			} else {
@@ -107,21 +107,21 @@ public class InputUtils {
 				}
 				List<Member> result = g.getMembersByEffectiveName(arg, true);
 				if(result.size() == 0) {
-					Member m = null;
+					Member m;
 					try{ m = g.getMemberById(arg); } catch (NumberFormatException e) { m = null; }
 					User u = null;
 					if(m == null) 
 						try { 
 							u = AventiBot.getInstance().getJDA().getUserById(arg); 
-						} catch(NumberFormatException e) { 
-							u = null; 
+						} catch(NumberFormatException ignored) {
+
 						}
 					if(u == null && m == null) failedTerms.add(arg);
 					else fMembers.add(u != null ? u : m.getUser());
 				} else result.forEach(m -> fMembers.add(m.getUser()));
 			}
 		}
-		return new Pair<Set<User>, Set<String>>(fMembers, failedTerms);
+		return new Pair<>(fMembers, failedTerms);
 	}
 	
 	/**
@@ -148,7 +148,7 @@ public class InputUtils {
 	 * <code>Guild</code> g, otherwise null.
 	 */
 	public static Role parseRole(String reference, Guild g){
-		Role r = null;
+		Role r;
 		try{ r = g.getRoleById(reference); } catch (NumberFormatException e) { r = null; }
 		if(r != null) return r;
 		if(RAW_ROLE.matcher(reference).matches()){
@@ -183,20 +183,20 @@ public class InputUtils {
 	public static Pair<Integer, String> parseFullTerm(String[] args, int startAt){
 		if(startAt >= args.length) return null;
 		String delimiter = args[startAt].substring(0, 1).equals("'") ? "'" : "\"";
-		String arg = args[startAt].substring(1);
+		StringBuilder arg = new StringBuilder(args[startAt].substring(1));
 		if(arg.substring(arg.length()-1).equals(delimiter))
-			return new Pair<Integer, String>(startAt, arg.substring(0, arg.length()-1));
+			return new Pair<>(startAt, arg.substring(0, arg.length()-1));
 		int finishedAt = startAt;
 		for(int i=startAt+1; i<args.length; ++i){
 			finishedAt = i;
 			if(args[i].substring(args[i].length()-1).equals(delimiter)){
-				arg = arg + " " + args[i].substring(0, args[i].length()-1);
+				arg.append(" ").append(args[i], 0, args[i].length() - 1);
 				break;
 			}
-			arg = arg + " " + args[i];
+			arg.append(" ").append(args[i]);
 		}
 		
-		return new Pair<Integer, String>(finishedAt, arg);
+		return new Pair<>(finishedAt, arg.toString());
 	}
 	
 	/**
@@ -235,13 +235,13 @@ public class InputUtils {
 	public static Pair<Set<Role>, Set<String>> parseBulkRoles(String[] rawArgs, Guild g){
 		if(g == null) return null;
 		if(rawArgs.length == 0) return null;
-		Set<Role> fRoles = new LinkedHashSet<Role>();
-		Set<String> failedTerms = new LinkedHashSet<String>();
+		Set<Role> fRoles = new LinkedHashSet<>();
+		Set<String> failedTerms = new LinkedHashSet<>();
 		for(int i=0; i<rawArgs.length; ++i){
 			String s = rawArgs[i];
 			if(RAW_ROLE.matcher(s).matches()){
 				String id = ROLE_EXCESS.matcher(s).replaceAll("");
-				Role r = null;
+				Role r;
 				try{ r = g.getRoleById(id); } catch (NumberFormatException e) { r = null; }
 				if(r != null) fRoles.add(r);
 			} else {
@@ -255,14 +255,14 @@ public class InputUtils {
 				}
 				List<Role> result = g.getRolesByName(arg, true);
 				if(result.size() == 0) {
-					Role r = null;
+					Role r;
 					try{ r = g.getRoleById(arg); } catch (NumberFormatException e) { r = null; }
 					if(r == null) failedTerms.add(arg);
 					else fRoles.add(r);
 				} else fRoles.addAll(result);
 			}
 		}
-		return new Pair<Set<Role>, Set<String>>(fRoles, failedTerms);
+		return new Pair<>(fRoles, failedTerms);
 	}
 	
 }

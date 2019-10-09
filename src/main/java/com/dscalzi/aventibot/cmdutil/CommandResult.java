@@ -29,7 +29,7 @@ public enum CommandResult {
 	
 	public String unicode;
 	
-	private CommandResult(String unicode){
+	CommandResult(String unicode){
 		this.unicode = unicode;
 	}
 	

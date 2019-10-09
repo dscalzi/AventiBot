@@ -36,7 +36,7 @@ import org.slf4j.MarkerFactory;
 
 public class CommandLineOutput extends OutputStream {
 
-	public static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd.HH.mm.ss").withLocale(Locale.US).withZone(ZoneId.systemDefault());
+	private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd.HH.mm.ss").withLocale(Locale.US).withZone(ZoneId.systemDefault());
 
 	private volatile boolean fileStreamClosed;
 	

@@ -64,7 +64,7 @@ public class CmdPermissionsControl implements CommandExecutor{
 	public final Set<PermissionNode> nodes;
 	
 	public CmdPermissionsControl(){
-		nodes = new HashSet<PermissionNode>(Arrays.asList(
+		nodes = new HashSet<>(Arrays.asList(
 				permGrant,
 				permRevoke,
 				permBlacklist,
@@ -202,7 +202,7 @@ public class CmdPermissionsControl implements CommandExecutor{
 						++g;
 					}
 				}
-				return new Pair<String[], String[]>(first, second);
+				return new Pair<>(first, second);
 			}
 		}
 		return null;
@@ -265,17 +265,17 @@ public class CmdPermissionsControl implements CommandExecutor{
 					+ BULLET + " Currently `" + blacklisted.size() + "` blacklisted user" + (blacklisted.size() == 1 ? "" : "s") + ".");
 			
 			if(roles != null && roles.size() > 0){
-				String roleStr = "[";
-				for(String s : roles) roleStr += "<@&" + s + ">, ";
-				if(roleStr.length() >= 2) roleStr = roleStr.substring(0, roleStr.length()-2) + "]";
-				eb.addField("Allowed Roles", roleStr, true);
+				StringBuilder roleStr = new StringBuilder("[");
+				for(String s : roles) roleStr.append("<@&").append(s).append(">, ");
+				if(roleStr.length() >= 2) roleStr = new StringBuilder(roleStr.substring(0, roleStr.length() - 2) + "]");
+				eb.addField("Allowed Roles", roleStr.toString(), true);
 			}
 			
 			if(blacklisted.size() > 0){
-				String blStr = "[";
-				for(String s : blacklisted) blStr += "<@" + s + ">, ";
-				if(blStr.length() >= 2) blStr = blStr.substring(0, blStr.length()-2) + "]";
-				eb.addField("Blacklisted Users", blStr, true);
+				StringBuilder blStr = new StringBuilder("[");
+				for(String s : blacklisted) blStr.append("<@").append(s).append(">, ");
+				if(blStr.length() >= 2) blStr = new StringBuilder(blStr.substring(0, blStr.length() - 2) + "]");
+				eb.addField("Blacklisted Users", blStr.toString(), true);
 			}
 			
 			e.getChannel().sendMessage(eb.build()).queue();
@@ -297,9 +297,9 @@ public class CmdPermissionsControl implements CommandExecutor{
 		}
 		
 		String[] terms = new String[rawArgs.length-1];
-		for(int i=0; i<terms.length; ++i) terms[i] = rawArgs[i+1];
+		System.arraycopy(rawArgs, 1, terms, 0, terms.length);
 		
-		Pair<Set<User>, Set<String>> temp = InputUtils.parseBulkMembers(rawArgs, JDAUtils.getGuildFromCombinedEvent(e));
+		Pair<Set<User>, Set<String>> temp = InputUtils.parseBulkMembers(terms, JDAUtils.getGuildFromCombinedEvent(e));
 		if(temp.getKey().isEmpty()){
 			e.getChannel().sendMessage("Unknown User: `" + temp.getValue().iterator().next() + "`.").queue();
 			return CommandResult.ERROR;
@@ -335,7 +335,7 @@ public class CmdPermissionsControl implements CommandExecutor{
 		}
 		
 		String[] terms = new String[rawArgs.length-1];
-		for(int i=0; i<terms.length; ++i) terms[i] = rawArgs[i+1];
+		System.arraycopy(rawArgs, 1, terms, 0, terms.length);
 		
 		Pair<Set<Role>, Set<String>> temp = InputUtils.parseBulkRoles(terms, JDAUtils.getGuildFromCombinedEvent(e));
 		if(temp.getKey().isEmpty()){
@@ -353,7 +353,7 @@ public class CmdPermissionsControl implements CommandExecutor{
 		eb.setDescription(target.getAsMention() + "\n" + BULLET + " Currently granted `" + r.size() + "` permission" + (r.size() == 1 ? "" : "s") + ".");
 		
 		if(r.size() > 0){
-			List<String> nodeLst = new ArrayList<String>();
+			List<String> nodeLst = new ArrayList<>();
 			for(PermissionNode n : r) nodeLst.add("`" + n.toString() + "`");
 			eb.addField("Granted Permissions", nodeLst.toString(), false);
 		}

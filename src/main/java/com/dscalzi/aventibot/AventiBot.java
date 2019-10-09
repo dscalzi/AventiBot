@@ -20,43 +20,27 @@
 
 package com.dscalzi.aventibot;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URISyntaxException;
-import javax.security.auth.login.LoginException;
-
-import org.slf4j.LoggerFactory;
-import org.slf4j.MarkerFactory;
-
 import com.dscalzi.aventibot.cmdutil.CommandListener;
 import com.dscalzi.aventibot.cmdutil.CommandRegistry;
-import com.dscalzi.aventibot.commands.CmdAuthor;
-import com.dscalzi.aventibot.commands.CmdClear;
-import com.dscalzi.aventibot.commands.CmdGSettings;
-import com.dscalzi.aventibot.commands.CmdHardRestart;
-import com.dscalzi.aventibot.commands.CmdHelloWorld;
-import com.dscalzi.aventibot.commands.CmdHelp;
-import com.dscalzi.aventibot.commands.CmdMusicControl;
-import com.dscalzi.aventibot.commands.CmdPermissionsControl;
-import com.dscalzi.aventibot.commands.CmdRoleId;
-import com.dscalzi.aventibot.commands.CmdSay;
-import com.dscalzi.aventibot.commands.CmdSettingsControl;
-import com.dscalzi.aventibot.commands.CmdShutdown;
-import com.dscalzi.aventibot.commands.CmdSoftReload;
-import com.dscalzi.aventibot.commands.CmdUrbanDictionary;
+import com.dscalzi.aventibot.commands.*;
 import com.dscalzi.aventibot.console.ConsoleUser;
 import com.dscalzi.aventibot.music.LavaWrapper;
 import com.dscalzi.aventibot.settings.GlobalConfig;
 import com.dscalzi.aventibot.settings.SettingsManager;
-
 import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.PrivateChannel;
-import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.utils.UnlockHook;
 import net.dv8tion.jda.internal.utils.cache.SnowflakeCacheViewImpl;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MarkerFactory;
+
+import javax.security.auth.login.LoginException;
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
 
 public class AventiBot {
 	
@@ -91,13 +75,13 @@ public class AventiBot {
 		return false;
 	}
 	
-	private void postConntectionSetup(){
+	private void postConnectionSetup(){
 		registerCommands();
 		registerListeners();
 		LavaWrapper.initialize();
 		this.console = ConsoleUser.build(jda);
-		SnowflakeCacheViewImpl<PrivateChannel> pcCache = ((SnowflakeCacheViewImpl<PrivateChannel>)((JDAImpl)jda).getPrivateChannelCache());
-		try(UnlockHook lock = pcCache.writeLock()) {
+		SnowflakeCacheViewImpl<PrivateChannel> pcCache = ((SnowflakeCacheViewImpl<PrivateChannel>) jda.getPrivateChannelCache());
+		try(UnlockHook ignored = pcCache.writeLock()) {
 		    pcCache.getMap().put(console.getIdLong(), console.getPrivateChannel());
 		}
 		launchTime = System.currentTimeMillis();
@@ -145,7 +129,7 @@ public class AventiBot {
 				jdaBuilder.setActivity(Activity.playing(g.getCurrentGame()));
 			jda = jdaBuilder.build().awaitReady();
 			status = BotStatus.CONNECTED;
-			postConntectionSetup();
+			postConnectionSetup();
 		} catch (LoginException | IllegalArgumentException | InterruptedException | IOException e) {
 			status = BotStatus.LAUNCHED;
 			LoggerFactory.getLogger("JDA").error(MarkerFactory.getMarker("FATAL"), "Failed to connect to Discord!");

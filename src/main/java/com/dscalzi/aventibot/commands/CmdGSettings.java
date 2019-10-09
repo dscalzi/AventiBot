@@ -45,11 +45,11 @@ public class CmdGSettings implements CommandExecutor{
 
 	private final PermissionNode permUpdate = PermissionNode.get(NodeType.SUBCOMMAND, "gsettings", "update");
 	private final PermissionNode permInfo = PermissionNode.get(NodeType.SUBCOMMAND, "gsettings", "info");
-	
+
 	public final Set<PermissionNode> nodes;
 	
 	public CmdGSettings(){
-		nodes = new HashSet<PermissionNode>(Arrays.asList(
+		nodes = new HashSet<>(Arrays.asList(
 				permUpdate,
 				permInfo
 			));

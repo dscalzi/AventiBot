@@ -65,9 +65,9 @@ public final class PermissionUtil {
 	private static final Map<String, Map<String, List<String>>> blacklistMap;
 	
 	static {
-		permissionMap = new HashMap<String, Map<String, List<String>>>();
-		blacklistMap = new HashMap<String, Map<String, List<String>>>();
-		initialized = new HashMap<Guild, Boolean>();
+		permissionMap = new HashMap<>();
+		blacklistMap = new HashMap<>();
+		initialized = new HashMap<>();
 	}
 	
 	public static boolean isInitialized(Guild g){
@@ -158,7 +158,7 @@ public final class PermissionUtil {
 	public static List<String> getNodesForUser(User u, Guild g){
 		Map<String, List<String>> blist = blacklistMap.get(g.getId());
 		
-		List<String> ret = new ArrayList<String>();
+		List<String> ret = new ArrayList<>();
 		
 		String id = u.getId();
 		outer:
@@ -180,8 +180,8 @@ public final class PermissionUtil {
 	 * @return A pair whose key is a set of validate PermissionNodes and whose value is a set of invalid nodes.
 	 */
 	public static Pair<Set<PermissionNode>, Set<String>> validateNodes(Set<String> nodes){
-		Set<PermissionNode> valids = new HashSet<PermissionNode>();
-		Set<String> invalids = new HashSet<String>();
+		Set<PermissionNode> valids = new HashSet<>();
+		Set<String> invalids = new HashSet<>();
 		Set<PermissionNode> known = AventiBot.getInstance().getCommandRegistry().getAllRegisteredNodes();
 		
 		for(String s : nodes){
@@ -193,7 +193,7 @@ public final class PermissionUtil {
 				invalids.add(n.toString());
 			}
 		}
-		return new Pair<Set<PermissionNode>, Set<String>>(valids, invalids);
+		return new Pair<>(valids, invalids);
 	}
 	
 	public static boolean validateSingleNode(String node){
@@ -217,7 +217,7 @@ public final class PermissionUtil {
 		PermissionResult result = new PermissionResult(add ? PermissionResult.Type.GRANT : PermissionResult.Type.REVOKE, g);
 		
 		Map<String, List<String>> perms = permissionMap.get(g.getId());
-		Map<String, List<String>> queue = new HashMap<String, List<String>>();
+		Map<String, List<String>> queue = new HashMap<>();
 		for(PermissionNode n : nodes){
 			List<String> rP = perms.get(n.toString());
 			if(rP == null){
@@ -225,7 +225,7 @@ public final class PermissionUtil {
 				continue;
 			}
 			result.addNode(n.toString()); //Record it as processed
-			List<String> q = new ArrayList<String>();
+			List<String> q = new ArrayList<>();
 			for(Role r : roles){
 				if((add && rP.contains(r.getId())) || (!add && !rP.contains(r.getId()))){
 					result.logResult("'ERR \"" + n.toString() + "\" already " + (add ? "granted to" : "revoked from") + " \"" + r.getName() + "\"(" + r.getId() + ").");
@@ -251,7 +251,7 @@ public final class PermissionUtil {
 					JsonObject section = job.get(entry.getKey()).getAsJsonObject();
 					JsonArray arr = section.get(PermissionUtil.ALLOWEDKEY).getAsJsonArray();
 					if(add)
-						entry.getValue().forEach(r -> arr.add(r));
+						entry.getValue().forEach(arr::add);
 					else {
 						for(int i=arr.size()-1; i>=0; --i){
 						    String val = arr.get(i).getAsString();
@@ -291,12 +291,12 @@ public final class PermissionUtil {
 		PermissionResult result = new PermissionResult(add ? PermissionResult.Type.BLACKLIST : PermissionResult.Type.UNBLACKLIST, g);
 		
 		Map<String, List<String>> blacklist = blacklistMap.get(g.getId());
-		Map<String, List<String>> queue = new HashMap<String, List<String>>();
+		Map<String, List<String>> queue = new HashMap<>();
 		
 		for(PermissionNode n : nodes){
 			List<String> rP = blacklist.get(n.toString());
 			result.addNode(n.toString()); //Record it as processed
-			List<String> q = new ArrayList<String>();
+			List<String> q = new ArrayList<>();
 			for(User u : users){
 				String id = u.getId();
 				if((add && rP.contains(id)) || (!add && !rP.contains(id))){
@@ -362,7 +362,7 @@ public final class PermissionUtil {
 		PermissionResult result = new PermissionResult(enable ? PermissionResult.Type.NODE_ENABLE : PermissionResult.Type.NODE_DISABLE, g);
 		
 		Map<String, List<String>> perms = permissionMap.get(g.getId());
-		List<PermissionNode> queue = new ArrayList<PermissionNode>();
+		List<PermissionNode> queue = new ArrayList<>();
 		
 		for(PermissionNode n : nodes){
 			List<String> rP = perms.get(n.toString());
@@ -391,7 +391,7 @@ public final class PermissionUtil {
 					if(enable){
 						//We now need to read the data into memory.
 						JsonArray roles = section.get(PermissionUtil.ALLOWEDKEY).getAsJsonArray();
-						List<String> roleIds = new ArrayList<String>();
+						List<String> roleIds = new ArrayList<>();
 						for(JsonElement e3 : roles){
 							roleIds.add(e3.getAsString());
 						}
@@ -415,14 +415,14 @@ public final class PermissionUtil {
 		if(target == null) throw new IOException();
 		
 		log.info("Using permission file located at " + target.getAbsolutePath() + " for guild " + g.getName() + "(" + g.getId() + ").");
-		Map<String, List<String>> perms = new HashMap<String, List<String>>();
-		Map<String, List<String>> blist = new HashMap<String, List<String>>();
+		Map<String, List<String>> perms = new HashMap<>();
+		Map<String, List<String>> blist = new HashMap<>();
 		
 		JsonParser p = new JsonParser();
 		try(JsonReader file = new JsonReader(new FileReader(target))){
 			JsonObject result = null;
 			JsonElement parsed = p.parse(file);
-			Set<PermissionNode> registered = new HashSet<PermissionNode>(AventiBot.getInstance().getCommandRegistry().getAllRegisteredNodes());
+			Set<PermissionNode> registered = new HashSet<>(AventiBot.getInstance().getCommandRegistry().getAllRegisteredNodes());
 			if(parsed.isJsonObject()){
 				result = parsed.getAsJsonObject();
 				
@@ -437,17 +437,16 @@ public final class PermissionUtil {
 							if(e2.getKey().equals(PermissionUtil.GATEKEY) && !e2.getValue().getAsBoolean()) {
 								perms.put(e.getKey(), null);
 								ignorePerms = true;
-								continue;
 							} else if(e2.getKey().equals(PermissionUtil.ALLOWEDKEY) && e2.getValue().isJsonArray() && !ignorePerms){
 								JsonArray roles = e2.getValue().getAsJsonArray();
-								List<String> roleIds = new ArrayList<String>();
+								List<String> roleIds = new ArrayList<>();
 								for(JsonElement e3 : roles){
 									roleIds.add(e3.getAsString());
 								}
 								perms.put(e.getKey(), roleIds);
 							} else if(e2.getKey().equals(PermissionUtil.BLACKLISTKEY) && e2.getValue().isJsonArray()){
 								JsonArray blacklist = e2.getValue().getAsJsonArray();
-								List<String> userIds = new ArrayList<String>();
+								List<String> userIds = new ArrayList<>();
 								for(JsonElement e3 : blacklist){
 									userIds.add(e3.getAsString());
 								}
@@ -462,7 +461,7 @@ public final class PermissionUtil {
 				//If permissions is empty
 				if(result == null) result = new JsonObject();
 				
-				Set<PermissionNode> leftover = new HashSet<PermissionNode>(registered);
+				Set<PermissionNode> leftover = new HashSet<>(registered);
 				
 				Gson gson = new GsonBuilder().setPrettyPrinting().create();
 				for(PermissionNode pn : leftover){
@@ -471,7 +470,7 @@ public final class PermissionUtil {
 					container.add(PermissionUtil.ALLOWEDKEY, new JsonArray());
 					container.add(PermissionUtil.BLACKLISTKEY, new JsonArray());
 					result.add(pn.toString(), container);
-					if(pn.isOp()) perms.put(pn.toString(), new ArrayList<String>());
+					if(pn.isOp()) perms.put(pn.toString(), new ArrayList<>());
 				}
 				try(JsonWriter writer = gson.newJsonWriter(new FileWriter(target))){
 					gson.toJson(result, writer);

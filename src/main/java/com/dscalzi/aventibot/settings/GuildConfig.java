@@ -36,10 +36,10 @@ public class GuildConfig{
 	public static final  Map<Pair<String, Object>, Method> keyMap;
 	
 	static {
-		keyMap = new HashMap<Pair<String, Object>, Method>();
+		keyMap = new HashMap<>();
 		try {
-			keyMap.put(new Pair<String, Object>("colorHex", "#0f579d"), GuildConfig.class.getMethod("setColor", String.class));
-			keyMap.put(new Pair<String, Object>("commandPrefix", "--"), GuildConfig.class.getMethod("setCommandPrefix", String.class));
+			keyMap.put(new Pair<>("colorHex", "#0f579d"), GuildConfig.class.getMethod("setColor", String.class));
+			keyMap.put(new Pair<>("commandPrefix", "--"), GuildConfig.class.getMethod("setCommandPrefix", String.class));
 		} catch (NoSuchMethodException | SecurityException e) {
 			//Shouldn't happen since this is hard coded.
 			e.printStackTrace();
@@ -56,7 +56,7 @@ public class GuildConfig{
 	}
 	
 	public GuildConfig(String defaultColor){
-		setColor(colorHex);
+		setColor(null);
 	}
 	
 	public Color getColorAWT(){

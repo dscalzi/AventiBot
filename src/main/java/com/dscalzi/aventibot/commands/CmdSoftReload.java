@@ -20,7 +20,7 @@
 
 package com.dscalzi.aventibot.commands;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -42,9 +42,9 @@ private final PermissionNode permSoftReload = PermissionNode.get(NodeType.COMMAN
 	public final Set<PermissionNode> nodes;
 	
 	public CmdSoftReload(){
-		nodes = new HashSet<PermissionNode>(Arrays.asList(
-					permSoftReload
-				));
+		nodes = new HashSet<>(Collections.singletonList(
+				permSoftReload
+		));
 	}
 	
 	@Override

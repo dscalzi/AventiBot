@@ -38,7 +38,7 @@ import javafx.scene.control.TextArea;
 
 public class CommandLog extends OutputStream {
 	
-	public static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd.HH.mm.ss").withLocale(Locale.US).withZone(ZoneId.systemDefault());
+	private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd.HH.mm.ss").withLocale(Locale.US).withZone(ZoneId.systemDefault());
 
 	private volatile boolean fileStreamClosed;
 	
@@ -76,9 +76,7 @@ public class CommandLog extends OutputStream {
 	@Override
 	public void write(int i) throws IOException {
 		synchronized(this){
-			Platform.runLater(() -> {
-				node.appendText(String.valueOf((char) i));
-			});
+			Platform.runLater(() -> node.appendText(String.valueOf((char) i)));
 		}
 		if(!fileStreamClosed)
 			file.write(i);

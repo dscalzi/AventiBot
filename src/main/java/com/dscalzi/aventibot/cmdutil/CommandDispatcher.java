@@ -80,7 +80,7 @@ public class CommandDispatcher {
 	
 	private static String[] cleanArgsArray(String[] args){
 		if(args.length == 0) return args;
-		List<String> argsTemp = new ArrayList<String>(Arrays.asList(args));
+		List<String> argsTemp = new ArrayList<>(Arrays.asList(args));
 		for(int i=argsTemp.size()-1; i>=0; --i)	if(argsTemp.get(i).isEmpty()) argsTemp.remove(i);
 		return argsTemp.toArray(new String[0]);
 	}
@@ -96,7 +96,7 @@ public class CommandDispatcher {
 			c = c.trim();
 		
 		try{
-			return c.substring(0, (c.indexOf(" ") > -1 ? c.indexOf(" ") : c.length()));
+			return c.substring(0, (c.contains(" ") ? c.indexOf(" ") : c.length()));
 		} catch (Exception ex){
 			return null;
 		}

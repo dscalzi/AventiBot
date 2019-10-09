@@ -48,8 +48,8 @@ public class LavaWrapper {
 	
 	private LavaWrapper(){
 		playerManager = new DefaultAudioPlayerManager();
-		cache = new HashMap<Guild, AudioPlayer>();
-		listenerCache = new HashMap<Guild, TrackScheduler>();
+		cache = new HashMap<>();
+		listenerCache = new HashMap<>();
 		playerManager.registerSourceManager(new YoutubeAudioSourceManager());
 		playerManager.registerSourceManager(new SoundCloudAudioSourceManager());
 		playerManager.registerSourceManager(new BandcampAudioSourceManager());

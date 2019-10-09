@@ -33,7 +33,6 @@ import com.dscalzi.aventibot.AventiBot;
 import com.dscalzi.aventibot.BotStatus;
 import com.dscalzi.aventibot.settings.GlobalConfig;
 import com.dscalzi.aventibot.settings.SettingsManager;
-import net.dv8tion.jda.api.events.GenericEvent;
 import net.dv8tion.jda.api.events.ShutdownEvent;
 import net.dv8tion.jda.api.hooks.EventListener;
 
@@ -66,7 +65,7 @@ public class CommandLineExecutor {
 		System.setOut(ps);
 		System.setErr(ps);
 		
-		boolean success = false;
+		boolean success;
 		if(AventiBot.getStatus() == BotStatus.NULL){
 			AventiBot.launch();
 			success = AventiBot.getStatus() == BotStatus.CONNECTED;
@@ -74,23 +73,20 @@ public class CommandLineExecutor {
 			success = AventiBot.getInstance().connect();
 		}
 		if(success){
-			AventiBot.getInstance().getJDA().addEventListener(new EventListener(){
-				@Override
-				public void onEvent(GenericEvent e){
-					if(e instanceof ShutdownEvent){
-						if(console != null)	console.shutdown();
-						LOG.info("===================================");
-						LOG.info("AventiBot JDA has been shutdown..");
-						LOG.info("===================================");
-						LOG.info("Releasing log file - no more output will be logged.");
-						try {
-							o.closeLogger();
-						} catch (IOException e1) {
-							LOG.error(MarkerFactory.getMarker("FATAL"), "Error while releasing log file:");
-							e1.printStackTrace();
-						}
-						System.exit(0);
+			AventiBot.getInstance().getJDA().addEventListener((EventListener) e -> {
+				if(e instanceof ShutdownEvent){
+					if(console != null)	console.shutdown();
+					LOG.info("===================================");
+					LOG.info("AventiBot JDA has been shutdown..");
+					LOG.info("===================================");
+					LOG.info("Releasing log file - no more output will be logged.");
+					try {
+						o.closeLogger();
+					} catch (IOException e1) {
+						LOG.error(MarkerFactory.getMarker("FATAL"), "Error while releasing log file:");
+						e1.printStackTrace();
 					}
+					System.exit(0);
 				}
 			});
 		} else {
@@ -118,11 +114,7 @@ public class CommandLineExecutor {
 			e.printStackTrace();
 			return false;
 		}
-		if(g.getToken() == "NULL"){
-			return false;
-		} else {
-			return true;
-		}
+		return !g.getToken().equals("NULL");
 	}
 	
 	public static boolean usingCmdLine(){
