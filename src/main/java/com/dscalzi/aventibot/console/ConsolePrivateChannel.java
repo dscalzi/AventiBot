@@ -20,6 +20,8 @@
 
 package com.dscalzi.aventibot.console;
 
+import net.dv8tion.jda.internal.requests.CompletedRestAction;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.LoggerFactory;
 
 import net.dv8tion.jda.api.JDA;
@@ -30,7 +32,6 @@ import net.dv8tion.jda.api.entities.PrivateChannel;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
-import net.dv8tion.jda.internal.requests.EmptyRestAction;
 
 import javax.annotation.Nonnull;
 
@@ -103,7 +104,7 @@ public class ConsolePrivateChannel implements PrivateChannel {
 	@Override
 	public RestAction<Void> close() {
 		// Not Supported
-		return new EmptyRestAction<>(api);
+		return new CompletedRestAction<>(api, null);
 	}
 
 	@Override
@@ -112,10 +113,11 @@ public class ConsolePrivateChannel implements PrivateChannel {
 		return false;
 	}
 
+	@NotNull
 	@Override
 	public String getLatestMessageId() {
 		// Not supported
-		return null;
+		return "-1";
 	}
 
 	@Override

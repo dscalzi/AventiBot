@@ -20,6 +20,7 @@
 
 package com.dscalzi.aventibot.console;
 
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 
 import gnu.trove.set.hash.TLongHashSet;
@@ -33,50 +34,67 @@ import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import net.dv8tion.jda.internal.entities.ReceivedMessage;
-import net.dv8tion.jda.internal.requests.EmptyRestAction;
+import net.dv8tion.jda.internal.requests.CompletedRestAction;
 
 import javax.annotation.Nonnull;
 
 public class ConsoleMessage extends ReceivedMessage {
 	
 	public ConsoleMessage(MessageChannel channel, String content, User author) {
-		super(-1L, channel, MessageType.DEFAULT, false, false, new TLongHashSet(), new TLongHashSet(), false, false, content, "-1", author, null,
-				null, new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+		super(-1L,
+				channel,
+				MessageType.DEFAULT,
+				false,
+				false,
+				new TLongHashSet(),
+				new TLongHashSet(),
+				false,
+				false,
+				content,
+				"-1",
+				author,
+				null,
+				null,
+				OffsetDateTime.now(),
+				new ArrayList<>(),
+				new ArrayList<>(),
+				new ArrayList<>(),
+				0);
 	}
 
 	@Nonnull
 	@Override
 	public RestAction<Void> pin() {
 		// Unsupported
-		return new EmptyRestAction<>(getJDA());
+		return new CompletedRestAction<>(getJDA(), null);
 	}
 
 	@Nonnull
 	@Override
 	public RestAction<Void> unpin() {
 		// Unsupported
-	    return new EmptyRestAction<>(getJDA());
+	    return new CompletedRestAction<>(getJDA(), null);
 	}
 
 	@Nonnull
 	@Override
 	public RestAction<Void> addReaction(@Nonnull Emote emote) {
 		// Unsupported
-	    return new EmptyRestAction<>(getJDA());
+	    return new CompletedRestAction<>(getJDA(), null);
 	}
 
 	@Nonnull
 	@Override
 	public RestAction<Void> addReaction(@Nonnull String unicode) {
 		// Unsupported
-	    return new EmptyRestAction<>(getJDA());
+	    return new CompletedRestAction<>(getJDA(), null);
 	}
 
 	@Nonnull
 	@Override
 	public RestAction<Void> clearReactions() {
 		// Unsupported
-	    return new EmptyRestAction<>(getJDA());
+	    return new CompletedRestAction<>(getJDA(), null);
 	}
 
 	@Nonnull
@@ -111,7 +129,7 @@ public class ConsoleMessage extends ReceivedMessage {
     @Override
     public AuditableRestAction<Void> delete() {
     	// Unsupported
-        return new EmptyRestAction<>(getJDA());
+        return new CompletedRestAction<>(getJDA(), null);
     }
 
 	@Override

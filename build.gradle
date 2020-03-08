@@ -8,7 +8,7 @@ plugins {
 
 mainClassName = 'com.dscalzi.aventibot.LaunchWrapper'
 
-def versionObj = new Version(major: 0, minor: 82, revision: 0)
+def versionObj = new Version(major: 0, minor: 82, revision: 1)
 
 description = 'Highly customizable Discord Bot'
 
@@ -26,9 +26,9 @@ repositories {
 }
 
 dependencies {
-    implementation 'net.dv8tion:JDA:4.0.0_50'
-    implementation 'com.sedmelluq:lavaplayer:1.3.22'
-    implementation 'com.google.code.gson:gson:2.8.5'
+    implementation 'net.dv8tion:JDA:4.1.1_110'
+    implementation 'com.sedmelluq:lavaplayer:1.3.34'
+    implementation 'com.google.code.gson:gson:2.8.6'
     implementation 'ch.qos.logback:logback-classic:1.2.3'
     
     implementation('net.sf.trove4j:trove4j:3.0.3') {
@@ -63,7 +63,7 @@ javafx {
 
 jar {
     manifest {
-        attributes 'Implementation-Version': archiveVersion, 'Specification-Version': archiveVersion
+        attributes 'Implementation-Version': archiveVersion.get(), 'Specification-Version': archiveVersion.get()
     }
 }
 

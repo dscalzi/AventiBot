@@ -51,7 +51,7 @@ public class LavaWrapper {
 		cache = new HashMap<>();
 		listenerCache = new HashMap<>();
 		playerManager.registerSourceManager(new YoutubeAudioSourceManager());
-		playerManager.registerSourceManager(new SoundCloudAudioSourceManager());
+		playerManager.registerSourceManager(SoundCloudAudioSourceManager.createDefault());
 		playerManager.registerSourceManager(new BandcampAudioSourceManager());
 		playerManager.registerSourceManager(new BeamAudioSourceManager());
 		playerManager.registerSourceManager(new VimeoAudioSourceManager());

@@ -48,6 +48,7 @@ public class ConsoleMessageAction extends MessageActionImpl {
 		this.message = message;
 	}
 
+	@SuppressWarnings("unused")
 	public ConsoleMessageAction(JDA api, Route.CompiledRoute route, MessageChannel channel, StringBuilder contentBuilder) {
 		super(api, route, channel, contentBuilder);
 	}
