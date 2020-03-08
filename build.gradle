@@ -2,7 +2,7 @@ plugins {
     id 'java'
     id 'application'
     id 'net.minecrell.licenser' version '0.4.1'
-    id 'com.github.johnrengelman.shadow' version '5.1.0'
+    id 'com.github.johnrengelman.shadow' version '5.2.0'
     id 'org.openjfx.javafxplugin' version '0.0.8'
 }
 
@@ -62,23 +62,13 @@ javafx {
 }
 
 jar {
-    archiveBaseName = project.name
     manifest {
-        attributes 'Implementation-Version': version, 'Specification-Version': version
+        attributes 'Implementation-Version': archiveVersion, 'Specification-Version': archiveVersion
     }
 }
 
 shadowJar {
-    archiveClassifier = 'dist'
-}
-
-build {
-    dependsOn clean
-    dependsOn jar
-    dependsOn shadowJar
-
-    jar.mustRunAfter clean
-    shadowJar.mustRunAfter jar
+    archiveClassifier.set('dist')
 }
 
 String getDependencyVersion(name) {
@@ -88,7 +78,7 @@ String getDependencyVersion(name) {
 		def id = artifact.moduleVersion.id
 		if(id.name.equals(name)) {
 			res = id.version
-			return;
+			return
 		}
 	}
 	
@@ -105,11 +95,11 @@ task updateReadme {
 class Version {
     String major, minor, revision
 
-    String getBuild() {
+    static String getBuild() {
         System.getenv("BUILD_NUMBER") ?: System.getProperty("BUILD_NUMBER") ?: "DEV"
     }
 
     String toString() {
-        "${major}.${minor}.${revision}_$build"
+        "${major}.${minor}.${revision}_${getBuild()}"
     }
 }
