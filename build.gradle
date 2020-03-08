@@ -32,10 +32,10 @@ dependencies {
     implementation 'ch.qos.logback:logback-classic:1.2.3'
     
     implementation('net.sf.trove4j:trove4j:3.0.3') {
-    	because 'JDA implementation dependency is used in creating console messages.'
+        because 'JDA implementation dependency is used in creating console messages.'
     }
     implementation('org.apache.commons:commons-collections4:4.1') {
-    	because 'JDA implementation dependency is used in RestFuture constructor.'
+        because 'JDA implementation dependency is used in RestFuture constructor.'
     }
 }
 
@@ -43,7 +43,7 @@ compileJava.options.encoding = 'UTF-8'
 
 processResources {
 
-	from 'LICENSE.txt'
+    from 'LICENSE.txt'
 }
 
 license {
@@ -51,7 +51,7 @@ license {
     header = rootProject.file('HEADER.txt')
     ext {
         name = 'Daniel D. Scalzi'
-        year = '2016-2019'
+        year = '2016-2020'
         url = 'https://github.com/dscalzi/AventiBot'
     }
 }
@@ -72,24 +72,24 @@ shadowJar {
 }
 
 String getDependencyVersion(name) {
-	def res = ''
-	
-	configurations.compileClasspath.resolvedConfiguration.resolvedArtifacts.each { artifact ->
-		def id = artifact.moduleVersion.id
-		if(id.name.equals(name)) {
-			res = id.version
-			return
-		}
-	}
-	
-	return res
+    def res = ''
+
+    configurations.compileClasspath.resolvedConfiguration.resolvedArtifacts.each { artifact ->
+        def id = artifact.moduleVersion.id
+        if(id.name.equals(name)) {
+            res = id.version
+            return
+        }
+    }
+
+    return res
 }
 
 task updateReadme {
-	def readMe = new File(project.rootDir.toString() + '/README.md')
-	
-	def txt = readMe.text.replaceFirst(/JDA-(.*?)-/, "JDA-${getDependencyVersion('JDA').replaceAll('_', '__')}-")
-	readMe.text = txt.replaceFirst(/lavaplayer-(.*?)-/, "lavaplayer-${getDependencyVersion('lavaplayer')}-")
+    def readMe = new File(project.rootDir.toString() + '/README.md')
+
+    def txt = readMe.text.replaceFirst(/JDA-(.*?)-/, "JDA-${getDependencyVersion('JDA').replaceAll('_', '__')}-")
+    readMe.text = txt.replaceFirst(/lavaplayer-(.*?)-/, "lavaplayer-${getDependencyVersion('lavaplayer')}-")
 }
 
 class Version {
