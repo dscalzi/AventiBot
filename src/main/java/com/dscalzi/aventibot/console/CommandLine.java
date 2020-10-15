@@ -35,11 +35,11 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 public class CommandLine {
 
-	private final Logger LOG;
+	private static final Logger log = LoggerFactory.getLogger(CommandLine.class);
+
 	private TextField node;
 	
 	public CommandLine(TextField node){
-		this.LOG = LoggerFactory.getLogger("Console");
 		this.node = node;
 		this.node.setOnKeyPressed((e) -> {
 			if(e.getCode().equals(KeyCode.ENTER)){
@@ -47,14 +47,14 @@ public class CommandLine {
 					return;
 				
 				if(AventiBot.getStatus() == BotStatus.SHUTDOWN){
-					LOG.info("AventiBot has been shutdown, no further commands will be received.");
+					log.info("AventiBot has been shutdown, no further commands will be received.");
 				} else if(AventiBot.getStatus() != BotStatus.CONNECTED){
-					LOG.info("Please launch AventiBot to use the command line!");
+					log.info("Please launch AventiBot to use the command line!");
 				} else {
 					JDA api = AventiBot.getInstance().getJDA();
 					ConsoleUser console = AventiBot.getInstance().getConsole();
 					
-					LOG.info(node.getText());
+					log.info(node.getText());
 					
 					ConsoleMessage m = new ConsoleMessage(api.getPrivateChannelById(-1L), node.getText(), console);
 					MessageReceivedEvent mre = new MessageReceivedEvent(api, -1, m);

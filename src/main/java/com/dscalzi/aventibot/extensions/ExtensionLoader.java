@@ -30,14 +30,14 @@ import org.slf4j.MarkerFactory;
 
 public class ExtensionLoader {
 
-	private static final Logger LOG = LoggerFactory.getLogger("ExtensionLoader");
+	private static final Logger log = LoggerFactory.getLogger(ExtensionLoader.class);
 	
 	public static File getBaseExtensionsDirectory() {
 		File f = new File("extensions");
 		if(!f.exists()){
 			if(f.mkdirs()) return f;
 			else {
-				LOG.error(MarkerFactory.getMarker("FATAL"), "Unable to create settings directory!");
+				log.error(MarkerFactory.getMarker("FATAL"), "Unable to create settings directory!");
 				return null;
 			}
 		}
@@ -45,7 +45,7 @@ public class ExtensionLoader {
 	}
 	
 	public static List<File> getCandidates() {
-		List<File> candidates = new ArrayList<File>();
+		List<File> candidates = new ArrayList<>();
 		File fB = getBaseExtensionsDirectory();
 		if(fB != null && fB.isDirectory()) {
 			File[] allFiles = fB.listFiles();

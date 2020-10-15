@@ -37,13 +37,13 @@ import javafx.stage.Stage;
 
 public class TerminalExecutor extends Application {
 
+	private static final Logger log = LoggerFactory.getLogger(TerminalExecutor.class);
+
 	protected static List<String> parameters;
 	
 	public static void main(String[] args){
 		launch(args);
 	}
-	
-	private final Logger LOG = LoggerFactory.getLogger("Launcher");
 	
 	@Override
 	public void start(Stage primaryStage) throws Exception {
@@ -56,7 +56,7 @@ public class TerminalExecutor extends Application {
 			root = loader.load(fxmlStream);
 		}
 		
-		LOG.info("Starting terminal..");
+		log.info("Starting terminal..");
 		
 		root.getStylesheets().add(getClass().getResource("/assets/styles/styles.css").toExternalForm());
 		
@@ -78,7 +78,7 @@ public class TerminalExecutor extends Application {
 		primaryStage.setScene(root);
 		primaryStage.show();
 		
-		LOG.info("Done!");
+		log.info("Done!");
 	}
 
 }

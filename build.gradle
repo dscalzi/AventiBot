@@ -31,23 +31,28 @@ repositories {
 }
 
 dependencies {
-    implementation 'net.dv8tion:JDA:4.2.0_209'
-    implementation 'com.sedmelluq:lavaplayer:1.3.50'
-    implementation 'com.google.code.gson:gson:2.8.6'
-    implementation 'ch.qos.logback:logback-classic:1.2.3'
+    implementation "com.google.code.gson:gson:${gsonVersion}"
+
+    implementation "net.dv8tion:JDA:${jdaVersion}"
+    implementation "com.sedmelluq:lavaplayer:${lavaplayerVersion}"
+
+    implementation "org.slf4j:slf4j-api:${slf4jVersion}"
+    implementation "ch.qos.logback:logback-classic:${logbackVersion}"
     
-    implementation('net.sf.trove4j:trove4j:3.0.3') {
+    implementation("net.sf.trove4j:trove4j:3.0.3") {
         because 'JDA implementation dependency is used in creating console messages.'
     }
-    implementation('org.apache.commons:commons-collections4:4.1') {
+    implementation("org.apache.commons:commons-collections4:4.1") {
         because 'JDA implementation dependency is used in RestFuture constructor.'
     }
+
+    testImplementation "org.junit.jupiter:junit-jupiter-api:${junitVersion}"
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${junitVersion}"
 }
 
 compileJava.options.encoding = 'UTF-8'
 
 processResources {
-
     from 'LICENSE.txt'
 }
 
@@ -75,13 +80,14 @@ jar {
 shadowJar {
     archiveClassifier.set('dist')
 }
+assemble.dependsOn('shadowJar')
 
 String getDependencyVersion(name) {
     def res = ''
 
     configurations.compileClasspath.resolvedConfiguration.resolvedArtifacts.each { artifact ->
         def id = artifact.moduleVersion.id
-        if(id.name.equals(name)) {
+        if(id.name == name) {
             res = id.version
             return
         }

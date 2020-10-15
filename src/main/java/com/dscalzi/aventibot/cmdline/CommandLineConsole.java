@@ -36,12 +36,12 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 public class CommandLineConsole {
 
-	private final Logger LOG;
+	private static final Logger log = LoggerFactory.getLogger(CommandLineConsole.class);
+
 	private final Scanner input;
 	private volatile boolean control;
 	
 	public CommandLineConsole(){
-		this.LOG = LoggerFactory.getLogger("Console");
 		this.input = new Scanner(System.in);
 		this.control = false;
 	}
@@ -53,14 +53,14 @@ public class CommandLineConsole {
 			String line = input.nextLine();
 			
 			if(AventiBot.getStatus() == BotStatus.SHUTDOWN){
-				LOG.info("AventiBot has been shutdown, no further commands will be received.");
+				log.info("AventiBot has been shutdown, no further commands will be received.");
 			} else if(AventiBot.getStatus() != BotStatus.CONNECTED){
-				LOG.info("Please launch AventiBot to use the command line!");
+				log.info("Please launch AventiBot to use the command line!");
 			} else {
 				JDA api = AventiBot.getInstance().getJDA();
 				ConsoleUser console = AventiBot.getInstance().getConsole();
 				
-				LOG.info(line);
+				log.info(line);
 				
 				ConsoleMessage m = new ConsoleMessage(api.getPrivateChannelById(-1L), line, console);
 				MessageReceivedEvent mre = new MessageReceivedEvent(api, -1, m);

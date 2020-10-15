@@ -37,18 +37,19 @@ import net.dv8tion.jda.api.events.ShutdownEvent;
 import net.dv8tion.jda.api.hooks.EventListener;
 
 public class CommandLineExecutor {
-	
+
+	private static final Logger log = LoggerFactory.getLogger(CommandLineExecutor.class);
+
 	private static boolean usingCmdLine = false;
 	private static boolean headless = false;
-	
-	private static final Logger LOG = LoggerFactory.getLogger("Launcher");
+
 	private static CommandLineConsole console;
 	
 	public static void main(String[] args){
 		List<String> lstArgs = Arrays.asList(args);
 		usingCmdLine = true;
 		if(!checkSettings()){
-			LOG.error(MarkerFactory.getMarker("FATAL"), "Specify your bot's access token then relaunch.");
+			log.error(MarkerFactory.getMarker("FATAL"), "Specify your bot's access token then relaunch.");
 			System.exit(0);
 		}
 		//Start Console Thread
@@ -76,26 +77,26 @@ public class CommandLineExecutor {
 			AventiBot.getInstance().getJDA().addEventListener((EventListener) e -> {
 				if(e instanceof ShutdownEvent){
 					if(console != null)	console.shutdown();
-					LOG.info("===================================");
-					LOG.info("AventiBot JDA has been shutdown..");
-					LOG.info("===================================");
-					LOG.info("Releasing log file - no more output will be logged.");
+					log.info("===================================");
+					log.info("AventiBot JDA has been shutdown..");
+					log.info("===================================");
+					log.info("Releasing log file - no more output will be logged.");
 					try {
 						o.closeLogger();
 					} catch (IOException e1) {
-						LOG.error(MarkerFactory.getMarker("FATAL"), "Error while releasing log file:");
+						log.error(MarkerFactory.getMarker("FATAL"), "Error while releasing log file:");
 						e1.printStackTrace();
 					}
 					System.exit(0);
 				}
 			});
 		} else {
-			LOG.error(MarkerFactory.getMarker("FATAL"), "Unable to connect to discord. Try relaunching.");
+			log.error(MarkerFactory.getMarker("FATAL"), "Unable to connect to discord. Try relaunching.");
 			if(console != null) console.shutdown();
 			try {
 				o.closeLogger();
 			} catch (IOException e1) {
-				LOG.error(MarkerFactory.getMarker("FATAL"), "Error while releasing log file:");
+				log.error(MarkerFactory.getMarker("FATAL"), "Error while releasing log file:");
 				e1.printStackTrace();
 			}
 			System.exit(0);
@@ -110,7 +111,7 @@ public class CommandLineExecutor {
 				throw new IOException();
 			}
 		} catch(IOException e){
-			LOG.error(MarkerFactory.getMarker("FATAL"), "Unable to load global config. This error is FATAL, shutting down..");
+			log.error(MarkerFactory.getMarker("FATAL"), "Unable to load global config. This error is FATAL, shutting down..");
 			e.printStackTrace();
 			return false;
 		}

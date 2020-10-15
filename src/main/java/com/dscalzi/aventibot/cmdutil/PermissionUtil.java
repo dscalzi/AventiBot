@@ -53,11 +53,12 @@ import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.User;
 
 public final class PermissionUtil {
-	
+
+	private static final Logger log = LoggerFactory.getLogger(PermissionUtil.class);
+
 	private static final String ALLOWEDKEY = "allowedRoles";
 	private static final String BLACKLISTKEY = "blacklistedUsers";
 	private static final String GATEKEY = "requiresPermission";
-	private static final Logger log = LoggerFactory.getLogger("PermissionUtil");
 	
 	private static final Map<Guild, Boolean> initialized;
 

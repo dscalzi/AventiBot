@@ -48,7 +48,7 @@ import javafx.scene.paint.Color;
 
 public class SettingsController implements Initializable, ChangeListener<String>{
 
-	private static final Logger LOG = LoggerFactory.getLogger("Launcher");
+	private static final Logger log = LoggerFactory.getLogger(SettingsController.class);
 	private GlobalConfig current;
 	private SettingsState state;
 	
@@ -68,7 +68,7 @@ public class SettingsController implements Initializable, ChangeListener<String>
 				throw new IOException();
 			}
 		} catch (IOException e) {
-			LOG.error(MarkerFactory.getMarker("FATAL"), "Unable to load global config. This error is FATAL, shutting down..");
+			log.error(MarkerFactory.getMarker("FATAL"), "Unable to load global config. This error is FATAL, shutting down..");
 			e.printStackTrace();
 			if(AventiBot.getStatus() == BotStatus.CONNECTED)
 				AventiBot.getInstance().shutdown();
@@ -115,7 +115,7 @@ public class SettingsController implements Initializable, ChangeListener<String>
 			current = g;
 			setState(SettingsState.SAVED);
 		} catch (IOException e1) {
-			LOG.error(MarkerFactory.getMarker("FATAL"), "Failed to save global configuration settings..");
+			log.error(MarkerFactory.getMarker("FATAL"), "Failed to save global configuration settings..");
 			e1.printStackTrace();
 		}
 	}
@@ -128,9 +128,9 @@ public class SettingsController implements Initializable, ChangeListener<String>
 			else if(OSUtil.isMac())
 				Runtime.getRuntime().exec("open " + SettingsManager.getGlobalConfigurationFile().getAbsolutePath());
 			else 
-				LOG.error(MarkerFactory.getMarker("FATAL"), "Cannot open the configuration file location, unsupported OS. Path is " + SettingsManager.getGlobalConfigurationFile().getAbsolutePath());
+				log.error(MarkerFactory.getMarker("FATAL"), "Cannot open the configuration file location, unsupported OS. Path is " + SettingsManager.getGlobalConfigurationFile().getAbsolutePath());
 		} catch (IOException e1) {
-			LOG.warn("Error while opening file explorer:");
+			log.warn("Error while opening file explorer:");
 			e1.printStackTrace();
 		}
 	}
@@ -165,10 +165,10 @@ public class SettingsController implements Initializable, ChangeListener<String>
 		return this.save_button;
 	}
 	
-	public static enum SettingsState{
+	public enum SettingsState{
 		
 		SAVED(),
-		NOT_SAVED();
+		NOT_SAVED()
 		
 	}
 

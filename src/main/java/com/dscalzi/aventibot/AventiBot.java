@@ -34,6 +34,7 @@ import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.PrivateChannel;
 import net.dv8tion.jda.internal.utils.UnlockHook;
 import net.dv8tion.jda.internal.utils.cache.SnowflakeCacheViewImpl;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MarkerFactory;
 
@@ -43,6 +44,8 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 
 public class AventiBot {
+
+	private static final Logger log = LoggerFactory.getLogger(AventiBot.class);
 	
 	private static BotStatus status;
 	private static AventiBot instance;
@@ -132,7 +135,7 @@ public class AventiBot {
 			postConnectionSetup();
 		} catch (LoginException | IllegalArgumentException | InterruptedException | IOException e) {
 			status = BotStatus.LAUNCHED;
-			LoggerFactory.getLogger("JDA").error(MarkerFactory.getMarker("FATAL"), "Failed to connect to Discord!");
+			log.error(MarkerFactory.getMarker("FATAL"), "Failed to connect to Discord!");
 			e.printStackTrace();
 			return false;
 		}
@@ -184,7 +187,7 @@ public class AventiBot {
 		try {
 			pth = AventiBot.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath().replace("/", File.separator);
 		} catch (URISyntaxException e) {
-			LoggerFactory.getLogger("AventiBot").error(MarkerFactory.getMarker("FATAL"), "The paths on your machine cannot be converted to URIs, I am speechless.");
+			log.error(MarkerFactory.getMarker("FATAL"), "The paths on your machine cannot be converted to URIs, I am speechless.");
 			e.printStackTrace();
 			return null;
 		}

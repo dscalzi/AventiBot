@@ -30,6 +30,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MarkerFactory;
 
@@ -37,7 +38,8 @@ import javafx.application.Platform;
 import javafx.scene.control.TextArea;
 
 public class CommandLog extends OutputStream {
-	
+
+	private static final Logger log = LoggerFactory.getLogger(CommandLog.class);
 	private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd.HH.mm.ss").withLocale(Locale.US).withZone(ZoneId.systemDefault());
 
 	private volatile boolean fileStreamClosed;
@@ -54,7 +56,7 @@ public class CommandLog extends OutputStream {
 				logFile.getParentFile().mkdirs();
 				logFile.createNewFile();
 			} catch (IOException e) {
-				LoggerFactory.getLogger("AventiBot").error(MarkerFactory.getMarker("FATAL"), "Could not create logging file.");
+				log.error(MarkerFactory.getMarker("FATAL"), "Could not create logging file.");
 				e.printStackTrace();
 			}
 		}
@@ -63,7 +65,7 @@ public class CommandLog extends OutputStream {
 			fileStreamClosed = false;
 		} catch (FileNotFoundException e) {
 			fileStreamClosed = true;
-			LoggerFactory.getLogger("AventiBot").error(MarkerFactory.getMarker("FATAL"), "Could not bind to logging file.");
+			log.error(MarkerFactory.getMarker("FATAL"), "Could not bind to logging file.");
 			e.printStackTrace();
 		}
 	}
