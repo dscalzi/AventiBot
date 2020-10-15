@@ -1,9 +1,9 @@
 plugins {
     id 'java'
     id 'application'
-    id 'net.minecrell.licenser' version '0.4.1'
-    id 'com.github.johnrengelman.shadow' version '5.2.0'
-    id 'org.openjfx.javafxplugin' version '0.0.8'
+    id 'org.cadixdev.licenser' version '0.5.0'
+    id 'com.github.johnrengelman.shadow' version '6.1.0'
+    id 'org.openjfx.javafxplugin' version '0.0.9'
 }
 
 mainClassName = 'com.dscalzi.aventibot.LaunchWrapper'
@@ -19,6 +19,11 @@ version = "$versionObj"
 sourceCompatibility = JavaVersion.VERSION_11
 targetCompatibility = JavaVersion.VERSION_11
 
+wrapper {
+    gradleVersion = '6.7'
+    distributionType = Wrapper.DistributionType.ALL
+}
+
 repositories {
     jcenter()
     mavenCentral()
@@ -26,7 +31,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'net.dv8tion:JDA:4.2.0_208'
+    implementation 'net.dv8tion:JDA:4.2.0_209'
     implementation 'com.sedmelluq:lavaplayer:1.3.50'
     implementation 'com.google.code.gson:gson:2.8.6'
     implementation 'ch.qos.logback:logback-classic:1.2.3'
