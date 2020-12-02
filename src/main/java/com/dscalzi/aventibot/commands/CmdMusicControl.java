@@ -410,7 +410,7 @@ public class CmdMusicControl implements CommandExecutor{
 		return CommandResult.IGNORE;
 	}
 	
-	private VoiceChannel connectWithUser(Member member, Guild g){
+	public static VoiceChannel connectWithUser(Member member, Guild g){
 		AudioManager am = g.getAudioManager();
 		VoiceChannel vc = member.getVoiceState().getChannel();
 		if(vc != null && (!am.isConnected() || !am.getConnectedChannel().equals(vc))) am.openAudioConnection(vc);

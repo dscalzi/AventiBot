@@ -115,6 +115,7 @@ public class AventiBot {
 		this.registry.register("hardrestart", new CmdHardRestart());
 		this.registry.register("urbandictionary", ud);
 		this.registry.register("define", ud);
+		this.registry.register("sheik", new CmdSheik());
 	}
 	
 	private void registerListeners(){
@@ -125,7 +126,7 @@ public class AventiBot {
 	public boolean connect(){
 		try {
 			GlobalConfig g = SettingsManager.loadGlobalConfig();
-			JDABuilder jdaBuilder = new JDABuilder(AccountType.BOT)
+			JDABuilder jdaBuilder = JDABuilder.createDefault(g.getToken())
 					.setAutoReconnect(true)
 					.setToken(g.getToken());
 			if(!g.getCurrentGame().isEmpty()) 

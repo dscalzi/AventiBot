@@ -44,6 +44,7 @@ public class ConsoleMessage extends ReceivedMessage {
 		super(-1L,
 				channel,
 				MessageType.DEFAULT,
+				null,
 				false,
 				false,
 				new TLongHashSet(),
