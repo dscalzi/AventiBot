@@ -114,11 +114,13 @@ public final class PermissionUtil {
 			if(getBlacklistedUsers(node, g) != null)
 				if(getBlacklistedUsers(node, g).contains(user.getId())) return false;
 			
-			List<String> userRoleIds = new ArrayList<String>();
-			g.getMember(user).getRoles().forEach(r -> userRoleIds.add(r.getId()));
-			
-			if(getAllowedRoles(node, g) != null)
-				if(Collections.disjoint(userRoleIds, getAllowedRoles(node, g))) return false;
+			List<String> userRoleIds = new ArrayList<>();
+			g.retrieveMember(user).complete().getRoles().forEach(r -> userRoleIds.add(r.getId()));
+
+			List<String> allowedRoles = getAllowedRoles(node, g);
+			if(allowedRoles != null) {
+				return !Collections.disjoint(userRoleIds, allowedRoles);
+			}
 		}
 		return true;
 		
