@@ -8,7 +8,7 @@ plugins {
 
 mainClassName = 'com.dscalzi.aventibot.LaunchWrapper'
 
-def versionObj = new Version(major: 0, minor: 83, revision: 0)
+def versionObj = new Version(major: 0, minor: 83, revision: 1)
 
 description = 'Highly customizable Discord Bot'
 
@@ -20,14 +20,14 @@ sourceCompatibility = JavaVersion.VERSION_11
 targetCompatibility = JavaVersion.VERSION_11
 
 wrapper {
-    gradleVersion = '6.7'
+    gradleVersion = '6.8.3'
     distributionType = Wrapper.DistributionType.ALL
 }
 
 repositories {
-    jcenter()
     mavenCentral()
     maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
+    maven { url 'https://m2.dv8tion.net/releases' }
 }
 
 dependencies {
@@ -61,7 +61,7 @@ license {
     header = rootProject.file('HEADER.txt')
     ext {
         name = 'Daniel D. Scalzi'
-        year = '2016-2020'
+        year = '2016-2021'
         url = 'https://github.com/dscalzi/AventiBot'
     }
 }
