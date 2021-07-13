@@ -56,7 +56,7 @@ public class CommandLine {
 					
 					log.info(node.getText());
 					
-					ConsoleMessage m = new ConsoleMessage(api.getPrivateChannelById(-1L), node.getText(), console);
+					ConsoleMessage m = new ConsoleMessage(console.getPrivateChannel(), node.getText(), console);
 					MessageReceivedEvent mre = new MessageReceivedEvent(api, -1, m);
 					CommandDispatcher.dispatchCommand(mre, CommandDispatcher.parseMessage(mre));
 				}

@@ -60,6 +60,8 @@ public class ConsoleMessage extends ReceivedMessage {
 				new ArrayList<>(),
 				new ArrayList<>(),
 				new ArrayList<>(),
+				new ArrayList<>(),
+				new ArrayList<>(),
 				0);
 	}
 

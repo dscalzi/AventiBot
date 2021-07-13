@@ -228,7 +228,7 @@ public class CmdMusicControl implements CommandExecutor{
 			Optional<VoiceChannel> vc = scheduler.getCurrentChannel();
 			int usrs = -1;
 			int required = -1;
-			if(!vc.isPresent()) {
+			if(vc.isEmpty()) {
 				e.getChannel().sendMessage("\u2757 Warning - Not connected to voice! Report this issue.").queue();
 			} else {
 				usrs = vc.get().getMembers().size()-1;
@@ -238,15 +238,15 @@ public class CmdMusicControl implements CommandExecutor{
 			EmbedBuilder eb = new EmbedBuilder().setColor(SettingsManager.getColorAWT(e.getGuild()));
 			int skips = current.getNumSkips();
 			eb.addField(new Field("Currently Playing:", current.getTrack().getInfo().title + " (" + TimeUtils.formatTrackDuration(current.getTrack().getPosition()) + "/" + TimeUtils.formatTrackDuration(current.getTrack().getDuration()) + ")" + (usrs > -1 && skips > 0 ? (" | Votes " + skips + "/" + required + " (" + (int)(((double)skips/required)*100) + "%)") : ""), false));
-			String desc = "";
+			StringBuilder desc = new StringBuilder();
 			
 			if(tracks.size() != 0)
 				for(int i=0; i<tracks.getPage(page).size(); ++i){
 					TrackMeta t = tracks.getPage(page).get(i);
-					desc += "\n" + (i+1+5*page) + ") " + t.getTrack().getInfo().title + " (" + TimeUtils.formatTrackDuration(t.getTrack().getDuration()) + ")";
+					desc.append("\n").append(i + 1 + 5 * page).append(") ").append(t.getTrack().getInfo().title).append(" (").append(TimeUtils.formatTrackDuration(t.getTrack().getDuration())).append(")");
 				}
 			
-			if(desc.length() > 0) eb.addField(new Field("Up Next:", desc, false));
+			if(desc.length() > 0) eb.addField(new Field("Up Next:", desc.toString(), false));
 			eb.setFooter("Playlist Length " + TimeUtils.formatTrackDuration(scheduler.getPlaylistDuration()) + (tracks.size() > 0 ? " | Page " + (page+1) + " of " + tracks.size(): ""), IconUtil.CLOCK.getURL());
 			
 			

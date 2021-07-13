@@ -182,7 +182,7 @@ public class InputUtils {
 	 */
 	public static Pair<Integer, String> parseFullTerm(String[] args, int startAt){
 		if(startAt >= args.length) return null;
-		String delimiter = args[startAt].substring(0, 1).equals("'") ? "'" : "\"";
+		String delimiter = args[startAt].charAt(0) == '\'' ? "'" : "\"";
 		StringBuilder arg = new StringBuilder(args[startAt].substring(1));
 		if(arg.substring(arg.length()-1).equals(delimiter))
 			return new Pair<>(startAt, arg.substring(0, arg.length()-1));

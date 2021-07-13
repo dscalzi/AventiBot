@@ -1,14 +1,14 @@
 plugins {
     id 'java'
     id 'application'
-    id 'org.cadixdev.licenser' version '0.5.0'
-    id 'com.github.johnrengelman.shadow' version '6.1.0'
-    id 'org.openjfx.javafxplugin' version '0.0.9'
+    id 'org.cadixdev.licenser' version '0.6.1'
+    id 'com.github.johnrengelman.shadow' version '7.0.0'
+    id 'org.openjfx.javafxplugin' version '0.0.10'
 }
 
 mainClassName = 'com.dscalzi.aventibot.LaunchWrapper'
 
-def versionObj = new Version(major: 0, minor: 83, revision: 1)
+def versionObj = new Version(major: 0, minor: 84, revision: 0)
 
 description = 'Highly customizable Discord Bot'
 
@@ -20,8 +20,8 @@ sourceCompatibility = JavaVersion.VERSION_11
 targetCompatibility = JavaVersion.VERSION_11
 
 wrapper {
-    gradleVersion = '6.8.3'
-    distributionType = Wrapper.DistributionType.ALL
+    gradleVersion = '7.1.1'
+    distributionType = Wrapper.DistributionType.BIN
 }
 
 repositories {
@@ -57,9 +57,8 @@ processResources {
 }
 
 license {
-    sourceSets = [project.sourceSets.main]
     header = rootProject.file('HEADER.txt')
-    ext {
+    properties {
         name = 'Daniel D. Scalzi'
         year = '2016-2021'
         url = 'https://github.com/dscalzi/AventiBot'

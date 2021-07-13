@@ -20,18 +20,15 @@
 
 package com.dscalzi.aventibot.console;
 
-import java.util.concurrent.CompletableFuture;
-import java.util.function.Consumer;
-
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.requests.RestFuture;
-import net.dv8tion.jda.internal.requests.Route;
-import net.dv8tion.jda.internal.requests.Route.CompiledRoute;
 import net.dv8tion.jda.internal.requests.restaction.MessageActionImpl;
 
 import javax.annotation.Nonnull;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
 
 /**
  * Class to avoid queuing messages sent to the console.
@@ -43,14 +40,14 @@ public class ConsoleMessageAction extends MessageActionImpl {
 
 	private Message message;
 	
-	public ConsoleMessageAction(JDA api, CompiledRoute route, MessageChannel channel, Message message) {
-		super(api, route, channel);
+	public ConsoleMessageAction(JDA api, String messageId, MessageChannel channel, Message message) {
+		super(api, messageId, channel);
 		this.message = message;
 	}
 
 	@SuppressWarnings("unused")
-	public ConsoleMessageAction(JDA api, Route.CompiledRoute route, MessageChannel channel, StringBuilder contentBuilder) {
-		super(api, route, channel, contentBuilder);
+	public ConsoleMessageAction(JDA api, String messageId, MessageChannel channel, StringBuilder contentBuilder) {
+		super(api, messageId, channel, contentBuilder);
 	}
 	
 	@Override

@@ -72,7 +72,7 @@ public final class PermissionUtil {
 	}
 	
 	public static boolean isInitialized(Guild g){
-		return initialized.get(g) == null ? false : initialized.get(g);
+		return initialized.get(g) != null && initialized.get(g);
 	}
 	
 	public static void reload(Guild g){
@@ -138,7 +138,7 @@ public final class PermissionUtil {
 	
 	public static Set<PermissionNode> getNodesForRole(Role r, Guild g){
 		Map<String, List<String>> perms = permissionMap.get(g.getId());
-		Set<PermissionNode> registered = new HashSet<PermissionNode>(AventiBot.getInstance().getCommandRegistry().getAllRegisteredNodes());
+		Set<PermissionNode> registered = new HashSet<>(AventiBot.getInstance().getCommandRegistry().getAllRegisteredNodes());
 		String id = r.getId();
 		
 		outer:
@@ -231,7 +231,7 @@ public final class PermissionUtil {
 			List<String> q = new ArrayList<>();
 			for(Role r : roles){
 				if((add && rP.contains(r.getId())) || (!add && !rP.contains(r.getId()))){
-					result.logResult("'ERR \"" + n.toString() + "\" already " + (add ? "granted to" : "revoked from") + " \"" + r.getName() + "\"(" + r.getId() + ").");
+					result.logResult("'ERR \"" + n + "\" already " + (add ? "granted to" : "revoked from") + " \"" + r.getName() + "\"(" + r.getId() + ").");
 					continue;
 				}
 				if(add) rP.add(r.getId());
@@ -244,10 +244,9 @@ public final class PermissionUtil {
 		//Write the changes in queue map.
 		if(queue.size() == 0) return result;
 
-		JsonParser p = new JsonParser();
 		try(JsonReader file = new JsonReader(new FileReader(target))){
 			JsonObject job = null;
-			JsonElement parsed = p.parse(file);
+			JsonElement parsed = JsonParser.parseReader(file);
 			if(parsed.isJsonObject()){
 				job = parsed.getAsJsonObject();
 				for(Map.Entry<String, List<String>> entry : queue.entrySet()){
@@ -303,7 +302,7 @@ public final class PermissionUtil {
 			for(User u : users){
 				String id = u.getId();
 				if((add && rP.contains(id)) || (!add && !rP.contains(id))){
-					result.logResult("'ERR \"" + n.toString() + "\" " + (add ? "already blacklists" : "does not blacklist") + " \"" + u.getName() + "#" + u.getDiscriminator() + "\"(" + id + ").");
+					result.logResult("'ERR \"" + n + "\" " + (add ? "already blacklists" : "does not blacklist") + " \"" + u.getName() + "#" + u.getDiscriminator() + "\"(" + id + ").");
 					continue;
 				}
 				if(add) rP.add(id);
@@ -316,17 +315,16 @@ public final class PermissionUtil {
 		//Write the changes in queue map.
 		if(queue.size() == 0) return result;
 
-		JsonParser p = new JsonParser();
 		try(JsonReader file = new JsonReader(new FileReader(target))){
 			JsonObject job = null;
-			JsonElement parsed = p.parse(file);
+			JsonElement parsed = JsonParser.parseReader(file);
 			if(parsed.isJsonObject()){
 				job = parsed.getAsJsonObject();
 				for(Map.Entry<String, List<String>> entry : queue.entrySet()){
 					JsonObject section = job.get(entry.getKey()).getAsJsonObject();
 					JsonArray arr = section.get(PermissionUtil.BLACKLISTKEY).getAsJsonArray();
 					if(add)
-						entry.getValue().forEach(r -> arr.add(r));
+						entry.getValue().forEach(arr::add);
 					else {
 						for(int i=arr.size()-1; i>=0; --i){
 						    String val = arr.get(i).getAsString();
@@ -381,11 +379,10 @@ public final class PermissionUtil {
 		}
 		
 		if(queue.size() == 0) return result;
-		
-		JsonParser p = new JsonParser();
+
 		try(JsonReader file = new JsonReader(new FileReader(target))){
 			JsonObject job = null;
-			JsonElement parsed = p.parse(file);
+			JsonElement parsed = JsonParser.parseReader(file);
 			if(parsed.isJsonObject()){
 				job = parsed.getAsJsonObject();
 				for(PermissionNode n : queue){
@@ -420,11 +417,10 @@ public final class PermissionUtil {
 		log.info("Using permission file located at " + target.getAbsolutePath() + " for guild " + g.getName() + "(" + g.getId() + ").");
 		Map<String, List<String>> perms = new HashMap<>();
 		Map<String, List<String>> blist = new HashMap<>();
-		
-		JsonParser p = new JsonParser();
+
 		try(JsonReader file = new JsonReader(new FileReader(target))){
 			JsonObject result = null;
-			JsonElement parsed = p.parse(file);
+			JsonElement parsed = JsonParser.parseReader(file);
 			Set<PermissionNode> registered = new HashSet<>(AventiBot.getInstance().getCommandRegistry().getAllRegisteredNodes());
 			if(parsed.isJsonObject()){
 				result = parsed.getAsJsonObject();
@@ -432,7 +428,8 @@ public final class PermissionUtil {
 				//get nodes
 				for(Map.Entry<String, JsonElement> e : result.entrySet()){
 					PermissionNode current = PermissionNode.get(e.getKey());
-					if(registered.contains(current)) registered.remove(current);
+					// Removes if present.
+					registered.remove(current);
 					
 					if(e.getValue().isJsonObject()){
 						boolean ignorePerms = false;

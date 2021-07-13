@@ -108,8 +108,7 @@ public class CmdUrbanDictionary implements CommandExecutor {
 			return CommandResult.ERROR;
 		}
 
-		JsonParser p = new JsonParser();
-		JsonElement parsed = p.parse(json);
+		JsonElement parsed = JsonParser.parseString(json);
 
 		if(parsed.isJsonObject()) {
 			JsonObject root = parsed.getAsJsonObject();
@@ -148,7 +147,7 @@ public class CmdUrbanDictionary implements CommandExecutor {
 	
 	private String linkSubTerms(String s) {
 	    final Matcher m = SUB_DEF_REG.matcher(s);
-	    final StringBuffer b = new StringBuffer();
+	    final StringBuilder b = new StringBuilder();
         while(m.find()) {
 			String t = URLEncoder.encode(m.group(1), StandardCharsets.UTF_8);
 			m.appendReplacement(b, "[" + m.group(1) + "](https://www.urbandictionary.com/define.php?term=" + t + ")");

@@ -157,21 +157,18 @@ public class TerminalController implements Initializable {
 				if(success){
 					launch_button.setVisible(false);
 					launch_button.setManaged(false);
-					AventiBot.getInstance().getJDA().addEventListener(new EventListener(){
-						@Override
-						public void onEvent(GenericEvent e){
-							if(e instanceof ShutdownEvent){
-								log.info("===================================");
-								log.info("AventiBot JDA has been shutdown..");
-								log.info("===================================");
-								terminate_button.setDisable(true);
-								log.info("Releasing log file - no more output will be logged.");
-								try {
-									console.closeLogger();
-								} catch (IOException e1) {
-									log.error(MarkerFactory.getMarker("FATAL"), "Error while releasing log file:");
-									e1.printStackTrace();
-								}
+					AventiBot.getInstance().getJDA().addEventListener((EventListener) e12 -> {
+						if(e12 instanceof ShutdownEvent){
+							log.info("===================================");
+							log.info("AventiBot JDA has been shutdown..");
+							log.info("===================================");
+							terminate_button.setDisable(true);
+							log.info("Releasing log file - no more output will be logged.");
+							try {
+								console.closeLogger();
+							} catch (IOException e1) {
+								log.error(MarkerFactory.getMarker("FATAL"), "Error while releasing log file:");
+								e1.printStackTrace();
 							}
 						}
 					});

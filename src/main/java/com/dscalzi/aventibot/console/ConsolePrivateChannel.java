@@ -72,6 +72,14 @@ public class ConsolePrivateChannel implements PrivateChannel {
 
 	@Nonnull
 	@Override
+	public MessageAction sendMessageEmbeds(@Nonnull MessageEmbed embed, @Nonnull MessageEmbed... other) {
+		LoggerFactory.getLogger("Embeded Message").info("Unable to display embed on terminal.");
+		ConsoleMessage msg = new ConsoleMessage(this, null, user);
+		return new ConsoleMessageAction(api, null, this, msg);
+	}
+
+	@Nonnull
+	@Override
 	public String getId() {
 		return user.getId();
 	}
@@ -105,12 +113,6 @@ public class ConsolePrivateChannel implements PrivateChannel {
 	public RestAction<Void> close() {
 		// Not Supported
 		return new CompletedRestAction<>(api, null);
-	}
-
-	@Override
-	public boolean isFake() {
-		// Not supported
-		return false;
 	}
 
 	@NotNull

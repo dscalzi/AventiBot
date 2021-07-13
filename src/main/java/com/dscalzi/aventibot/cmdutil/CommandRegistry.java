@@ -51,7 +51,7 @@ public class CommandRegistry {
 	public Set<PermissionNode> getAllRegisteredNodes(){
 		Set<PermissionNode> a = new HashSet<>();
 		for(CommandExecutor e : registry.values()){
-			for(PermissionNode pn : e.provideNodes()) a.add(pn);
+			a.addAll(e.provideNodes());
 		}
 		return a;
 	}

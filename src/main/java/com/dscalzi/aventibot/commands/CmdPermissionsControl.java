@@ -118,14 +118,14 @@ public class CmdPermissionsControl implements CommandExecutor{
 		}
 		
 		String[] terms = new String[rawArgs.length-1];
-		for(int i=0; i<terms.length; ++i) terms[i] = rawArgs[i+1];
+		System.arraycopy(rawArgs, 1, terms, 0, terms.length);
 		if(rawArgs.length < 3) return cmdWritePermissionFormat(e, label, add);
 		
 		Pair<String[], String[]> ps = partition(terms, add ? "to" : "from");
 		if(ps == null) return cmdWritePermissionFormat(e, label, add);
 			
 		Pair<Set<Role>,Set<String>> roles = InputUtils.parseBulkRoles(ps.getValue(), JDAUtils.getGuildFromCombinedEvent(e));
-		Pair<Set<PermissionNode>,Set<String>> nodes = PermissionUtil.validateNodes(new HashSet<String>(Arrays.asList(ps.getKey())));
+		Pair<Set<PermissionNode>,Set<String>> nodes = PermissionUtil.validateNodes(new HashSet<>(Arrays.asList(ps.getKey())));
 		try {
 			PermissionResult r = PermissionUtil.writePermissionChange(JDAUtils.getGuildFromCombinedEvent(e), roles.getKey(), nodes.getKey(), add);
 			for(String s : roles.getValue()) r.addInvalidRole(s);
@@ -156,14 +156,14 @@ public class CmdPermissionsControl implements CommandExecutor{
 		}
 		
 		String[] terms = new String[rawArgs.length-1];
-		for(int i=0; i<terms.length; ++i) terms[i] = rawArgs[i+1];
+		System.arraycopy(rawArgs, 1, terms, 0, terms.length);
 		if(rawArgs.length < 3) return cmdWriteBlacklistFormat(e, label, add);
 		
 		Pair<String[], String[]> ps = partition(terms, "for");
 		if(ps == null) return cmdWriteBlacklistFormat(e, label, add);
 		
 		Pair<Set<User>,Set<String>> users = InputUtils.parseBulkMembers(ps.getValue(), JDAUtils.getGuildFromCombinedEvent(e));
-		Pair<Set<PermissionNode>,Set<String>> nodes = PermissionUtil.validateNodes(new HashSet<String>(Arrays.asList(ps.getKey())));
+		Pair<Set<PermissionNode>,Set<String>> nodes = PermissionUtil.validateNodes(new HashSet<>(Arrays.asList(ps.getKey())));
 		
 		try {
 			PermissionResult r = PermissionUtil.writeBlacklistChange(JDAUtils.getGuildFromCombinedEvent(e), users.getKey(), nodes.getKey(), add);
@@ -214,13 +214,13 @@ public class CmdPermissionsControl implements CommandExecutor{
 		}
 		
 		String[] terms = new String[rawArgs.length-1];
-		for(int i=0; i<terms.length; ++i) terms[i] = rawArgs[i+1];
+		System.arraycopy(rawArgs, 1, terms, 0, terms.length);
 		if(rawArgs.length < 2){
 			e.getChannel().sendMessage("Proper format is `" + SettingsManager.getCommandPrefix(JDAUtils.getGuildFromCombinedEvent(e)) + "permissions " + label + " <node(s)>`").queue();
 			return CommandResult.ERROR;
 		}
 		
-		Pair<Set<PermissionNode>,Set<String>> nodes = PermissionUtil.validateNodes(new HashSet<String>(Arrays.asList(terms)));
+		Pair<Set<PermissionNode>,Set<String>> nodes = PermissionUtil.validateNodes(new HashSet<>(Arrays.asList(terms)));
 		
 		try {
 			PermissionResult r = PermissionUtil.writeNodeChange(JDAUtils.getGuildFromCombinedEvent(e), nodes.getKey(), enable);

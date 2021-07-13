@@ -236,14 +236,13 @@ public class SettingsManager {
 	public static GlobalConfig loadGlobalConfig() throws IOException{
 		File target = SettingsManager.getGlobalConfigurationFile();
 		if(target == null) throw new IOException();
-		
-		JsonParser p = new JsonParser();
+
 		GlobalConfig g = new GlobalConfig();
 		boolean requiresSave = false;
 		
 		try(JsonReader file = new JsonReader(new FileReader(target))){
 			JsonObject result;
-			JsonElement parsed = p.parse(file);
+			JsonElement parsed = JsonParser.parseReader(file);
 			if(parsed.isJsonNull()) return generateDefaultGlobal();
 			if(parsed.isJsonObject()){
 				result = parsed.getAsJsonObject();
@@ -348,14 +347,13 @@ public class SettingsManager {
 	public static GuildConfig loadGuildConfig(Guild id) throws IOException{
 		File target = SettingsManager.getConfigurationFile(id);
 		if(target == null) throw new IOException();
-		
-		JsonParser p = new JsonParser();
+
 		GuildConfig g = new GuildConfig();
 		boolean requiresSave = false;
 		
 		try(JsonReader file = new JsonReader(new FileReader(target))){
 			JsonObject result;
-			JsonElement parsed = p.parse(file);
+			JsonElement parsed = JsonParser.parseReader(file);
 			if(parsed.isJsonNull()) return generateDefaultGuild(id);
 			if(parsed.isJsonObject()){
 				result = parsed.getAsJsonObject();
