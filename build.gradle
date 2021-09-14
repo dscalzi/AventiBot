@@ -8,7 +8,7 @@ plugins {
 
 mainClassName = 'com.dscalzi.aventibot.LaunchWrapper'
 
-def versionObj = new Version(major: 0, minor: 84, revision: 0)
+def versionObj = new Version(major: 0, minor: 84, revision: 1)
 
 description = 'Highly customizable Discord Bot'
 
@@ -20,7 +20,7 @@ sourceCompatibility = JavaVersion.VERSION_11
 targetCompatibility = JavaVersion.VERSION_11
 
 wrapper {
-    gradleVersion = '7.1.1'
+    gradleVersion = '7.2'
     distributionType = Wrapper.DistributionType.BIN
 }
 
