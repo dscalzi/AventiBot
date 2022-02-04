@@ -1,6 +1,6 @@
 /*
  * This file is part of AventiBot.
- * Copyright (C) 2016-2021 Daniel D. Scalzi
+ * Copyright (C) 2016-2022 Daniel D. Scalzi
  *
  * https://github.com/dscalzi/AventiBot
  *

@@ -60,7 +60,7 @@ license {
     header = rootProject.file('HEADER.txt')
     properties {
         name = 'Daniel D. Scalzi'
-        year = '2016-2021'
+        year = '2016-2022'
         url = 'https://github.com/dscalzi/AventiBot'
     }
 }
