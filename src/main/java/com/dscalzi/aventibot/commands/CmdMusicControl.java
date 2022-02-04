@@ -413,7 +413,10 @@ public class CmdMusicControl implements CommandExecutor{
 	public static VoiceChannel connectWithUser(Member member, Guild g){
 		AudioManager am = g.getAudioManager();
 		VoiceChannel vc = member.getVoiceState().getChannel();
-		if(vc != null && (!am.isConnected() || !am.getConnectedChannel().equals(vc))) am.openAudioConnection(vc);
+		if(vc != null && (!am.isConnected() || !am.getConnectedChannel().equals(vc))) {
+			am.openAudioConnection(vc);
+			am.setSelfDeafened(true);
+		}
 		return vc;
 	}
 
