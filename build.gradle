@@ -2,13 +2,13 @@ plugins {
     id 'java'
     id 'application'
     id 'org.cadixdev.licenser' version '0.6.1'
-    id 'com.github.johnrengelman.shadow' version '7.0.0'
-    id 'org.openjfx.javafxplugin' version '0.0.10'
+    id 'com.github.johnrengelman.shadow' version '7.1.2'
+    id 'org.openjfx.javafxplugin' version '0.0.11'
 }
 
 mainClassName = 'com.dscalzi.aventibot.LaunchWrapper'
 
-def versionObj = new Version(major: 0, minor: 84, revision: 1)
+def versionObj = new Version(major: 0, minor: 84, revision: 2)
 
 description = 'Highly customizable Discord Bot'
 

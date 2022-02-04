@@ -42,3 +42,5 @@ dependency-reduced-pom.xml
 /bin
 /subprojects/*/bin
 atlassian-ide-plugin.xml
+
+/deploy
