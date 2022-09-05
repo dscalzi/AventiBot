@@ -27,7 +27,6 @@ import com.dscalzi.aventibot.console.ConsoleUser;
 import com.dscalzi.aventibot.music.LavaWrapper;
 import com.dscalzi.aventibot.settings.GlobalConfig;
 import com.dscalzi.aventibot.settings.SettingsManager;
-import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
@@ -87,6 +86,7 @@ public class AventiBot {
 		try(UnlockHook ignored = pcCache.writeLock()) {
 		    pcCache.getMap().put(console.getIdLong(), console.getPrivateChannel());
 		}
+		log.info("Connected to {} servers.", jda.getGuilds().size());
 		launchTime = System.currentTimeMillis();
 	}
 	
