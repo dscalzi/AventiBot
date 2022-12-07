@@ -81,7 +81,7 @@ public class CmdAuthor implements CommandExecutor {
 		ver = !ver.equals("Debug") ? "v" + ver : "Debug Mode";
 		b.setFooter(ver + " | " + upStr, null);
 		
-		e.getChannel().sendMessage(b.build()).queue();
+		e.getChannel().sendMessageEmbeds(b.build()).queue();
 		
 		return CommandResult.SUCCESS;
 	}

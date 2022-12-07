@@ -3,12 +3,12 @@ plugins {
     id 'application'
     id 'org.cadixdev.licenser' version '0.6.1'
     id 'com.github.johnrengelman.shadow' version '7.1.2'
-    id 'org.openjfx.javafxplugin' version '0.0.11'
+    id 'org.openjfx.javafxplugin' version '0.0.13'
 }
 
 mainClassName = 'com.dscalzi.aventibot.LaunchWrapper'
 
-def versionObj = new Version(major: 0, minor: 84, revision: 3)
+def versionObj = new Version(major: 5, minor: 0, revision: 0)
 
 description = 'Highly customizable Discord Bot'
 
@@ -16,12 +16,15 @@ group = 'com.dscalzi'
 archivesBaseName = 'AventiBot'
 version = "$versionObj"
 
-sourceCompatibility = JavaVersion.VERSION_11
-targetCompatibility = JavaVersion.VERSION_11
-
 wrapper {
-    gradleVersion = '7.3.3'
+    gradleVersion = '7.6'
     distributionType = Wrapper.DistributionType.BIN
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
 }
 
 repositories {
@@ -31,6 +34,11 @@ repositories {
 }
 
 dependencies {
+
+    // From JDA - Code safety
+    compileOnly("com.google.code.findbugs:jsr305:3.0.2")
+    compileOnly("org.jetbrains:annotations:23.0.0")
+
     implementation "com.google.code.gson:gson:${gsonVersion}"
 
     implementation "net.dv8tion:JDA:${jdaVersion}"
@@ -38,11 +46,11 @@ dependencies {
 
     implementation "org.slf4j:slf4j-api:${slf4jVersion}"
     implementation "ch.qos.logback:logback-classic:${logbackVersion}"
-    
+
     implementation("net.sf.trove4j:trove4j:3.0.3") {
         because 'JDA implementation dependency is used in creating console messages.'
     }
-    implementation("org.apache.commons:commons-collections4:4.1") {
+    implementation("org.apache.commons:commons-collections4:4.4") {
         because 'JDA implementation dependency is used in RestFuture constructor.'
     }
 
@@ -65,8 +73,12 @@ license {
     }
 }
 
+tasks.withType(JavaExec).configureEach {
+    javaLauncher.set(javaToolchains.launcherFor(java.toolchain))
+}
+
 javafx {
-    version = "11"
+    version = "17"
     modules = [ 'javafx.controls',  'javafx.fxml' ]
 }
 
@@ -98,7 +110,7 @@ String getDependencyVersion(name) {
 task updateReadme {
     def readMe = new File(project.rootDir.toString() + '/README.md')
 
-    def txt = readMe.text.replaceFirst(/JDA-(.*?)-/, "JDA-${getDependencyVersion('JDA').replaceAll('_', '__')}-")
+    def txt = readMe.text.replaceFirst(/JDA-(.+?)-9/, "JDA-${getDependencyVersion('JDA').replaceAll('_', '__').replaceAll('-', '--')}-9")
     readMe.text = txt.replaceFirst(/lavaplayer-(.*?)-/, "lavaplayer-${getDependencyVersion('lavaplayer')}-")
 }
 

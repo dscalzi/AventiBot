@@ -51,11 +51,10 @@ import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.entities.MessageEmbed.Field;
+import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.managers.AudioManager;
 
@@ -250,7 +249,7 @@ public class CmdMusicControl implements CommandExecutor{
 			eb.setFooter("Playlist Length " + TimeUtils.formatTrackDuration(scheduler.getPlaylistDuration()) + (tracks.size() > 0 ? " | Page " + (page+1) + " of " + tracks.size(): ""), IconUtil.CLOCK.getURL());
 			
 			
-			e.getChannel().sendMessage(new MessageBuilder().setEmbed(eb.build()).build()).queue();
+			e.getChannel().sendMessageEmbeds(eb.build()).queue();
 			
 			CommandDispatcher.displayResult(CommandResult.SUCCESS, e.getMessage());
 		});
@@ -275,7 +274,7 @@ public class CmdMusicControl implements CommandExecutor{
 				EmbedBuilder eb = new EmbedBuilder().setTitle("Paused " + tm.getTrack().getInfo().title, null).setColor(SettingsManager.getColorAWT(e.getGuild()));
 				eb.setDescription("Song Duration: (" + TimeUtils.formatTrackDuration(tm.getTrack().getPosition()) + "/" + TimeUtils.formatTrackDuration(tm.getTrack().getDuration()) + ")");
 				eb.setFooter("Use " + SettingsManager.getCommandPrefix(e.getGuild()) + "resume to unpause.", IconUtil.INFO.getURL());
-				e.getChannel().sendMessage(new MessageBuilder().setEmbed(eb.build()).build()).queue();
+				e.getChannel().sendMessageEmbeds(eb.build()).queue();
 				player.setPaused(true);
 				CommandDispatcher.displayResult(CommandResult.SUCCESS, e.getMessage());
 			});
@@ -302,7 +301,7 @@ public class CmdMusicControl implements CommandExecutor{
 				EmbedBuilder eb = new EmbedBuilder().setTitle("Resumed " + tm.getTrack().getInfo().title, null).setColor(SettingsManager.getColorAWT(e.getGuild()));
 				eb.setDescription("Song Duration: (" + TimeUtils.formatTrackDuration(tm.getTrack().getPosition()) + "/" + TimeUtils.formatTrackDuration(tm.getTrack().getDuration()) + ")");
 				eb.setFooter("Use " + SettingsManager.getCommandPrefix(e.getGuild()) + "pause to pause.", IconUtil.INFO.getURL());
-				e.getChannel().sendMessage(new MessageBuilder().setEmbed(eb.build()).build()).queue();
+				e.getChannel().sendMessageEmbeds(eb.build()).queue();
 				player.setPaused(false);
 				CommandDispatcher.displayResult(CommandResult.SUCCESS, e.getMessage());
 			});
@@ -348,7 +347,7 @@ public class CmdMusicControl implements CommandExecutor{
 				int required = (int) Math.ceil(usrs/2D);
 				eb.setFooter("Votes - " + skips + "/" + required
 						+ " (" + (int)(((double)skips/required)*100) + "%)", IconUtil.VOTE.getURL());
-				e.getChannel().sendMessage(eb.build()).queue();
+				e.getChannel().sendMessageEmbeds(eb.build()).queue();
 			});
 			return CommandResult.SUCCESS;
 		} else if(result == 1){
@@ -379,7 +378,7 @@ public class CmdMusicControl implements CommandExecutor{
 				int usrs = scheduler.getCurrentChannel().get().getMembers().size()-1;
 				eb.setFooter("Votes - " + skips + "/" + usrs
 						+ " (" + (int)(((double)skips/usrs)*100) + "%)", IconUtil.VOTE.getURL());
-				e.getChannel().sendMessage(eb.build()).queue();
+				e.getChannel().sendMessageEmbeds(eb.build()).queue();
 			});
 			return CommandResult.SUCCESS;
 		} else if(result == 1){
@@ -412,7 +411,7 @@ public class CmdMusicControl implements CommandExecutor{
 	
 	public static VoiceChannel connectWithUser(Member member, Guild g){
 		AudioManager am = g.getAudioManager();
-		VoiceChannel vc = member.getVoiceState().getChannel();
+		VoiceChannel vc = member.getVoiceState().getChannel().asVoiceChannel();
 		if(vc != null && (!am.isConnected() || !am.getConnectedChannel().equals(vc))) {
 			am.openAudioConnection(vc);
 			am.setSelfDeafened(true);

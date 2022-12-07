@@ -31,8 +31,8 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Role;
-import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 
 public class InputUtils {
 
@@ -45,7 +45,7 @@ public class InputUtils {
 		TextChannel chnl;
 		try { chnl = AventiBot.getInstance().getJDA().getTextChannelById(reference); } catch (NumberFormatException e){ chnl = null; }
 		if(chnl != null) return chnl;
-		List<TextChannel> channels = m.getMentionedChannels();
+		List<TextChannel> channels = m.getMentions().getChannels(TextChannel.class);
 		for(TextChannel tc : channels){
 			if(tc.getName().equals(reference.replace("#", ""))){
 				return tc;
@@ -58,7 +58,7 @@ public class InputUtils {
 		User usr;
 		try { usr = AventiBot.getInstance().getJDA().getUserById(reference); } catch (NumberFormatException e) { usr = null; }
 		if(usr != null) return usr;
-		List<User> users = m.getMentionedUsers();
+		List<User> users = m.getMentions().getUsers();
 		for(User u : users){
 			if(u.getAsMention().equals(reference.replace("!", ""))){
 				return u;

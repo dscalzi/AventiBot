@@ -57,7 +57,7 @@ public class CmdRoleId implements CommandExecutor{
 		if(!PermissionUtil.hasPermission(e.getAuthor(), permRoleId, JDAUtils.getGuildFromCombinedEvent(e))) return CommandResult.NO_PERMISSION;
 		
 		if(!e.isFromGuild()){
-			e.getPrivateChannel().sendMessage("You must use this command in a guild.").queue();
+			e.getChannel().sendMessage("You must use this command in a guild.").queue();
 			return CommandResult.ERROR;
 		}
 		
@@ -88,7 +88,7 @@ public class CmdRoleId implements CommandExecutor{
 				desc.append(r.getAsMention()).append("\n`").append(r.getId()).append("`\n");
 			}
 			eb.setDescription(desc.toString());
-			e.getChannel().sendMessage(eb.build()).queue();
+			e.getChannel().sendMessageEmbeds(eb.build()).queue();
 		}
 		
 		return CommandResult.SUCCESS;

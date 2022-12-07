@@ -179,7 +179,7 @@ public class CmdSettingsControl implements CommandExecutor{
 		eb.setDescription("`" + val + "` | [def `" + def + "`]");
 		eb.setColor(current.getColorAWT());
 		
-		e.getChannel().sendMessage(eb.build()).queue();
+		e.getChannel().sendMessageEmbeds(eb.build()).queue();
 		
 		return CommandResult.SUCCESS;
 	}
@@ -203,7 +203,7 @@ public class CmdSettingsControl implements CommandExecutor{
 					+ "`" + val + "` | [def `" + keys.getValue() + "`]\n");
 		}
 		
-		e.getChannel().sendMessage(eb.build()).queue();
+		e.getChannel().sendMessageEmbeds(eb.build()).queue();
 		
 		return CommandResult.SUCCESS;
 	}

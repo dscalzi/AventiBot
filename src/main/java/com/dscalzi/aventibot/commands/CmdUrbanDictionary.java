@@ -132,7 +132,7 @@ public class CmdUrbanDictionary implements CommandExecutor {
 					b.addField(exField);
 					b.setFooter("" + ((char)9650) + " " + def.get("thumbs_up").getAsInt() + " / " + ((char)9660) + " " + def.get("thumbs_down").getAsInt(), null);
 
-					e.getChannel().sendMessage(b.build()).queue();
+					e.getChannel().sendMessageEmbeds(b.build()).queue();
 
 					return CommandResult.SUCCESS;
 				} else {

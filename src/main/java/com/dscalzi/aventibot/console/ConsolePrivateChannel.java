@@ -20,20 +20,21 @@
 
 package com.dscalzi.aventibot.console;
 
+import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel;
+import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
+import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 import net.dv8tion.jda.internal.requests.CompletedRestAction;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.LoggerFactory;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.ChannelType;
-import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.entities.PrivateChannel;
 import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.requests.RestAction;
-import net.dv8tion.jda.api.requests.restaction.MessageAction;
 
 import javax.annotation.Nonnull;
+import java.util.Collection;
 
 public class ConsolePrivateChannel implements PrivateChannel {
 	
@@ -49,33 +50,34 @@ public class ConsolePrivateChannel implements PrivateChannel {
 
 	@Nonnull
     @Override
-	public MessageAction sendMessage(CharSequence text) {
+	public MessageCreateAction sendMessage(CharSequence text) {
     	LoggerFactory.getLogger("??? -> Me").info(text.toString());
     	ConsoleMessage msg = new ConsoleMessage(this, text.toString(), user);
-    	return new ConsoleMessageAction(api, null, this, msg);
+    	return new ConsoleMessageCreateAction(this, msg);
 	}
 
 	@Nonnull
 	@Override
-	public MessageAction sendMessage(Message msg) {
-		LoggerFactory.getLogger(msg.getAuthor().getDiscriminator() + " -> Me").info(msg.getContentRaw());
-		return new ConsoleMessageAction(api, null, this, msg);
+	public MessageCreateAction sendMessage(@Nonnull MessageCreateData msg) {
+		LoggerFactory.getLogger("??? -> Me").info(msg.getContent());
+		ConsoleMessage x = new ConsoleMessage(this, msg.getContent(), user);
+		return new ConsoleMessageCreateAction(this, x);
 	}
 
 	@Nonnull
 	@Override
-	public MessageAction sendMessage(@Nonnull MessageEmbed embed) {
+	public MessageCreateAction sendMessageEmbeds(@Nonnull MessageEmbed embed, @Nonnull MessageEmbed... other) {
 		LoggerFactory.getLogger("Embeded Message").info("Unable to display embed on terminal.");
 		ConsoleMessage msg = new ConsoleMessage(this, null, user);
-		return new ConsoleMessageAction(api, null, this, msg);
+		return new ConsoleMessageCreateAction(this, msg);
 	}
 
 	@Nonnull
 	@Override
-	public MessageAction sendMessageEmbeds(@Nonnull MessageEmbed embed, @Nonnull MessageEmbed... other) {
+	public MessageCreateAction sendMessageEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds) {
 		LoggerFactory.getLogger("Embeded Message").info("Unable to display embed on terminal.");
 		ConsoleMessage msg = new ConsoleMessage(this, null, user);
-		return new ConsoleMessageAction(api, null, this, msg);
+		return new ConsoleMessageCreateAction(this, msg);
 	}
 
 	@Nonnull
@@ -90,10 +92,22 @@ public class ConsolePrivateChannel implements PrivateChannel {
 		return this.user;
 	}
 
+	@NotNull
+	@Override
+	public RestAction<User> retrieveUser() {
+		return new CompletedRestAction<>(getJDA(), this.user);
+	}
+
 	@Nonnull
 	@Override
 	public JDA getJDA() {
 		return this.api;
+	}
+
+	@NotNull
+	@Override
+	public RestAction<Void> delete() {
+		return new CompletedRestAction<>(getJDA(), null);
 	}
 
 	@Nonnull
@@ -110,28 +124,20 @@ public class ConsolePrivateChannel implements PrivateChannel {
 
 	@Nonnull
 	@Override
-	public RestAction<Void> close() {
-		// Not Supported
-		return new CompletedRestAction<>(api, null);
-	}
-
-	@NotNull
-	@Override
 	public String getLatestMessageId() {
 		// Not supported
 		return "-1";
 	}
 
 	@Override
-	public boolean hasLatestMessage() {
-		// Not supported
-		return false;
-	}
-
-	@Override
 	public long getLatestMessageIdLong() {
 		// Not supported
 		return 0L;
+	}
+
+	@Override
+	public boolean canTalk() {
+		return true;
 	}
 
 	@Override

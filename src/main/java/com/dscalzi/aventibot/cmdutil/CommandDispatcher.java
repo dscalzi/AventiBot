@@ -27,6 +27,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 import com.dscalzi.aventibot.console.CommandLine;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -127,9 +128,9 @@ public class CommandDispatcher {
 		if(result != null && result != CommandResult.IGNORE){
 			if(m.getIdLong() > 0){
 				if(success != null)
-					m.addReaction(result.getEmote()).queue(success);
+					m.addReaction(Emoji.fromUnicode(result.getEmote())).queue(success);
 				else
-					m.addReaction(result.getEmote()).queue();
+					m.addReaction(Emoji.fromUnicode(result.getEmote())).queue();
 			} else {
 				if(success != null)
 					success.accept(null);

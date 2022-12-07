@@ -35,11 +35,11 @@ import com.dscalzi.aventibot.util.InputUtils;
 import com.dscalzi.aventibot.util.JDAUtils;
 import com.dscalzi.aventibot.util.TimeUtils;
 
-import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageChannel;
-import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 public class CmdClear implements CommandExecutor{
@@ -75,7 +75,7 @@ public class CmdClear implements CommandExecutor{
 		}
 		
 		//The default text channel is the one the command was sent from.
-		TextChannel channel = e.isFromType(ChannelType.PRIVATE) ? null : (TextChannel) e.getChannel();
+		TextChannel channel = e.isFromType(ChannelType.PRIVATE) ? null : e.getChannel().asTextChannel();
 		//Default target is everyone.
 		User target = null;
 		//Default limit for clearing a channel is 50 messages. Max is 100

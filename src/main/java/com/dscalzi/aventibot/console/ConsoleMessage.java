@@ -22,17 +22,19 @@ package com.dscalzi.aventibot.console;
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
+import java.util.Collection;
 
-import gnu.trove.set.hash.TLongHashSet;
-import net.dv8tion.jda.api.entities.Emote;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.MessageType;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
+import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
-import net.dv8tion.jda.api.requests.restaction.MessageAction;
+import net.dv8tion.jda.api.requests.restaction.MessageEditAction;
+import net.dv8tion.jda.api.utils.AttachedFile;
+import net.dv8tion.jda.api.utils.messages.MessageEditData;
 import net.dv8tion.jda.internal.entities.ReceivedMessage;
 import net.dv8tion.jda.internal.requests.CompletedRestAction;
 
@@ -46,9 +48,7 @@ public class ConsoleMessage extends ReceivedMessage {
 				MessageType.DEFAULT,
 				null,
 				false,
-				false,
-				new TLongHashSet(),
-				new TLongHashSet(),
+				0,
 				false,
 				false,
 				content,
@@ -57,12 +57,14 @@ public class ConsoleMessage extends ReceivedMessage {
 				null,
 				null,
 				OffsetDateTime.now(),
+				null,
 				new ArrayList<>(),
 				new ArrayList<>(),
 				new ArrayList<>(),
 				new ArrayList<>(),
 				new ArrayList<>(),
 				0,
+				null,
 				null);
 	}
 
@@ -82,14 +84,7 @@ public class ConsoleMessage extends ReceivedMessage {
 
 	@Nonnull
 	@Override
-	public RestAction<Void> addReaction(@Nonnull Emote emote) {
-		// Unsupported
-	    return new CompletedRestAction<>(getJDA(), null);
-	}
-
-	@Nonnull
-	@Override
-	public RestAction<Void> addReaction(@Nonnull String unicode) {
+	public RestAction<Void> addReaction(@Nonnull Emoji emote) {
 		// Unsupported
 	    return new CompletedRestAction<>(getJDA(), null);
 	}
@@ -103,30 +98,44 @@ public class ConsoleMessage extends ReceivedMessage {
 
 	@Nonnull
 	@Override
-    public MessageAction editMessage(@Nonnull CharSequence newContent) {
+    public MessageEditAction editMessage(@Nonnull CharSequence newContent) {
 		// Unsupported
-    	return new ConsoleMessageAction(getJDA(), null, channel, this);
+		return new ConsoleMessageEditAction(channel, null);
     }
 
 	@Nonnull
     @Override
-    public MessageAction editMessage(@Nonnull MessageEmbed newContent) {
+    public MessageEditAction editMessageEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds) {
     	// Unsupported
-    	return new ConsoleMessageAction(getJDA(), null, channel, this);
+		return new ConsoleMessageEditAction(channel, null);
     }
 
 	@Nonnull
-    @Override
-    public MessageAction editMessageFormat(@Nonnull String format, @Nonnull Object... args) {
-    	// Unsupported
-    	return new ConsoleMessageAction(getJDA(), null, channel, this);
-    }
+	@Override
+	public MessageEditAction editMessageComponents(@Nonnull Collection<? extends LayoutComponent> components) {
+		// Unsupported
+		return new ConsoleMessageEditAction(channel, null);
+	}
 
 	@Nonnull
     @Override
-    public MessageAction editMessage(@Nonnull Message newContent) {
+    public MessageEditAction editMessageFormat(@Nonnull String format, @Nonnull Object... args) {
     	// Unsupported
-    	return new ConsoleMessageAction(getJDA(), null, channel, this);
+    	return new ConsoleMessageEditAction(channel, null);
+    }
+
+	@Nonnull
+	@Override
+	public MessageEditAction editMessageAttachments(@Nonnull Collection<? extends AttachedFile> attachments) {
+		// Unsupported
+		return new ConsoleMessageEditAction(channel, null);
+	}
+
+	@Nonnull
+    @Override
+    public MessageEditAction editMessage(@Nonnull MessageEditData newContent) {
+    	// Unsupported
+		return new ConsoleMessageEditAction(channel, null);
     }
 
 	@Nonnull

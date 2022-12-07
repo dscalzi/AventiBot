@@ -25,8 +25,8 @@ import java.util.Map;
 
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 
-import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 
 public class TrackMeta{
 

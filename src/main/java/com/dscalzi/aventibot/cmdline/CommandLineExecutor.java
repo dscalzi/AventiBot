@@ -25,6 +25,7 @@ import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.List;
 
+import net.dv8tion.jda.api.events.session.ShutdownEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MarkerFactory;
@@ -33,7 +34,6 @@ import com.dscalzi.aventibot.AventiBot;
 import com.dscalzi.aventibot.BotStatus;
 import com.dscalzi.aventibot.settings.GlobalConfig;
 import com.dscalzi.aventibot.settings.SettingsManager;
-import net.dv8tion.jda.api.events.ShutdownEvent;
 import net.dv8tion.jda.api.hooks.EventListener;
 
 public class CommandLineExecutor {

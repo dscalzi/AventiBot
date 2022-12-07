@@ -29,6 +29,7 @@ import java.net.URL;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
+import net.dv8tion.jda.api.events.session.ShutdownEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MarkerFactory;
@@ -59,8 +60,6 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
-import net.dv8tion.jda.api.events.GenericEvent;
-import net.dv8tion.jda.api.events.ShutdownEvent;
 import net.dv8tion.jda.api.hooks.EventListener;
 
 public class TerminalController implements Initializable {

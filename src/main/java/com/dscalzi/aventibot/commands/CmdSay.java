@@ -33,10 +33,10 @@ import com.dscalzi.aventibot.console.ConsoleUser;
 import com.dscalzi.aventibot.util.InputUtils;
 import com.dscalzi.aventibot.util.JDAUtils;
 
-import net.dv8tion.jda.api.MessageBuilder;
-import net.dv8tion.jda.api.entities.ChannelType;
-import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 
 public class CmdSay implements CommandExecutor{
 	
@@ -70,17 +70,17 @@ public class CmdSay implements CommandExecutor{
 		}
 		
 		String message = e.getMessage().getContentRaw().substring((ch == null) ? e.getMessage().getContentRaw().indexOf(cmd) + cmd.length() : e.getMessage().getContentRaw().indexOf(rawArgs[0]) + rawArgs[0].length());
-		MessageBuilder mb = new MessageBuilder();
-		mb.append(message);
+		MessageCreateBuilder mb = new MessageCreateBuilder();
+		mb.addContent(message);
 		
 		if(ch == null) {
 			if(e.getAuthor() instanceof ConsoleUser){
 				e.getChannel().sendMessage("Please specify a valid channel!").queue();
 				return CommandResult.ERROR;
 			} else if(e.isFromType(ChannelType.PRIVATE))
-				ch = e.getPrivateChannel();
+				ch = e.getChannel().asPrivateChannel();
 			else
-				ch = e.getTextChannel();
+				ch = e.getChannel();
 		}
 		
 		if(!(e.getMessage().isFromType(ChannelType.PRIVATE)))

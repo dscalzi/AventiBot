@@ -30,7 +30,8 @@ import com.dscalzi.aventibot.settings.SettingsManager;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
-import net.dv8tion.jda.api.entities.PrivateChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel;
+import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.internal.utils.UnlockHook;
 import net.dv8tion.jda.internal.utils.cache.SnowflakeCacheViewImpl;
 import org.slf4j.Logger;
@@ -128,13 +129,14 @@ public class AventiBot {
 			GlobalConfig g = SettingsManager.loadGlobalConfig();
 			JDABuilder jdaBuilder = JDABuilder.createDefault(g.getToken())
 					.setAutoReconnect(true)
+					.enableIntents(GatewayIntent.MESSAGE_CONTENT)
 					.setToken(g.getToken());
 			if(!g.getCurrentGame().isEmpty()) 
 				jdaBuilder.setActivity(Activity.playing(g.getCurrentGame()));
 			jda = jdaBuilder.build().awaitReady();
 			status = BotStatus.CONNECTED;
 			postConnectionSetup();
-		} catch (LoginException | IllegalArgumentException | InterruptedException | IOException e) {
+		} catch (IllegalArgumentException | InterruptedException | IOException e) {
 			status = BotStatus.LAUNCHED;
 			log.error(MarkerFactory.getMarker("FATAL"), "Failed to connect to Discord!");
 			e.printStackTrace();

@@ -37,12 +37,12 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.entities.VoiceChannel;
+import net.dv8tion.jda.api.entities.channel.Channel;
+import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.GenericEvent;
-import net.dv8tion.jda.api.events.guild.voice.GuildVoiceJoinEvent;
-import net.dv8tion.jda.api.events.guild.voice.GuildVoiceLeaveEvent;
+import net.dv8tion.jda.api.events.guild.voice.GuildVoiceUpdateEvent;
 import net.dv8tion.jda.api.hooks.EventListener;
 import net.dv8tion.jda.api.managers.AudioManager;
 import org.jetbrains.annotations.NotNull;
@@ -86,7 +86,7 @@ public class TrackScheduler extends AudioEventAdapter implements EventListener{
 				eb.setColor(SettingsManager.getColorAWT(associatedGuild));
 				eb.setDescription("Runtime: " + TimeUtils.formatTrackDuration(meta.getTrack().getDuration()));
 				eb.setFooter("Estimated Wait Time: " + TimeUtils.formatTrackDuration(waitTime), IconUtil.CLOCK.getURL());
-				meta.getRequestedIn().sendMessage(eb.build()).queue();
+				meta.getRequestedIn().sendMessageEmbeds(eb.build()).queue();
 			});
 		}
 		return true;
@@ -129,7 +129,7 @@ public class TrackScheduler extends AudioEventAdapter implements EventListener{
 			eb.setColor(SettingsManager.getColorAWT(associatedGuild));
 			eb.setDescription("Collective length: " + TimeUtils.formatTrackDuration(playlistLength));
 			if(waitTime > 0) eb.setFooter("Estimated Wait Time: " + TimeUtils.formatTrackDuration(waitTime), IconUtil.CLOCK.getURL());
-			requestedIn.sendMessage(eb.build()).queue();
+			requestedIn.sendMessageEmbeds(eb.build()).queue();
 			
 			if(player.getPlayingTrack() == null) player.playTrack(queue.element().getTrack());
 			
@@ -151,7 +151,7 @@ public class TrackScheduler extends AudioEventAdapter implements EventListener{
 				eb.setFooter("Up next: " + it.next().getTrack().getInfo().title, IconUtil.PLAY.getURL());
 			eb.setDescription("Requested by " + current.getRequester().getAsMention() + "\n" +
 				"| Runtime " + TimeUtils.formatTrackDuration(current.getTrack().getDuration()));
-			current.getRequestedIn().sendMessage(eb.build()).queue();
+			current.getRequestedIn().sendMessageEmbeds(eb.build()).queue();
 		});
 		
 	}
@@ -176,18 +176,21 @@ public class TrackScheduler extends AudioEventAdapter implements EventListener{
 	
 	@Override
 	public void onEvent(@NotNull GenericEvent event){
-		if(event instanceof GuildVoiceLeaveEvent){
-			GuildVoiceLeaveEvent e = (GuildVoiceLeaveEvent)event;
-			Optional<VoiceChannel> vcOpt = getCurrentChannel();
-			if(e.getGuild().equals(associatedGuild) && vcOpt.isPresent() && e.getChannelLeft().equals(vcOpt.get())){
-				modifyVoteWeight(e.getMember().getUser(), 0);
+		if(event instanceof GuildVoiceUpdateEvent e){
+			if(e.getChannelLeft() != null) {
+				// Left
+				Optional<VoiceChannel> vcOpt = getCurrentChannel();
+				if(e.getGuild().equals(associatedGuild) && vcOpt.isPresent() && e.getChannelLeft().equals(vcOpt.get())){
+					modifyVoteWeight(e.getMember().getUser(), 0);
+				}
+			} else {
+				// Joined
+				Optional<VoiceChannel> vcOpt = getCurrentChannel();
+				if(e.getGuild().equals(associatedGuild) && vcOpt.isPresent() && e.getChannelJoined().equals(vcOpt.get())){
+					modifyVoteWeight(e.getMember().getUser(), 1);
+				}
 			}
-		} else if(event instanceof GuildVoiceJoinEvent){
-			GuildVoiceJoinEvent e = (GuildVoiceJoinEvent)event;
-			Optional<VoiceChannel> vcOpt = getCurrentChannel();
-			if(e.getGuild().equals(associatedGuild) && vcOpt.isPresent() && e.getChannelJoined().equals(vcOpt.get())){
-				modifyVoteWeight(e.getMember().getUser(), 1);
-			}
+
 		}
 	}
 	
@@ -264,8 +267,8 @@ public class TrackScheduler extends AudioEventAdapter implements EventListener{
 	}
 	
 	public Optional<VoiceChannel> getCurrentChannel(){
-		VoiceChannel vc = associatedGuild.getMember(AventiBot.getInstance().getJDA().getSelfUser()).getVoiceState().getChannel();
-		return vc == null ? Optional.empty() : Optional.of(vc);
+		return Optional.ofNullable((VoiceChannel) associatedGuild.getMember(AventiBot.getInstance().getJDA().getSelfUser())
+				.getVoiceState().getChannel());
 	}
 	
 	public long getPlaylistDuration(){

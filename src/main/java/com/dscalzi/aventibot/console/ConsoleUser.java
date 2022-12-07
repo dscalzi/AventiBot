@@ -21,7 +21,7 @@
 package com.dscalzi.aventibot.console;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.PrivateChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.UserImpl;
 
@@ -56,10 +56,10 @@ public class ConsoleUser extends UserImpl {
 		this.setBot(ConsoleUser._isBot);
 	}
 
-	@Override
-	public PrivateChannel getPrivateChannel() {
-		return this.privateChannel;
-	}
+//	@Override
+//	public PrivateChannel getPrivateChannel() {
+//		return this.getPrivateChannel();
+//	}
 
 	public static ConsoleUser build(JDA api){
 		if(!limit){

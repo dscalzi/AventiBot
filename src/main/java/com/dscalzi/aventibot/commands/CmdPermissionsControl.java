@@ -81,7 +81,7 @@ public class CmdPermissionsControl implements CommandExecutor{
 	public CommandResult onCommand(MessageReceivedEvent e, String cmd, String[] args, String[] rawArgs) {
 		
 		if(args.length == 0){
-			e.getChannel().sendMessage(constructSubcommandTree(JDAUtils.getGuildFromCombinedEvent(e))).queue();
+			e.getChannel().sendMessageEmbeds(constructSubcommandTree(JDAUtils.getGuildFromCombinedEvent(e))).queue();
 			return CommandResult.ERROR;
 		}
 		
@@ -131,7 +131,7 @@ public class CmdPermissionsControl implements CommandExecutor{
 			for(String s : roles.getValue()) r.addInvalidRole(s);
 			for(String s : nodes.getValue()) r.addInvalidNode(s);
 			for(Role ro : roles.getKey()) r.addMentionable(ro);
-			e.getChannel().sendMessage(r.construct(true)).queue();
+			e.getChannel().sendMessageEmbeds(r.construct(true)).queue();
 			if(r.hasLog()){
 				List<String> log = r.constructLog();
 				for(String s : log) e.getChannel().sendMessage(s).queue();
@@ -170,7 +170,7 @@ public class CmdPermissionsControl implements CommandExecutor{
 			for(String s : users.getValue()) r.addInvalidUser(s);
 			for(String s : nodes.getValue()) r.addInvalidNode(s);
 			for(User u : users.getKey()) r.addMentionable(u);
-			e.getChannel().sendMessage(r.construct(true)).queue();
+			e.getChannel().sendMessageEmbeds(r.construct(true)).queue();
 			if(r.hasLog()){
 				List<String> log = r.constructLog();
 				for(String s : log) e.getChannel().sendMessage(s).queue();
@@ -225,7 +225,7 @@ public class CmdPermissionsControl implements CommandExecutor{
 		try {
 			PermissionResult r = PermissionUtil.writeNodeChange(JDAUtils.getGuildFromCombinedEvent(e), nodes.getKey(), enable);
 			for(String s : nodes.getValue()) r.addInvalidNode(s);
-			e.getChannel().sendMessage(r.construct(true)).queue();
+			e.getChannel().sendMessageEmbeds(r.construct(true)).queue();
 			if(r.hasLog()){
 				List<String> log = r.constructLog();
 				for(String s : log) e.getChannel().sendMessage(s).queue();
@@ -278,7 +278,7 @@ public class CmdPermissionsControl implements CommandExecutor{
 				eb.addField("Blacklisted Users", blStr.toString(), true);
 			}
 			
-			e.getChannel().sendMessage(eb.build()).queue();
+			e.getChannel().sendMessageEmbeds(eb.build()).queue();
 			return CommandResult.SUCCESS;
 		} else {
 			e.getChannel().sendMessage("Invalid permission node: `" + node + "`").queue();
@@ -319,7 +319,7 @@ public class CmdPermissionsControl implements CommandExecutor{
 			eb.addField("Blacklisted Permissions", r.toString(), false);
 		}
 		
-		e.getChannel().sendMessage(eb.build()).queue();
+		e.getChannel().sendMessageEmbeds(eb.build()).queue();
 		
 		return CommandResult.SUCCESS;
 	}
@@ -358,7 +358,7 @@ public class CmdPermissionsControl implements CommandExecutor{
 			eb.addField("Granted Permissions", nodeLst.toString(), false);
 		}
 		
-		e.getChannel().sendMessage(eb.build()).queue();
+		e.getChannel().sendMessageEmbeds(eb.build()).queue();
 		
 		return CommandResult.SUCCESS;
 	}
