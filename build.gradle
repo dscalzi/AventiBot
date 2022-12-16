@@ -8,13 +8,10 @@ plugins {
 
 mainClassName = 'com.dscalzi.aventibot.LaunchWrapper'
 
-def versionObj = new Version(major: 5, minor: 0, revision: 0)
-
 description = 'Highly customizable Discord Bot'
 
 group = 'com.dscalzi'
 archivesBaseName = 'AventiBot'
-version = "$versionObj"
 
 wrapper {
     gradleVersion = '7.6'
@@ -112,16 +109,4 @@ task updateReadme {
 
     def txt = readMe.text.replaceFirst(/JDA-(.+?)-9/, "JDA-${getDependencyVersion('JDA').replaceAll('_', '__').replaceAll('-', '--')}-9")
     readMe.text = txt.replaceFirst(/lavaplayer-(.*?)-/, "lavaplayer-${getDependencyVersion('lavaplayer')}-")
-}
-
-class Version {
-    String major, minor, revision
-
-    static String getBuild() {
-        System.getenv("BUILD_NUMBER") ?: System.getProperty("BUILD_NUMBER") ?: "DEV"
-    }
-
-    String toString() {
-        "${major}.${minor}.${revision}_${getBuild()}"
-    }
 }

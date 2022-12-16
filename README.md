@@ -1,5 +1,5 @@
 ![# Header](http://i.imgur.com/cEilUOK.png)
 
-[![](https://img.shields.io/github/workflow/status/dscalzi/AventiBot/Build.svg)](https://github.com/dscalzi/AventiBot/actions) [![](https://img.shields.io/github/license/dscalzi/AventiBot.svg)](https://github.com/dscalzi/AventiBot/blob/master/LICENSE.txt) ![](https://img.shields.io/badge/JDA-5.0.0--beta.1-9158BC.svg) ![](https://img.shields.io/badge/lavaplayer-1.3.78-9158BC.svg) [![](https://discordapp.com/api/guilds/211524927831015424/widget.png)](https://discordapp.com/invite/Fcrh6PT)
+[![](https://img.shields.io/github/actions/workflow/status/dscalzi/AventiBot/gradle.yml?branch=master)](https://github.com/dscalzi/AventiBot/actions) [![](https://img.shields.io/github/license/dscalzi/AventiBot.svg)](https://github.com/dscalzi/AventiBot/blob/master/LICENSE.txt) ![](https://img.shields.io/badge/JDA-5.0.0--beta.2-9158BC.svg) ![](https://img.shields.io/badge/lavaplayer-1.3.78-9158BC.svg) [![](https://discordapp.com/api/guilds/211524927831015424/widget.png)](https://discordapp.com/invite/Fcrh6PT)
 
 AventiBot is a dynamic bot for Discord build using JDA. More information will be provided in the future.
