@@ -20,9 +20,7 @@
 
 package com.dscalzi.aventibot.music;
 
-import java.util.Iterator;
-import java.util.Optional;
-import java.util.Queue;
+import java.util.*;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import com.dscalzi.aventibot.AventiBot;
@@ -38,7 +36,6 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.GenericEvent;
@@ -61,6 +58,21 @@ public class TrackScheduler extends AudioEventAdapter implements EventListener{
 		this.player = player;
 		this.associatedGuild = associatedGuild;
 		AventiBot.getInstance().getJDA().addEventListener(this);
+	}
+
+	public void shuffle() {
+		if(this.queue.size() > 1) {
+			List<TrackMeta> shuffler = new ArrayList<>();
+			Iterator<TrackMeta> it = queue.iterator();
+			TrackMeta current = it.next();
+			while(it.hasNext()) {
+				shuffler.add(it.next());
+			}
+			Collections.shuffle(shuffler);
+			this.queue.clear();
+			this.queue.add(current);
+			this.queue.addAll(shuffler);
+		}
 	}
 	
 	public boolean queue(TrackMeta meta){
@@ -92,7 +104,7 @@ public class TrackScheduler extends AudioEventAdapter implements EventListener{
 		return true;
 	}
 	
-	public boolean queuePlaylist(AudioPlaylist playlist, User user, MessageChannel requestedIn, boolean selectedFirst){
+	public boolean queuePlaylist(AudioPlaylist playlist, User user, MessageChannel requestedIn, boolean selectedFirst, boolean shuffle){
 		if(playlist == null || playlist.getTracks() == null || playlist.getTracks().size() < 1) return false;
 		
 		requestedIn.sendTyping().queue((v) -> {
@@ -115,15 +127,20 @@ public class TrackScheduler extends AudioEventAdapter implements EventListener{
 				playlistLength += playlist.getSelectedTrack().getDuration();
 				queue.add(m);
 			}
-			
+
+			List<TrackMeta> shuffler = new ArrayList<>();
 			for(int i=0; i<Math.min(adjustedLimit, playlist.getTracks().size()); ++i){
 				AudioTrack aT = playlist.getTracks().get(i);
 				if(!selectedFirst || aT != playlist.getSelectedTrack()) {
 					TrackMeta m = new TrackMeta(playlist.getTracks().get(i), user, requestedIn);
 					playlistLength += playlist.getTracks().get(i).getDuration();
-					queue.add(m);
+					shuffler.add(m);
 				}
 			}
+			if(shuffle) {
+				Collections.shuffle(shuffler);
+			}
+			queue.addAll(shuffler);
 			
 			EmbedBuilder eb = new EmbedBuilder().setTitle("Added Playlist " + playlist.getName() + " to the Queue.", null);
 			eb.setColor(SettingsManager.getColorAWT(associatedGuild));

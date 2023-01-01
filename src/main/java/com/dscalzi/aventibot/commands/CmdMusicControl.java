@@ -71,7 +71,8 @@ public class CmdMusicControl implements CommandExecutor{
 					permResume,
 					permSkip,
 					permCancelSkip,
-					permStop
+					permStop,
+					permShuffle
 				));
 	}
 	
@@ -105,7 +106,9 @@ public class CmdMusicControl implements CommandExecutor{
 		
 		switch(cmd.toLowerCase()){
 		case "play":
-			return this.cmdPlay(e, player, scheduler, args);
+			return this.cmdPlay(e, player, scheduler, false, args);
+		case "shuffleplay":
+			return this.cmdPlay(e, player, scheduler, true, args);
 		case "playlist":
 			return this.cmdPlaylist(e, player, scheduler, args);
 		case "pause":
@@ -120,6 +123,8 @@ public class CmdMusicControl implements CommandExecutor{
 			return this.cmdCancelSkip(e, scheduler);
 		case "stop":
 			return this.cmdStop(e, player, scheduler);
+		case "shuffle":
+			return this.cmdShuffle(e, player, scheduler);
 		}
 		
 		e.getChannel().sendMessage("Unknown subcommand: *args[0]*").queue();
@@ -128,7 +133,7 @@ public class CmdMusicControl implements CommandExecutor{
 	}
 	
 	private final PermissionNode permPlay = PermissionNode.get(NodeType.COMMAND, "play");
-	private CommandResult cmdPlay(MessageReceivedEvent e, AudioPlayer player, TrackScheduler scheduler, String[] args){
+	private CommandResult cmdPlay(MessageReceivedEvent e, AudioPlayer player, TrackScheduler scheduler, final boolean shuffle, String[] args){
 		if(!PermissionUtil.hasPermission(e.getAuthor(), permPlay, e.getGuild())) return CommandResult.NO_PERMISSION;
 		
 		if(args.length == 0) {
@@ -169,7 +174,7 @@ public class CmdMusicControl implements CommandExecutor{
 						scheduler.queue(new TrackMeta(playlist.getTracks().get(0), e.getAuthor(), e.getChannel()));
 					}
 				} else {
-					scheduler.queuePlaylist(playlist, e.getAuthor(), e.getChannel(), playlist.getSelectedTrack() != null);
+					scheduler.queuePlaylist(playlist, e.getAuthor(), e.getChannel(), playlist.getSelectedTrack() != null, shuffle);
 				}
 				CommandDispatcher.displayResult(CommandResult.SUCCESS, e.getMessage());
 			}
@@ -404,6 +409,24 @@ public class CmdMusicControl implements CommandExecutor{
 			scheduler.clearQueue();
 			am.closeAudioConnection();
 			e.getChannel().sendMessage("Stopped playing.").queue();
+			CommandDispatcher.displayResult(CommandResult.SUCCESS, e.getMessage());
+		});
+		return CommandResult.IGNORE;
+	}
+
+	private final PermissionNode permShuffle = PermissionNode.get(NodeType.COMMAND, "shuffle");
+	private CommandResult cmdShuffle(MessageReceivedEvent e, AudioPlayer player, TrackScheduler scheduler){
+
+		if(!PermissionUtil.hasPermission(e.getAuthor(), permShuffle, e.getGuild())) return CommandResult.NO_PERMISSION;
+
+		AudioManager am = e.getGuild().getAudioManager();
+		if(!am.isConnected()){
+			e.getChannel().sendMessage("Not currently playing.").queue();
+			return CommandResult.ERROR;
+		}
+		e.getChannel().sendTyping().queue((v) -> {
+			scheduler.shuffle();
+			e.getChannel().sendMessage("Shuffled playlist.").queue();
 			CommandDispatcher.displayResult(CommandResult.SUCCESS, e.getMessage());
 		});
 		return CommandResult.IGNORE;

@@ -95,6 +95,7 @@ public class AventiBot {
 		CmdMusicControl mcc = new CmdMusicControl();
 		CmdUrbanDictionary ud = new CmdUrbanDictionary();
 		this.registry.register("play", mcc);
+		this.registry.register("shuffleplay", mcc);
 		this.registry.register("playlist", mcc);
 		this.registry.register("skip", mcc);
 		this.registry.register("cancelskip", mcc);
@@ -102,6 +103,7 @@ public class AventiBot {
 		this.registry.register("pause", mcc);
 		this.registry.register("stop", mcc);
 		this.registry.register("resume", mcc);
+		this.registry.register("shuffle", mcc);
 		this.registry.register("say", new CmdSay());
 		this.registry.register("help", new CmdHelp());
 		this.registry.register("helloworld", new CmdHelloWorld());
