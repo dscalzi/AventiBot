@@ -22,6 +22,9 @@ package com.dscalzi.aventibot.music;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import com.dscalzi.aventibot.settings.GlobalConfig;
+import com.github.topisenpai.lavasrc.spotify.SpotifySourceManager;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
@@ -36,8 +39,12 @@ import com.sedmelluq.discord.lavaplayer.source.vimeo.VimeoAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager;
 
 import net.dv8tion.jda.api.entities.Guild;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class LavaWrapper {
+
+	private static final Logger log = LoggerFactory.getLogger(LavaWrapper.class);
 
 	private static LavaWrapper instance;
 	private static boolean initialized;
@@ -46,11 +53,21 @@ public class LavaWrapper {
 	private final Map<Guild, AudioPlayer> cache;
 	private final Map<Guild, TrackScheduler> listenerCache;
 	
-	private LavaWrapper(){
+	private LavaWrapper(GlobalConfig g){
 		playerManager = new DefaultAudioPlayerManager();
 		cache = new HashMap<>();
 		listenerCache = new HashMap<>();
 		playerManager.registerSourceManager(new YoutubeAudioSourceManager());
+		if(g.getSpotifyClientId() != null) {
+			log.info("Registering spotify.");
+			playerManager.registerSourceManager(new SpotifySourceManager(
+					null,
+					g.getSpotifyClientId(),
+					g.getSpotifyClientSecret(),
+					g.getSpotifyCountryCode(),
+					playerManager
+			));
+		}
 		playerManager.registerSourceManager(SoundCloudAudioSourceManager.createDefault());
 		playerManager.registerSourceManager(new BandcampAudioSourceManager());
 		playerManager.registerSourceManager(new BeamAudioSourceManager());
@@ -61,10 +78,10 @@ public class LavaWrapper {
 		AudioSourceManagers.registerRemoteSources(playerManager);
 	}
 	
-	public static boolean initialize(){
+	public static boolean initialize(GlobalConfig g){
 		if(!initialized){
 			initialized = true;
-			instance = new LavaWrapper();
+			instance = new LavaWrapper(g);
 			return true;
 		}
 		return false;

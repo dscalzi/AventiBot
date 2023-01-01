@@ -28,6 +28,7 @@ repositories {
     mavenCentral()
     maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
     maven { url 'https://m2.dv8tion.net/releases' }
+    maven { url 'https://jitpack.io' }
 }
 
 dependencies {
@@ -40,6 +41,7 @@ dependencies {
 
     implementation "net.dv8tion:JDA:${jdaVersion}"
     implementation "com.sedmelluq:lavaplayer:${lavaplayerVersion}"
+    implementation "com.github.TopiSenpai.LavaSrc:lavasrc:${lavasrcVersion}"
 
     implementation "org.slf4j:slf4j-api:${slf4jVersion}"
     implementation "ch.qos.logback:logback-classic:${logbackVersion}"

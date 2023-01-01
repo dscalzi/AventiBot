@@ -29,17 +29,21 @@ import com.dscalzi.aventibot.AventiBot;
 import com.dscalzi.aventibot.BotStatus;
 import com.dscalzi.aventibot.util.Pair;
 
-public class GlobalConfig{
+public class GlobalConfig {
 	
 	public static final Map<Pair<String, Object>, Method> keyMap;
 	
 	static {
 		keyMap = new HashMap<>();
 		try {
-			keyMap.put(new Pair<>("token", "NULL"), GlobalConfig.class.getMethod("setToken", String.class));
+			keyMap.put(new Pair<>("token", null), GlobalConfig.class.getMethod("setToken", String.class));
 			keyMap.put(new Pair<>("currentGame", "Developed by Dan"), GlobalConfig.class.getMethod("setCurrentGame", String.class));
 			keyMap.put(new Pair<>("defaultColorHex", "#0f579d"), GlobalConfig.class.getMethod("setDefaultColor", String.class));
 			keyMap.put(new Pair<>("defaultCommandPrefix", "--"), GlobalConfig.class.getMethod("setDefaultCommandPrefix", String.class));
+			// TODO This needs to be rewritten to use a POJO, etc. Implementing this using the current setup.
+			keyMap.put(new Pair<>("spotifyClientId", null), GlobalConfig.class.getMethod("setSpotifyClientId", String.class));
+			keyMap.put(new Pair<>("spotifyClientSecret", null), GlobalConfig.class.getMethod("setSpotifyClientSecret", String.class));
+			keyMap.put(new Pair<>("spotifyCountryCode", null), GlobalConfig.class.getMethod("setSpotifyCountryCode", String.class));
 		} catch (NoSuchMethodException | SecurityException e) {
 			//Shouldn't happen since this is hard coded.
 			e.printStackTrace();
@@ -52,6 +56,10 @@ public class GlobalConfig{
 	private transient Color defaultColorAWT;
 	private transient javafx.scene.paint.Color defaultColorJFX;
 	private String defaultCommandPrefix;
+
+	private String spotifyClientId;
+	private String spotifyClientSecret;
+	private String spotifyCountryCode;
 	
 	public GlobalConfig(){ /* For deserialization. */ }
 	
@@ -121,6 +129,30 @@ public class GlobalConfig{
 	
 	public void setDefaultCommandPrefix(String defaultCommandPrefix){
 		this.defaultCommandPrefix = defaultCommandPrefix;
+	}
+
+	public String getSpotifyClientId() {
+		return spotifyClientId;
+	}
+
+	public void setSpotifyClientId(String spotifyClientId) {
+		this.spotifyClientId = spotifyClientId;
+	}
+
+	public String getSpotifyClientSecret() {
+		return spotifyClientSecret;
+	}
+
+	public void setSpotifyClientSecret(String spotifyClientSecret) {
+		this.spotifyClientSecret = spotifyClientSecret;
+	}
+
+	public String getSpotifyCountryCode() {
+		return spotifyCountryCode;
+	}
+
+	public void setSpotifyCountryCode(String spotifyCountryCode) {
+		this.spotifyCountryCode = spotifyCountryCode;
 	}
 	
 }

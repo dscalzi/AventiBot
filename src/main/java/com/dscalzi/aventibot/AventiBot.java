@@ -78,10 +78,10 @@ public class AventiBot {
 		return false;
 	}
 	
-	private void postConnectionSetup(){
+	private void postConnectionSetup(GlobalConfig g){
 		registerCommands();
 		registerListeners();
-		LavaWrapper.initialize();
+		LavaWrapper.initialize(g);
 		this.console = ConsoleUser.build(jda);
 		SnowflakeCacheViewImpl<PrivateChannel> pcCache = ((SnowflakeCacheViewImpl<PrivateChannel>) jda.getPrivateChannelCache());
 		try(UnlockHook ignored = pcCache.writeLock()) {
@@ -135,7 +135,7 @@ public class AventiBot {
 				jdaBuilder.setActivity(Activity.playing(g.getCurrentGame()));
 			jda = jdaBuilder.build().awaitReady();
 			status = BotStatus.CONNECTED;
-			postConnectionSetup();
+			postConnectionSetup(g);
 		} catch (IllegalArgumentException | InterruptedException | IOException e) {
 			status = BotStatus.LAUNCHED;
 			log.error(MarkerFactory.getMarker("FATAL"), "Failed to connect to Discord!");

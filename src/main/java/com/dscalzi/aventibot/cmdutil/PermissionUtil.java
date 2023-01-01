@@ -266,7 +266,7 @@ public final class PermissionUtil {
 				}
 			}
 			
-			Gson gson = new GsonBuilder().setPrettyPrinting().create();
+			Gson gson = new GsonBuilder().serializeNulls().setPrettyPrinting().create();
 			try(JsonWriter writer = gson.newJsonWriter(new FileWriter(target))){
 				gson.toJson(job, writer);
 			}
@@ -337,7 +337,7 @@ public final class PermissionUtil {
 				}
 			}
 			
-			Gson gson = new GsonBuilder().setPrettyPrinting().create();
+			Gson gson = new GsonBuilder().serializeNulls().setPrettyPrinting().create();
 			try(JsonWriter writer = gson.newJsonWriter(new FileWriter(target))){
 				gson.toJson(job, writer);
 			}
@@ -400,7 +400,7 @@ public final class PermissionUtil {
 				}
 			}
 			
-			Gson gson = new GsonBuilder().setPrettyPrinting().create();
+			Gson gson = new GsonBuilder().serializeNulls().setPrettyPrinting().create();
 			try(JsonWriter writer = gson.newJsonWriter(new FileWriter(target))){
 				gson.toJson(job, writer);
 			}
@@ -463,7 +463,7 @@ public final class PermissionUtil {
 				
 				Set<PermissionNode> leftover = new HashSet<>(registered);
 				
-				Gson gson = new GsonBuilder().setPrettyPrinting().create();
+				Gson gson = new GsonBuilder().serializeNulls().setPrettyPrinting().create();
 				for(PermissionNode pn : leftover){
 					JsonObject container = new JsonObject();
 					container.addProperty(PermissionUtil.GATEKEY, pn.isOp());

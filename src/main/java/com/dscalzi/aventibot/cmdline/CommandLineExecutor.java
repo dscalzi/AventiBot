@@ -115,7 +115,7 @@ public class CommandLineExecutor {
 			e.printStackTrace();
 			return false;
 		}
-		return !g.getToken().equals("NULL");
+		return g.getToken() != null;
 	}
 	
 	public static boolean usingCmdLine(){

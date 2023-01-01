@@ -219,7 +219,7 @@ public class SettingsManager {
 		File target = SettingsManager.getGlobalConfigurationFile();
 		if(target == null) throw new IOException();
 		
-		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		Gson gson = new GsonBuilder().serializeNulls().serializeNulls().setPrettyPrinting().create();
 		try(FileWriter w = new FileWriter(target)){
 			gson.toJson(g, w);
 		}
@@ -329,7 +329,7 @@ public class SettingsManager {
 		File target = SettingsManager.getConfigurationFile(id);
 		if(target == null) throw new IOException();
 		
-		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		Gson gson = new GsonBuilder().serializeNulls().setPrettyPrinting().create();
 		try(FileWriter w = new FileWriter(target)){
 			gson.toJson(g, w);
 		}
