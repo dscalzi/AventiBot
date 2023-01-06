@@ -93,7 +93,7 @@ public class CmdSettingsControl implements CommandExecutor {
             return CommandResult.ERROR;
         }
 
-        GuildConfig current = Objects.requireNonNull(SettingsManager.getGuildConfig(e.getGuild()));
+        GuildConfig current = SettingsManager.getGuildConfig(e.getGuild());
         CommandResult result = CommandResult.SUCCESS;
         switch (key) {
             case "colorHex" -> {
@@ -126,7 +126,7 @@ public class CmdSettingsControl implements CommandExecutor {
     }
 
     private CommandResult cmdInfo(MessageReceivedEvent e, String key) {
-        GuildConfig current = Objects.requireNonNull(SettingsManager.getGuildConfig(e.getGuild()));
+        GuildConfig current = SettingsManager.getGuildConfig(e.getGuild());
         Object val = null;
         CommandResult result = CommandResult.SUCCESS;
         switch (key) {
@@ -150,7 +150,7 @@ public class CmdSettingsControl implements CommandExecutor {
     }
 
     private CommandResult cmdInfoFull(MessageReceivedEvent e) {
-        GuildConfig current = Objects.requireNonNull(SettingsManager.getGuildConfig(e.getGuild()));
+        GuildConfig current = SettingsManager.getGuildConfig(e.getGuild());
         EmbedBuilder eb = new EmbedBuilder();
         eb.setTitle("Configuration for " + e.getGuild().getName(), null);
         eb.setColor(current.getColorAWT());

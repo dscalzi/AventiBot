@@ -244,7 +244,7 @@ public class SettingsManager {
             File target = SettingsManager.getConfigurationFile(id);
 
             if (!target.exists()) {
-                GuildConfig g = new GuildConfig(Objects.requireNonNull(getGlobalConfig()));
+                GuildConfig g = new GuildConfig(getGlobalConfig());
                 saveGuildConfig(id, g);
                 return g;
             }

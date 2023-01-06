@@ -62,7 +62,7 @@ public class CmdGSettings implements CommandExecutor {
             if (args[0].equalsIgnoreCase("update")) {
                 if (args.length >= 3) {
                     String prop = args[1];
-                    GlobalConfig current = Objects.requireNonNull(SettingsManager.getGlobalConfig());
+                    GlobalConfig current = SettingsManager.getGlobalConfig();
                     CommandResult result = CommandResult.SUCCESS;
                     switch (prop) {
                         case "currentGame" -> {
