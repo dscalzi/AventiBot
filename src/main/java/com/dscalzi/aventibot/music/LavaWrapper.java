@@ -38,6 +38,7 @@ import com.sedmelluq.discord.lavaplayer.source.twitch.TwitchStreamAudioSourceMan
 import com.sedmelluq.discord.lavaplayer.source.vimeo.VimeoAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager;
 
+import com.sedmelluq.discord.lavaplayer.track.*;
 import net.dv8tion.jda.api.entities.Guild;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,11 +49,11 @@ public class LavaWrapper {
 
 	private static LavaWrapper instance;
 	private static boolean initialized;
-	
+
 	private final AudioPlayerManager playerManager;
 	private final Map<Guild, AudioPlayer> cache;
 	private final Map<Guild, TrackScheduler> listenerCache;
-	
+
 	private LavaWrapper(GlobalConfig g){
 		playerManager = new DefaultAudioPlayerManager();
 		cache = new HashMap<>();
@@ -61,11 +62,44 @@ public class LavaWrapper {
 		if(g.getSpotifyClientId() != null) {
 			log.info("Registering spotify.");
 			playerManager.registerSourceManager(new SpotifySourceManager(
-					null,
 					g.getSpotifyClientId(),
 					g.getSpotifyClientSecret(),
 					g.getSpotifyCountryCode(),
-					playerManager
+					playerManager,
+					mirroringAudioTrack -> {
+						final String ytsearch = "ytsearch:";
+
+                        // Try by isrc
+                        AudioItem item = AudioReference.NO_TRACK;
+                        if(mirroringAudioTrack.getISRC() != null) {
+                            item = mirroringAudioTrack.loadItem(
+                                    ytsearch + mirroringAudioTrack.getISRC());
+							String title = null;
+                            if(item instanceof InternalAudioTrack casted) {
+								title = casted.getInfo().title;
+                            }
+							else if(item instanceof AudioPlaylist casted) {
+								title = casted.getTracks().get(0).getInfo().title;
+							}
+							if(title != null) {
+								if(!title.toLowerCase().contains(mirroringAudioTrack.getInfo().title.toLowerCase())) {
+									log.info("Title Mismatch, Expected: {}. Actual: {}.", mirroringAudioTrack.getInfo().title, title);
+									item = AudioReference.NO_TRACK;
+								}
+							}
+                        }
+                        // Try name + isrc
+                        if(item == AudioReference.NO_TRACK) {
+                            item = mirroringAudioTrack.loadItem(
+                                    ytsearch + mirroringAudioTrack.getInfo().title + " " + mirroringAudioTrack.getISRC());
+                        }
+
+                        if(item == AudioReference.NO_TRACK) {
+                            log.error("Failed to find track");
+                        }
+
+                        return item;
+					}
 			));
 		}
 		playerManager.registerSourceManager(SoundCloudAudioSourceManager.createDefault());
@@ -77,7 +111,7 @@ public class LavaWrapper {
 		playerManager.registerSourceManager(new LocalAudioSourceManager());
 		AudioSourceManagers.registerRemoteSources(playerManager);
 	}
-	
+
 	public static boolean initialize(GlobalConfig g){
 		if(!initialized){
 			initialized = true;
@@ -86,35 +120,35 @@ public class LavaWrapper {
 		}
 		return false;
 	}
-	
+
 	public static LavaWrapper getInstance(){
 		return LavaWrapper.instance;
 	}
-	
+
 	public AudioPlayerManager getAudioPlayerManager(){
 		return playerManager;
 	}
-	
+
 	public AudioPlayer getAudioPlayer(Guild id){
 		if(cache.containsKey(id))
 			return cache.get(id);
 		else {
 			AudioPlayer player = playerManager.createPlayer();
 			TrackScheduler trackScheduler = new TrackScheduler(player, id);
-			
+
 			player.addListener(trackScheduler);
-			
+
 			listenerCache.put(id, trackScheduler);
 			cache.put(id, player);
-			
+
 			id.getAudioManager().setSendingHandler(new AudioPlayerSendHandler(player));
-			
+
 			return player;
 		}
 	}
-	
+
 	public TrackScheduler getScheduler(Guild id){
 		return listenerCache.get(id);
 	}
-	
+
 }
