@@ -26,19 +26,12 @@ import com.dscalzi.aventibot.cmdutil.PermissionNode.NodeType;
 import com.dscalzi.aventibot.settings.GuildConfig;
 import com.dscalzi.aventibot.settings.SettingsManager;
 import com.dscalzi.aventibot.util.IconUtil;
-import com.dscalzi.aventibot.util.Pair;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.awt.*;
 import java.io.IOException;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class CmdSettingsControl implements CommandExecutor {
 
@@ -68,19 +61,7 @@ public class CmdSettingsControl implements CommandExecutor {
                     return CommandResult.NO_PERMISSION;
                 }
                 if (args.length > 1) {
-                    String prop = args[1].toLowerCase();
-                    for (Map.Entry<Pair<String, Object>, Method> entry : GuildConfig.keyMap.entrySet()) {
-                        if (entry.getKey().getKey().toLowerCase().equals(prop)) {
-                            switch (prop) {
-                                case "colorhex":
-                                    return cmdUpdateColor(e, args);
-                                default:
-                                    return genericStringUpdate(e, entry.getKey().getKey(), entry.getValue(), args);
-                            }
-                        }
-                    }
-                    e.getChannel().sendMessage("Unknown settings key: `" + prop + "`.").queue();
-                    return CommandResult.ERROR;
+                    return this.cmdUpdate(e, args[1], args);
                 }
                 e.getChannel().sendMessage("Proper usage is `" + SettingsManager.getCommandPrefix(e.getGuild()) + "settings update <key> <value>`").queue();
                 return CommandResult.IGNORE;
@@ -91,14 +72,7 @@ public class CmdSettingsControl implements CommandExecutor {
                     return CommandResult.NO_PERMISSION;
                 }
                 if (args.length > 1) {
-                    String prop = args[1].toLowerCase();
-                    for (Map.Entry<Pair<String, Object>, Method> entry : GuildConfig.keyMap.entrySet()) {
-                        if (entry.getKey().getKey().toLowerCase().equals(prop)) {
-                            return cmdInfo(e, entry.getKey().getKey(), entry.getKey().getValue());
-                        }
-                    }
-                    e.getChannel().sendMessage("Unknown settings key: `" + prop + "`.").queue();
-                    return CommandResult.ERROR;
+                    return this.cmdInfo(e, args[1]);
                 }
                 return this.cmdInfoFull(e);
             }
@@ -108,116 +82,97 @@ public class CmdSettingsControl implements CommandExecutor {
         }
 
         //TODO subcommand list
-        e.getChannel().sendMessage("Subcommand list comming soon!").queue();
+        e.getChannel().sendMessage("Subcommand list coming soon!").queue();
         return CommandResult.IGNORE;
     }
 
-    private CommandResult genericStringUpdate(MessageReceivedEvent e, String key, Method setter, String[] args) {
-        GuildConfig current = SettingsManager.getGuildConfig(e.getGuild());
+    private CommandResult cmdUpdate(MessageReceivedEvent e, String key, String[] args) {
 
         if (args.length < 3) {
             e.getChannel().sendMessage("Proper usage is " + SettingsManager.getCommandPrefix(e.getGuild()) + "settings update " + key.toLowerCase() + " <value>").queue();
             return CommandResult.ERROR;
         }
-        try {
-            setter.invoke(current, args[2]);
-            SettingsManager.saveGuildConfig(e.getGuild(), current);
-        } catch (IllegalArgumentException e1) {
-            e.getChannel().sendMessage("You have provided an improper value.").queue();
-            e1.printStackTrace();
-            return CommandResult.ERROR;
-        } catch (InvocationTargetException | IllegalAccessException e1) {
-            e.getChannel().sendMessage("Error occured while updating the value.").queue();
-            e1.printStackTrace();
-            return CommandResult.ERROR;
-        } catch (IOException e1) {
-            e.getChannel().sendMessage("Error occured while saving the new configuration.").queue();
-            e1.printStackTrace();
-            return CommandResult.ERROR;
+
+        GuildConfig current = Objects.requireNonNull(SettingsManager.getGuildConfig(e.getGuild()));
+        CommandResult result = CommandResult.SUCCESS;
+        switch (key) {
+            case "colorHex" -> {
+                try {
+                    Color.decode(args[2]);
+                    current.setColorHex(args[2]);
+                    return CommandResult.SUCCESS;
+                } catch (NumberFormatException e1) {
+                    e.getChannel().sendMessage("Invalid color, must be a valid hex color code.").queue();
+                    return CommandResult.ERROR;
+                }
+            }
+            case "commandPrefix" -> current.setCommandPrefix(args[2]);
+            default -> {
+                e.getChannel().sendMessage("Unknown settings key: `" + key + "`.").queue();
+                result = CommandResult.ERROR;
+            }
+        }
+        if (result == CommandResult.SUCCESS) {
+            try {
+                SettingsManager.saveGuildConfig(e.getGuild(), current);
+            } catch(IOException exception) {
+                result = CommandResult.ERROR;
+                e.getChannel().sendMessage("IOException while saving the config.").queue();
+                exception.printStackTrace();
+            }
         }
 
-        return CommandResult.SUCCESS;
-
+        return result;
     }
 
-    private CommandResult cmdUpdateColor(MessageReceivedEvent e, String[] args) {
-        GuildConfig g = SettingsManager.getGuildConfig(e.getGuild());
-        if (args.length < 3) {
-            e.getChannel().sendMessage("Proper usage is " + SettingsManager.getCommandPrefix(e.getGuild()) + "settings update color [hex value]").queue();
-            return CommandResult.ERROR;
+    private CommandResult cmdInfo(MessageReceivedEvent e, String key) {
+        GuildConfig current = Objects.requireNonNull(SettingsManager.getGuildConfig(e.getGuild()));
+        Object val = null;
+        CommandResult result = CommandResult.SUCCESS;
+        switch (key) {
+            case "colorHex" -> val = current.getColorHex();
+            case "commandPrefix" -> val = current.getCommandPrefix();
+            default -> {
+                e.getChannel().sendMessage("Unknown settings key: `" + key + "`.").queue();
+                result = CommandResult.ERROR;
+            }
         }
-        try {
-            Color.decode(args[2]);
-            g.setColor(args[2]);
-            SettingsManager.saveGuildConfig(e.getGuild(), g);
-            return CommandResult.SUCCESS;
-        } catch (NumberFormatException e1) {
-            e.getChannel().sendMessage("Invalid color, must be a valid hex color code.").queue();
-            return CommandResult.ERROR;
-        } catch (IOException e1) {
-            e.getChannel().sendMessage("Unable to complete request, could not update configuration file.").queue();
-            e1.printStackTrace();
-            return CommandResult.ERROR;
-        }
-    }
+        if (result == CommandResult.SUCCESS) {
+            EmbedBuilder eb = new EmbedBuilder();
+            eb.setTitle("Value of `" + key + "`", null);
+            eb.setDescription("`" + val + "`");
+            eb.setColor(current.getColorAWT());
 
-    private CommandResult cmdInfo(MessageReceivedEvent e, String key, Object def) {
-        GuildConfig current = SettingsManager.getGuildConfig(e.getGuild());
-        Object val = getFieldValue(current, key);
-        if (val == null) {
-            e.getChannel().sendMessage("Internal error while retrieving the settings value.").queue();
-            return CommandResult.ERROR;
+            e.getChannel().sendMessageEmbeds(eb.build()).queue();
         }
 
-        EmbedBuilder eb = new EmbedBuilder();
-        eb.setTitle("Value of `" + key + "`", null);
-        eb.setDescription("`" + val + "` | [def `" + def + "`]");
-        eb.setColor(current.getColorAWT());
-
-        e.getChannel().sendMessageEmbeds(eb.build()).queue();
-
-        return CommandResult.SUCCESS;
+        return result;
     }
 
     private CommandResult cmdInfoFull(MessageReceivedEvent e) {
-        GuildConfig current = SettingsManager.getGuildConfig(e.getGuild());
+        GuildConfig current = Objects.requireNonNull(SettingsManager.getGuildConfig(e.getGuild()));
         EmbedBuilder eb = new EmbedBuilder();
         eb.setTitle("Configuration for " + e.getGuild().getName(), null);
         eb.setColor(current.getColorAWT());
+
         String proper = SettingsManager.getCommandPrefix(e.getGuild());
         if (proper.trim().equals(AventiBot.getInstance().getJDA().getSelfUser().getAsMention())) {
             proper = CommandDispatcher.getDisplayedMention(e.getGuild()) + " ";
         }
         eb.setFooter("Narrow Search | " + proper + "settings info <key>.", IconUtil.INFO.getURL());
 
+        Map<String, Object> map = new LinkedHashMap<>();
+        map.put("colorHex", current.getColorHex());
+        map.put("commandPrefix", current.getCommandPrefix());
 
-        for (Pair<String, Object> keys : GuildConfig.keyMap.keySet()) {
-            Object val = getFieldValue(current, keys.getKey());
-            if (val == null) val = "ERROR";
-            eb.appendDescription("**" + keys.getKey() + "**\n"
-                    + "`" + val + "` | [def `" + keys.getValue() + "`]\n");
+        for (Map.Entry<String, Object> entry : map.entrySet()) {
+            eb.appendDescription("**" + entry.getKey() + "**\t"
+                    + "`" + entry.getValue() + "`\n");
         }
 
         e.getChannel().sendMessageEmbeds(eb.build()).queue();
 
         return CommandResult.SUCCESS;
-    }
-
-    private Object getFieldValue(GuildConfig src, String key) {
-        Object val = null;
-        try {
-            for (Field f : src.getClass().getDeclaredFields()) {
-                if (f.getName().equalsIgnoreCase(key)) {
-                    f.setAccessible(true);
-                    val = f.get(src);
-                    f.setAccessible(false);
-                }
-            }
-        } catch (SecurityException | IllegalArgumentException | IllegalAccessException e1) {
-            e1.printStackTrace();
-            return null;
-        }
-        return val == null ? "null" : val;
     }
 
 

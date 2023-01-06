@@ -63,7 +63,6 @@ public class CmdGSettings implements CommandExecutor {
                 if (args.length >= 3) {
                     String prop = args[1];
                     GlobalConfig current = Objects.requireNonNull(SettingsManager.getGlobalConfig());
-                    boolean save = true;
                     CommandResult result = CommandResult.SUCCESS;
                     switch (prop) {
                         case "currentGame" -> {
@@ -76,11 +75,10 @@ public class CmdGSettings implements CommandExecutor {
                         default -> {
                             e.getChannel().sendMessage("Unknown settings key: `" + prop + "`.").queue();
                             result = CommandResult.ERROR;
-                            save = false;
                         }
                     }
 
-                    if(save) {
+                    if(result == CommandResult.SUCCESS) {
                         try {
                             SettingsManager.saveGlobalConfig(current);
                         } catch(IOException exception) {

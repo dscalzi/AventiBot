@@ -38,7 +38,6 @@ import net.dv8tion.jda.internal.utils.cache.SnowflakeCacheViewImpl;
 import org.slf4j.MarkerFactory;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.URISyntaxException;
 
 @Slf4j
@@ -135,7 +134,7 @@ public class AventiBot {
             jda = jdaBuilder.build().awaitReady();
             status = BotStatus.CONNECTED;
             postConnectionSetup(g);
-        } catch (IllegalArgumentException | InterruptedException | IOException e) {
+        } catch (IllegalArgumentException | InterruptedException e) {
             status = BotStatus.LAUNCHED;
             log.error(MarkerFactory.getMarker("FATAL"), "Failed to connect to Discord!");
             e.printStackTrace();

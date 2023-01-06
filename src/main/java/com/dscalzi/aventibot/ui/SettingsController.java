@@ -127,12 +127,13 @@ public class SettingsController implements Initializable, ChangeListener<String>
     @FXML
     private void handleShowFileButton(ActionEvent e) {
         try {
+            String pth = SettingsManager.getGlobalConfigurationFile().getAbsolutePath();
             if (OSUtil.isWindows())
-                Runtime.getRuntime().exec("explorer.exe /select," + SettingsManager.getGlobalConfigurationFile().getAbsolutePath());
+                Runtime.getRuntime().exec("explorer.exe /select," + pth);
             else if (OSUtil.isMac())
-                Runtime.getRuntime().exec("open " + SettingsManager.getGlobalConfigurationFile().getAbsolutePath());
+                Runtime.getRuntime().exec("open " + pth);
             else
-                log.error(MarkerFactory.getMarker("FATAL"), "Cannot open the configuration file location, unsupported OS. Path is " + SettingsManager.getGlobalConfigurationFile().getAbsolutePath());
+                log.error(MarkerFactory.getMarker("FATAL"), "Cannot open the configuration file location, unsupported OS. Path is " + pth);
         } catch (IOException e1) {
             log.warn("Error while opening file explorer:");
             e1.printStackTrace();

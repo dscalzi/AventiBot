@@ -22,10 +22,7 @@ package com.dscalzi.aventibot.settings;
 
 import com.dscalzi.aventibot.AventiBot;
 import com.dscalzi.aventibot.BotStatus;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.awt.*;
 
@@ -36,7 +33,9 @@ public class GlobalConfig {
     private String token;
     private String currentGame;
     private String defaultColorHex;
+    @Setter(AccessLevel.NONE)
     private transient Color defaultColorAWT;
+    @Setter(AccessLevel.NONE)
     private transient javafx.scene.paint.Color defaultColorJFX;
     private String defaultCommandPrefix;
 
@@ -70,16 +69,16 @@ public class GlobalConfig {
         private String countryCode;
     }
 
-    public void setDefaultColorHex(String defaultColor) {
+    public void setDefaultColorHex(String defaultColorHex) {
         try {
-            this.defaultColorHex = defaultColor;
-            this.defaultColorAWT = Color.decode(defaultColorHex);
-            this.defaultColorJFX = javafx.scene.paint.Color.web(defaultColor);
+            this.defaultColorHex = defaultColorHex;
+            this.defaultColorAWT = Color.decode(this.defaultColorHex);
+            this.defaultColorJFX = javafx.scene.paint.Color.web(this.defaultColorHex);
         } catch (IllegalArgumentException | NullPointerException e) {
             //Assign default
             e.printStackTrace();
             this.defaultColorHex = "#0f579d";
-            this.defaultColorAWT = Color.decode(defaultColorHex);
+            this.defaultColorAWT = Color.decode(this.defaultColorHex);
         }
     }
 

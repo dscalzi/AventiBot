@@ -22,65 +22,55 @@ package com.dscalzi.aventibot.settings;
 
 import com.dscalzi.aventibot.AventiBot;
 import com.dscalzi.aventibot.BotStatus;
-import com.dscalzi.aventibot.util.Pair;
+import com.google.gson.InstanceCreator;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.Setter;
 import net.dv8tion.jda.api.entities.Guild;
 
 import java.awt.*;
-import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Map;
 
+@Getter
+@Setter
 public class GuildConfig {
 
-    public static final Map<Pair<String, Object>, Method> keyMap;
-
-    static {
-        keyMap = new HashMap<>();
-        try {
-            keyMap.put(new Pair<>("colorHex", "#0f579d"), GuildConfig.class.getMethod("setColor", String.class));
-            keyMap.put(new Pair<>("commandPrefix", "--"), GuildConfig.class.getMethod("setCommandPrefix", String.class));
-        } catch (NoSuchMethodException | SecurityException e) {
-            //Shouldn't happen since this is hard coded.
-            e.printStackTrace();
-        }
-    }
-
-    private transient Color colorAWT;
-    private transient javafx.scene.paint.Color colorJFX;
     private String colorHex;
+    @Setter(AccessLevel.NONE)
+    private transient Color colorAWT;
+    @Setter(AccessLevel.NONE)
+    private transient javafx.scene.paint.Color colorJFX;
     private String commandPrefix;
 
-    public GuildConfig() {
+    public GuildConfig() { }
 
+    public GuildConfig(GlobalConfig globalConfig) {
+        this(globalConfig.getDefaultColorHex(), globalConfig.getDefaultCommandPrefix());
     }
 
-    public GuildConfig(String defaultColor) {
-        setColor(null);
+    public GuildConfig(String colorHex, String commandPrefix) {
+        setColorHex(colorHex);
+        this.commandPrefix = commandPrefix;
     }
 
     public Color getColorAWT() {
-        if (colorAWT == null) setColor(getColorHex());
+        if (colorAWT == null) setColorHex(getColorHex());
         return colorAWT;
     }
 
     public javafx.scene.paint.Color getColorJFX() {
-        if (colorJFX == null) setColor(getColorHex());
+        if (colorJFX == null) setColorHex(getColorHex());
         return colorJFX;
     }
 
-    public String getColorHex() {
-        return colorHex;
-    }
-
-    public void setColor(String defaultColor) {
+    public void setColorHex(String colorHex) {
         try {
-            colorHex = defaultColor;
-            this.colorAWT = Color.decode(colorHex);
-            this.colorJFX = javafx.scene.paint.Color.web(colorHex);
+            this.colorHex = colorHex;
+            this.colorAWT = Color.decode(this.colorHex);
+            this.colorJFX = javafx.scene.paint.Color.web(this.colorHex);
         } catch (IllegalArgumentException | NullPointerException e) {
-            //Assign default
-            colorHex = "#0f579d";
-            this.colorAWT = Color.decode(colorHex);
+            // Assign default
+            this.colorHex = "#0f579d";
+            this.colorAWT = Color.decode(this.colorHex);
         }
     }
 
@@ -92,16 +82,8 @@ public class GuildConfig {
         return this.commandPrefix;
     }
 
-    /**
-     * Returns raw command prefix specified in the configuration
-     * without any modifications.
-     */
-    public String getCommandPrefix() {
-        return this.commandPrefix;
-    }
-
-    public void setCommandPrefix(String commandPrefix) {
-        this.commandPrefix = commandPrefix;
+    public static InstanceCreator<GuildConfig> instanceCreator(final GlobalConfig globalConfig) {
+        return type -> new GuildConfig(globalConfig);
     }
 
 }
