@@ -1,6 +1,6 @@
 /*
  * This file is part of AventiBot.
- * Copyright (C) 2016-2022 Daniel D. Scalzi
+ * Copyright (C) 2016-2023 Daniel D. Scalzi
  *
  * https://github.com/dscalzi/AventiBot
  *
@@ -20,20 +20,11 @@
 
 package com.dscalzi.aventibot.ui;
 
-import java.io.IOException;
-import java.net.URL;
-import java.util.ResourceBundle;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.slf4j.MarkerFactory;
-
 import com.dscalzi.aventibot.AventiBot;
 import com.dscalzi.aventibot.BotStatus;
 import com.dscalzi.aventibot.settings.GlobalConfig;
 import com.dscalzi.aventibot.settings.SettingsManager;
 import com.dscalzi.aventibot.util.OSUtil;
-
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -45,131 +36,144 @@ import javafx.scene.control.ColorPicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.paint.Color;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MarkerFactory;
 
-public class SettingsController implements Initializable, ChangeListener<String>{
+import java.io.IOException;
+import java.net.URL;
+import java.util.ResourceBundle;
 
-	private static final Logger log = LoggerFactory.getLogger(SettingsController.class);
-	private GlobalConfig current;
-	private SettingsState state;
-	
-	@FXML private Label status_text;
-	@FXML private Button save_button;
-	
-	@FXML private TextField apikey_settings_field;
-	@FXML private TextField currentgame_settings_field;
-	@FXML private ColorPicker color_settings_picker;
-	@FXML private TextField commandprefix_settings_field;
-	
-	@Override
-	public void initialize(URL location, ResourceBundle resources) {
-		try {
-			current = SettingsManager.getGlobalConfig();
-			if(current == null){
-				throw new IOException();
-			}
-		} catch (IOException e) {
-			log.error(MarkerFactory.getMarker("FATAL"), "Unable to load global config. This error is FATAL, shutting down..");
-			e.printStackTrace();
-			if(AventiBot.getStatus() == BotStatus.CONNECTED)
-				AventiBot.getInstance().shutdown();
-			else 
-				TerminalController.markSoftShutdown = true;
-		}
-		bindTextFields();
-		setState(SettingsState.SAVED);
-	}
-	
-	private void bindTextFields(){
-		if(AventiBot.getStatus() == BotStatus.CONNECTED){
-			apikey_settings_field.setDisable(true);
-		}
-		//Bind token
-		apikey_settings_field.textProperty().addListener(this);
-		apikey_settings_field.setText(current.getToken());
-		//Bind current game
-		currentgame_settings_field.textProperty().addListener(this);
-		currentgame_settings_field.setText(current.getCurrentGame());
-		//Bind command prefix
-		commandprefix_settings_field.textProperty().addListener(this);
-		commandprefix_settings_field.setText(current.getRawCommandPrefix());
-		//Bind color
-		//color_settings_picker.setValue(Color.web("#0f579d"));
-		color_settings_picker.setValue(Color.web(current.getDefaultColorHex()));
-		color_settings_picker.valueProperty().addListener((o, oV, nV) -> {
-			if(!nV.equals(current.getDefaultColorJFX()))
-				setState(SettingsState.NOT_SAVED);
-			else
-				setState(SettingsState.SAVED);
-		});
-	}
+public class SettingsController implements Initializable, ChangeListener<String> {
 
-	@FXML
-	private void handleSaveButton(ActionEvent e){
-		GlobalConfig g = new GlobalConfig(apikey_settings_field.getText(),
-				currentgame_settings_field.getText(),
-				"#" + Integer.toHexString(color_settings_picker.getValue().hashCode()),
-				commandprefix_settings_field.getText());
-		try {
-			AventiBot.setCurrentGame(currentgame_settings_field.getText());
-			SettingsManager.saveGlobalConfig(g);
-			current = g;
-			setState(SettingsState.SAVED);
-		} catch (IOException e1) {
-			log.error(MarkerFactory.getMarker("FATAL"), "Failed to save global configuration settings..");
-			e1.printStackTrace();
-		}
-	}
-	
-	@FXML
-	private void handleShowFileButton(ActionEvent e){
-		try {
-			if(OSUtil.isWindows())
-				Runtime.getRuntime().exec("explorer.exe /select," + SettingsManager.getGlobalConfigurationFile().getAbsolutePath());
-			else if(OSUtil.isMac())
-				Runtime.getRuntime().exec("open " + SettingsManager.getGlobalConfigurationFile().getAbsolutePath());
-			else 
-				log.error(MarkerFactory.getMarker("FATAL"), "Cannot open the configuration file location, unsupported OS. Path is " + SettingsManager.getGlobalConfigurationFile().getAbsolutePath());
-		} catch (IOException e1) {
-			log.warn("Error while opening file explorer:");
-			e1.printStackTrace();
-		}
-	}
-	
-	@Override
-	public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-		TextField source = (TextField) ((StringProperty) observable).getBean();
-		if((source == apikey_settings_field && !newValue.equals(current.getToken())) ||
-		   (source == currentgame_settings_field && !newValue.equals(current.getCurrentGame())))
-			setState(SettingsState.NOT_SAVED);
-		else
-			setState(SettingsState.SAVED);
-	}
-	
-	private void setState(SettingsState state){
-		switch(state){
-		case SAVED:
-			status_text.setText("Status: Saved");
-			break;
-		case NOT_SAVED:
-			status_text.setText("Status: Not Saved!");
-			break;
-		}
-		this.state = state;
-	}
-	
-	public SettingsState getState(){
-		return this.state;
-	}
-	
-	public Button getSaveButton(){
-		return this.save_button;
-	}
-	
-	public enum SettingsState{
-		
-		SAVED(),
-		NOT_SAVED()
-		
-	}
+    private static final Logger log = LoggerFactory.getLogger(SettingsController.class);
+    private GlobalConfig current;
+    private SettingsState state;
+
+    @FXML
+    private Label status_text;
+    @FXML
+    private Button save_button;
+
+    @FXML
+    private TextField apikey_settings_field;
+    @FXML
+    private TextField currentgame_settings_field;
+    @FXML
+    private ColorPicker color_settings_picker;
+    @FXML
+    private TextField commandprefix_settings_field;
+
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        try {
+            current = SettingsManager.getGlobalConfig();
+            if (current == null) {
+                throw new IOException();
+            }
+        } catch (IOException e) {
+            log.error(MarkerFactory.getMarker("FATAL"), "Unable to load global config. This error is FATAL, shutting down..");
+            e.printStackTrace();
+            if (AventiBot.getStatus() == BotStatus.CONNECTED)
+                AventiBot.getInstance().shutdown();
+            else
+                TerminalController.markSoftShutdown = true;
+        }
+        bindTextFields();
+        setState(SettingsState.SAVED);
+    }
+
+    private void bindTextFields() {
+        if (AventiBot.getStatus() == BotStatus.CONNECTED) {
+            apikey_settings_field.setDisable(true);
+        }
+        //Bind token
+        apikey_settings_field.textProperty().addListener(this);
+        apikey_settings_field.setText(current.getToken());
+        //Bind current game
+        currentgame_settings_field.textProperty().addListener(this);
+        currentgame_settings_field.setText(current.getCurrentGame());
+        //Bind command prefix
+        commandprefix_settings_field.textProperty().addListener(this);
+        commandprefix_settings_field.setText(current.getRawCommandPrefix());
+        //Bind color
+        //color_settings_picker.setValue(Color.web("#0f579d"));
+        color_settings_picker.setValue(Color.web(current.getDefaultColorHex()));
+        color_settings_picker.valueProperty().addListener((o, oV, nV) -> {
+            if (!nV.equals(current.getDefaultColorJFX()))
+                setState(SettingsState.NOT_SAVED);
+            else
+                setState(SettingsState.SAVED);
+        });
+    }
+
+    @FXML
+    private void handleSaveButton(ActionEvent e) {
+        GlobalConfig g = new GlobalConfig(apikey_settings_field.getText(),
+                currentgame_settings_field.getText(),
+                "#" + Integer.toHexString(color_settings_picker.getValue().hashCode()),
+                commandprefix_settings_field.getText());
+        try {
+            AventiBot.setCurrentGame(currentgame_settings_field.getText());
+            SettingsManager.saveGlobalConfig(g);
+            current = g;
+            setState(SettingsState.SAVED);
+        } catch (IOException e1) {
+            log.error(MarkerFactory.getMarker("FATAL"), "Failed to save global configuration settings..");
+            e1.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void handleShowFileButton(ActionEvent e) {
+        try {
+            if (OSUtil.isWindows())
+                Runtime.getRuntime().exec("explorer.exe /select," + SettingsManager.getGlobalConfigurationFile().getAbsolutePath());
+            else if (OSUtil.isMac())
+                Runtime.getRuntime().exec("open " + SettingsManager.getGlobalConfigurationFile().getAbsolutePath());
+            else
+                log.error(MarkerFactory.getMarker("FATAL"), "Cannot open the configuration file location, unsupported OS. Path is " + SettingsManager.getGlobalConfigurationFile().getAbsolutePath());
+        } catch (IOException e1) {
+            log.warn("Error while opening file explorer:");
+            e1.printStackTrace();
+        }
+    }
+
+    @Override
+    public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+        TextField source = (TextField) ((StringProperty) observable).getBean();
+        if ((source == apikey_settings_field && !newValue.equals(current.getToken())) ||
+                (source == currentgame_settings_field && !newValue.equals(current.getCurrentGame())))
+            setState(SettingsState.NOT_SAVED);
+        else
+            setState(SettingsState.SAVED);
+    }
+
+    private void setState(SettingsState state) {
+        switch (state) {
+            case SAVED:
+                status_text.setText("Status: Saved");
+                break;
+            case NOT_SAVED:
+                status_text.setText("Status: Not Saved!");
+                break;
+        }
+        this.state = state;
+    }
+
+    public SettingsState getState() {
+        return this.state;
+    }
+
+    public Button getSaveButton() {
+        return this.save_button;
+    }
+
+    public enum SettingsState {
+
+        SAVED(),
+        NOT_SAVED()
+
+    }
 
 }

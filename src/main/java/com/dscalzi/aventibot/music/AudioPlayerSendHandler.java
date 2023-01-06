@@ -1,6 +1,6 @@
 /*
  * This file is part of AventiBot.
- * Copyright (C) 2016-2022 Daniel D. Scalzi
+ * Copyright (C) 2016-2023 Daniel D. Scalzi
  *
  * https://github.com/dscalzi/AventiBot
  *
@@ -20,36 +20,35 @@
 
 package com.dscalzi.aventibot.music;
 
-import java.nio.ByteBuffer;
-
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.track.playback.AudioFrame;
-
 import net.dv8tion.jda.api.audio.AudioSendHandler;
 
+import java.nio.ByteBuffer;
+
 public class AudioPlayerSendHandler implements AudioSendHandler {
-	
-	private final AudioPlayer audioPlayer;
-	private AudioFrame lastFrame;
 
-	public AudioPlayerSendHandler(AudioPlayer audioPlayer) {
-		this.audioPlayer = audioPlayer;
-	}
+    private final AudioPlayer audioPlayer;
+    private AudioFrame lastFrame;
 
-	@Override
-	public boolean canProvide() {
-		lastFrame = audioPlayer.provide();
-		return lastFrame != null;
-	}
+    public AudioPlayerSendHandler(AudioPlayer audioPlayer) {
+        this.audioPlayer = audioPlayer;
+    }
 
-	@Override
-	public ByteBuffer provide20MsAudio() {
-		return ByteBuffer.wrap(lastFrame.getData());
-	}
+    @Override
+    public boolean canProvide() {
+        lastFrame = audioPlayer.provide();
+        return lastFrame != null;
+    }
 
-	@Override
-	public boolean isOpus() {
-		return true;
-	}
+    @Override
+    public ByteBuffer provide20MsAudio() {
+        return ByteBuffer.wrap(lastFrame.getData());
+    }
+
+    @Override
+    public boolean isOpus() {
+        return true;
+    }
 
 }

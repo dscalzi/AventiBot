@@ -1,6 +1,6 @@
 /*
  * This file is part of AventiBot.
- * Copyright (C) 2016-2022 Daniel D. Scalzi
+ * Copyright (C) 2016-2023 Daniel D. Scalzi
  *
  * https://github.com/dscalzi/AventiBot
  *
@@ -22,19 +22,19 @@ package com.dscalzi.aventibot.cmdutil;
 
 public enum CommandResult {
 
-	SUCCESS("\u2611"),
-	ERROR("\u274C"),
-	NO_PERMISSION("\u26D4"),
-	IGNORE(null);
-	
-	public String unicode;
-	
-	CommandResult(String unicode){
-		this.unicode = unicode;
-	}
-	
-	public String getEmote(){
-		return unicode;
-	}
-	
+    SUCCESS("\u2611"),
+    ERROR("\u274C"),
+    NO_PERMISSION("\u26D4"),
+    IGNORE(null);
+
+    public String unicode;
+
+    CommandResult(String unicode) {
+        this.unicode = unicode;
+    }
+
+    public String getEmote() {
+        return unicode;
+    }
+
 }

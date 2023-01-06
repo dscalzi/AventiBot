@@ -1,6 +1,6 @@
 /*
  * This file is part of AventiBot.
- * Copyright (C) 2016-2022 Daniel D. Scalzi
+ * Copyright (C) 2016-2023 Daniel D. Scalzi
  *
  * https://github.com/dscalzi/AventiBot
  *
@@ -20,40 +20,38 @@
 
 package com.dscalzi.aventibot.cmdutil;
 
+import com.dscalzi.aventibot.AventiBot;
+import com.dscalzi.aventibot.settings.SettingsManager;
+import com.dscalzi.aventibot.util.JDAUtils;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MarkerFactory;
 
-import com.dscalzi.aventibot.AventiBot;
-import com.dscalzi.aventibot.settings.SettingsManager;
-import com.dscalzi.aventibot.util.JDAUtils;
-
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.api.hooks.ListenerAdapter;
-
 public class CommandListener extends ListenerAdapter {
 
-	private static final Logger log = LoggerFactory.getLogger(CommandListener.class);
+    private static final Logger log = LoggerFactory.getLogger(CommandListener.class);
 
-	@Override
-	public void onMessageReceived(MessageReceivedEvent e){
-		if(e.getMessage().getContentRaw().trim().startsWith(SettingsManager.getCommandPrefix(JDAUtils.getGuildFromCombinedEvent(e)))){
-			if(e.getChannelType() != ChannelType.PRIVATE)
-				if(!PermissionUtil.isInitialized(e.getGuild())){
-					try{
-						PermissionUtil.loadJson(e.getGuild());
-					} catch(Throwable t){
-						log.error(MarkerFactory.getMarker("FATAL"), "Error occured loading permissions.. unable to process"
-								+ "requests for guild " + e.getGuild().getName() + "(" + e.getGuild().getId() +  ")!");
-						t.printStackTrace();
-						return;
-					}
-				}
-			if(!e.getAuthor().getId().equals(AventiBot.getInstance().getJDA().getSelfUser().getId())){
-				CommandDispatcher.dispatchCommand(e, CommandDispatcher.parseMessage(e));
-			}
-		}
-	}
-	
+    @Override
+    public void onMessageReceived(MessageReceivedEvent e) {
+        if (e.getMessage().getContentRaw().trim().startsWith(SettingsManager.getCommandPrefix(JDAUtils.getGuildFromCombinedEvent(e)))) {
+            if (e.getChannelType() != ChannelType.PRIVATE)
+                if (!PermissionUtil.isInitialized(e.getGuild())) {
+                    try {
+                        PermissionUtil.loadJson(e.getGuild());
+                    } catch (Throwable t) {
+                        log.error(MarkerFactory.getMarker("FATAL"), "Error occured loading permissions.. unable to process"
+                                + "requests for guild " + e.getGuild().getName() + "(" + e.getGuild().getId() + ")!");
+                        t.printStackTrace();
+                        return;
+                    }
+                }
+            if (!e.getAuthor().getId().equals(AventiBot.getInstance().getJDA().getSelfUser().getId())) {
+                CommandDispatcher.dispatchCommand(e, CommandDispatcher.parseMessage(e));
+            }
+        }
+    }
+
 }

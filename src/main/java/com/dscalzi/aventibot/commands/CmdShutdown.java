@@ -1,6 +1,6 @@
 /*
  * This file is part of AventiBot.
- * Copyright (C) 2016-2022 Daniel D. Scalzi
+ * Copyright (C) 2016-2023 Daniel D. Scalzi
  *
  * https://github.com/dscalzi/AventiBot
  *
@@ -20,56 +20,56 @@
 
 package com.dscalzi.aventibot.commands;
 
+import com.dscalzi.aventibot.AventiBot;
+import com.dscalzi.aventibot.BotStatus;
+import com.dscalzi.aventibot.cmdutil.CommandExecutor;
+import com.dscalzi.aventibot.cmdutil.CommandResult;
+import com.dscalzi.aventibot.cmdutil.PermissionNode;
+import com.dscalzi.aventibot.cmdutil.PermissionNode.NodeType;
+import com.dscalzi.aventibot.cmdutil.PermissionUtil;
+import com.dscalzi.aventibot.util.JDAUtils;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.dscalzi.aventibot.BotStatus;
-import com.dscalzi.aventibot.AventiBot;
-import com.dscalzi.aventibot.cmdutil.CommandExecutor;
-import com.dscalzi.aventibot.cmdutil.CommandResult;
-import com.dscalzi.aventibot.cmdutil.PermissionNode;
-import com.dscalzi.aventibot.cmdutil.PermissionUtil;
-import com.dscalzi.aventibot.cmdutil.PermissionNode.NodeType;
-import com.dscalzi.aventibot.util.JDAUtils;
+public class CmdShutdown implements CommandExecutor {
 
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+    private final PermissionNode permShutdown = PermissionNode.get(NodeType.COMMAND, "shutdown");
 
-public class CmdShutdown implements CommandExecutor{
-	
-	private final PermissionNode permShutdown = PermissionNode.get(NodeType.COMMAND, "shutdown");
-	
-	public final Set<PermissionNode> nodes;
-	
-	public CmdShutdown(){
-		nodes = new HashSet<>(Collections.singletonList(
-				permShutdown
-		));
-	}
-	
-	@Override
-	public CommandResult onCommand(MessageReceivedEvent e, String cmd, String[] args, String[] rawArgs) {
-		
-		if(!PermissionUtil.hasPermission(e.getAuthor(), permShutdown, JDAUtils.getGuildFromCombinedEvent(e), false)) return CommandResult.NO_PERMISSION;
-		
-		e.getChannel().sendMessage("Shutting down.. :(").queue(v -> {
-			try {
-				if(AventiBot.getStatus() == BotStatus.CONNECTED){
-					AventiBot.getInstance().shutdown();
-				}
-			} catch (Exception ex){
-				//Shutdown
-				Runtime.getRuntime().exit(0);
-			}
-		});
-		
-		//The JDA should be shutdown, so the result is null.
-		return null;
-	}
+    public final Set<PermissionNode> nodes;
 
-	@Override
-	public Set<PermissionNode> provideNodes() {
-		return nodes;
-	}
-	
+    public CmdShutdown() {
+        nodes = new HashSet<>(Collections.singletonList(
+                permShutdown
+        ));
+    }
+
+    @Override
+    public CommandResult onCommand(MessageReceivedEvent e, String cmd, String[] args, String[] rawArgs) {
+
+        if (!PermissionUtil.hasPermission(e.getAuthor(), permShutdown, JDAUtils.getGuildFromCombinedEvent(e), false))
+            return CommandResult.NO_PERMISSION;
+
+        e.getChannel().sendMessage("Shutting down.. :(").queue(v -> {
+            try {
+                if (AventiBot.getStatus() == BotStatus.CONNECTED) {
+                    AventiBot.getInstance().shutdown();
+                }
+            } catch (Exception ex) {
+                //Shutdown
+                Runtime.getRuntime().exit(0);
+            }
+        });
+
+        //The JDA should be shutdown, so the result is null.
+        return null;
+    }
+
+    @Override
+    public Set<PermissionNode> provideNodes() {
+        return nodes;
+    }
+
 }

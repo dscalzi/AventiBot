@@ -1,6 +1,6 @@
 /*
  * This file is part of AventiBot.
- * Copyright (C) 2016-2022 Daniel D. Scalzi
+ * Copyright (C) 2016-2023 Daniel D. Scalzi
  *
  * https://github.com/dscalzi/AventiBot
  *
@@ -22,21 +22,21 @@ package com.dscalzi.aventibot;
 
 public enum BotStatus {
 
-	/**
-	 * Bot is successfully connected.
-	 */
-	CONNECTED(),
-	/**
-	 * Bot is launched and initialized, but not connected.
-	 */
-	LAUNCHED(),
-	/**
-	 * Bot is shutdown (was signaled to shutdown JDA and release bindings).
-	 */
-	SHUTDOWN(),
-	/**
-	 * Bot has not yet been launched.
-	 */
-	NULL()
-	
+    /**
+     * Bot is successfully connected.
+     */
+    CONNECTED(),
+    /**
+     * Bot is launched and initialized, but not connected.
+     */
+    LAUNCHED(),
+    /**
+     * Bot is shutdown (was signaled to shutdown JDA and release bindings).
+     */
+    SHUTDOWN(),
+    /**
+     * Bot has not yet been launched.
+     */
+    NULL()
+
 }

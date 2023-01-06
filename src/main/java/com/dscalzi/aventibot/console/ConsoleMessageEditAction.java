@@ -1,6 +1,6 @@
 /*
  * This file is part of AventiBot.
- * Copyright (C) 2016-2022 Daniel D. Scalzi
+ * Copyright (C) 2016-2023 Daniel D. Scalzi
  *
  * https://github.com/dscalzi/AventiBot
  *
@@ -31,48 +31,47 @@ import java.util.function.Consumer;
 
 /**
  * Class to avoid queuing messages sent to the console.
- * 
- * @author Daniel D. Scalzi
  *
+ * @author Daniel D. Scalzi
  */
 public class ConsoleMessageEditAction extends MessageEditActionImpl {
 
-	private Message message;
+    private Message message;
 
-	public ConsoleMessageEditAction(MessageChannel channel, Message message) {
-		super(channel, "-1");
-		this.message = message;
-	}
-	
-	@Override
-	public void queue() {
+    public ConsoleMessageEditAction(MessageChannel channel, Message message) {
+        super(channel, "-1");
+        this.message = message;
+    }
+
+    @Override
+    public void queue() {
         this.queue(null, null);
     }
-	
-	@Override
-	public void queue(Consumer<? super Message> success) {
+
+    @Override
+    public void queue(Consumer<? super Message> success) {
         queue(success, null);
     }
-	
-	
-	@Override
-	public void queue(Consumer<? super Message> success, Consumer<? super Throwable> failure) {
+
+
+    @Override
+    public void queue(Consumer<? super Message> success, Consumer<? super Throwable> failure) {
         //Should never have a failure.
 		/*if(success == null)
 			success = DEFAULT_SUCCESS;
 		if (failure == null)
 			failure = DEFAULT_FAILURE;*/
-		if(success != null)
-			success.accept(message);
+        if (success != null)
+            success.accept(message);
     }
 
-	@Nonnull
-	@Override
-	public CompletableFuture<Message> submit() {
+    @Nonnull
+    @Override
+    public CompletableFuture<Message> submit() {
         return submit(true);
     }
 
-	@Nonnull
+    @Nonnull
     @Override
     public CompletableFuture<Message> submit(boolean shouldQueue) {
         return new RestFuture<>(message);

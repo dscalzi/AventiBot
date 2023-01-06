@@ -67,7 +67,7 @@ license {
     header = rootProject.file('HEADER.txt')
     properties {
         name = 'Daniel D. Scalzi'
-        year = '2016-2022'
+        year = '2016-2023'
         url = 'https://github.com/dscalzi/AventiBot'
     }
 }
@@ -78,7 +78,7 @@ tasks.withType(JavaExec).configureEach {
 
 javafx {
     version = "17"
-    modules = [ 'javafx.controls',  'javafx.fxml' ]
+    modules = ['javafx.controls', 'javafx.fxml']
 }
 
 jar {
@@ -97,7 +97,7 @@ String getDependencyVersion(name) {
 
     configurations.compileClasspath.resolvedConfiguration.resolvedArtifacts.each { artifact ->
         def id = artifact.moduleVersion.id
-        if(id.name == name) {
+        if (id.name == name) {
             res = id.version
             return
         }

@@ -1,6 +1,6 @@
 /*
  * This file is part of AventiBot.
- * Copyright (C) 2016-2022 Daniel D. Scalzi
+ * Copyright (C) 2016-2023 Daniel D. Scalzi
  *
  * https://github.com/dscalzi/AventiBot
  *
@@ -25,11 +25,10 @@ import org.slf4j.MarkerFactory;
 
 /**
  * Work in progress
- *
  */
 public class LoggingUtil {
-	
-	public static final Marker FATAL = MarkerFactory.getMarker("FATAL");
-	public static final Marker SEVERE = MarkerFactory.getMarker("SEVERE");
-	
+
+    public static final Marker FATAL = MarkerFactory.getMarker("FATAL");
+    public static final Marker SEVERE = MarkerFactory.getMarker("SEVERE");
+
 }

@@ -1,6 +1,6 @@
 /*
  * This file is part of AventiBot.
- * Copyright (C) 2016-2022 Daniel D. Scalzi
+ * Copyright (C) 2016-2023 Daniel D. Scalzi
  *
  * https://github.com/dscalzi/AventiBot
  *
@@ -20,46 +20,46 @@
 
 package com.dscalzi.aventibot.commands;
 
+import com.dscalzi.aventibot.cmdutil.CommandExecutor;
+import com.dscalzi.aventibot.cmdutil.CommandResult;
+import com.dscalzi.aventibot.cmdutil.PermissionNode;
+import com.dscalzi.aventibot.cmdutil.PermissionNode.NodeType;
+import com.dscalzi.aventibot.cmdutil.PermissionUtil;
+import com.dscalzi.aventibot.util.JDAUtils;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.dscalzi.aventibot.cmdutil.CommandExecutor;
-import com.dscalzi.aventibot.cmdutil.CommandResult;
-import com.dscalzi.aventibot.cmdutil.PermissionNode;
-import com.dscalzi.aventibot.cmdutil.PermissionUtil;
-import com.dscalzi.aventibot.cmdutil.PermissionNode.NodeType;
-import com.dscalzi.aventibot.util.JDAUtils;
+public class CmdHelp implements CommandExecutor {
 
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+    private final PermissionNode permHelp = PermissionNode.get(NodeType.COMMAND, "help", true);
 
-public class CmdHelp implements CommandExecutor{
+    public final Set<PermissionNode> nodes;
 
-	private final PermissionNode permHelp = PermissionNode.get(NodeType.COMMAND, "help", true);
-	
-	public final Set<PermissionNode> nodes;
-	
-	public CmdHelp(){
-		nodes = new HashSet<>(Collections.singletonList(
-				permHelp
-		));
-	}
-	
-	@Override
-	public CommandResult onCommand(MessageReceivedEvent e, String cmd, String[] args, String[] rawArgs) {
-		
-		if(!PermissionUtil.hasPermission(e.getAuthor(), permHelp, JDAUtils.getGuildFromCombinedEvent(e), true)) return CommandResult.NO_PERMISSION;
-		
-		String msg = "Help message coming soon!";
-		
-		e.getAuthor().openPrivateChannel().queue((pc) -> pc.sendMessage(msg).queue());
-		
-		return CommandResult.SUCCESS;
-	}
+    public CmdHelp() {
+        nodes = new HashSet<>(Collections.singletonList(
+                permHelp
+        ));
+    }
 
-	@Override
-	public Set<PermissionNode> provideNodes() {
-		return nodes;
-	}
+    @Override
+    public CommandResult onCommand(MessageReceivedEvent e, String cmd, String[] args, String[] rawArgs) {
+
+        if (!PermissionUtil.hasPermission(e.getAuthor(), permHelp, JDAUtils.getGuildFromCombinedEvent(e), true))
+            return CommandResult.NO_PERMISSION;
+
+        String msg = "Help message coming soon!";
+
+        e.getAuthor().openPrivateChannel().queue((pc) -> pc.sendMessage(msg).queue());
+
+        return CommandResult.SUCCESS;
+    }
+
+    @Override
+    public Set<PermissionNode> provideNodes() {
+        return nodes;
+    }
 
 }

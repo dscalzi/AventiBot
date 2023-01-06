@@ -1,6 +1,6 @@
 /*
  * This file is part of AventiBot.
- * Copyright (C) 2016-2022 Daniel D. Scalzi
+ * Copyright (C) 2016-2023 Daniel D. Scalzi
  *
  * https://github.com/dscalzi/AventiBot
  *
@@ -21,52 +21,51 @@
 package com.dscalzi.aventibot.console;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.UserImpl;
 
 public class ConsoleUser extends UserImpl {
 
-	private static final long _id;
-	private static final String _username;
-	private static final String _discriminator;
-	private static final String _avatarId;
-	private static final boolean _isBot;
+    private static final long _id;
+    private static final String _username;
+    private static final String _discriminator;
+    private static final String _avatarId;
+    private static final boolean _isBot;
 
-	private static boolean limit;
-	
-	static {
-		_id = -1L;
-		_username = "AventiBot_Console";
-		_discriminator = "-1";
-		_avatarId = null;
-		_isBot = false;
-		
-		limit = false;
-	}
+    private static boolean limit;
 
-	private final ConsolePrivateChannel privateChannel;
-		
-	private ConsoleUser(JDA api) {
-		super(_id, (JDAImpl) api);
-		this.setName(ConsoleUser._username);
-		this.setDiscriminator(ConsoleUser._discriminator);
-		this.setAvatarId(ConsoleUser._avatarId);
-		this.privateChannel = new ConsolePrivateChannel(this, api);
-		this.setBot(ConsoleUser._isBot);
-	}
+    static {
+        _id = -1L;
+        _username = "AventiBot_Console";
+        _discriminator = "-1";
+        _avatarId = null;
+        _isBot = false;
+
+        limit = false;
+    }
+
+    private final ConsolePrivateChannel privateChannel;
+
+    private ConsoleUser(JDA api) {
+        super(_id, (JDAImpl) api);
+        this.setName(ConsoleUser._username);
+        this.setDiscriminator(ConsoleUser._discriminator);
+        this.setAvatarId(ConsoleUser._avatarId);
+        this.privateChannel = new ConsolePrivateChannel(this, api);
+        this.setBot(ConsoleUser._isBot);
+    }
 
 //	@Override
 //	public PrivateChannel getPrivateChannel() {
 //		return this.getPrivateChannel();
 //	}
 
-	public static ConsoleUser build(JDA api){
-		if(!limit){
-			limit = true;
-			return new ConsoleUser(api);
-		}
-		throw new IllegalStateException("Cannot build more than one ConsoleUser!");
-	}
+    public static ConsoleUser build(JDA api) {
+        if (!limit) {
+            limit = true;
+            return new ConsoleUser(api);
+        }
+        throw new IllegalStateException("Cannot build more than one ConsoleUser!");
+    }
 
 }

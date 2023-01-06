@@ -1,6 +1,6 @@
 /*
  * This file is part of AventiBot.
- * Copyright (C) 2016-2022 Daniel D. Scalzi
+ * Copyright (C) 2016-2023 Daniel D. Scalzi
  *
  * https://github.com/dscalzi/AventiBot
  *
@@ -25,13 +25,13 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 public class MessageListener extends ListenerAdapter {
 
-	@Override
-	public void onMessageReceived(MessageReceivedEvent e){
-		String content = e.getMessage().getContentDisplay().toLowerCase();
-		if(content.equals("just do it")){
-			e.getChannel().sendMessage("Yesterday you said tomorrow SO JUST DO IT!").queue();
-			e.getChannel().sendMessage("https://www.youtube.com/watch?v=1IzYQYYAdw0").queue();
-		}
-	}
-	
+    @Override
+    public void onMessageReceived(MessageReceivedEvent e) {
+        String content = e.getMessage().getContentDisplay().toLowerCase();
+        if (content.equals("just do it")) {
+            e.getChannel().sendMessage("Yesterday you said tomorrow SO JUST DO IT!").queue();
+            e.getChannel().sendMessage("https://www.youtube.com/watch?v=1IzYQYYAdw0").queue();
+        }
+    }
+
 }

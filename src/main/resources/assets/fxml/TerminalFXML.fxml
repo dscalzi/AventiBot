@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
     This file is part of AventiBot.
-    Copyright (C) 2016-2022 Daniel D. Scalzi
+    Copyright (C) 2016-2023 Daniel D. Scalzi
 
     https://github.com/dscalzi/AventiBot
 
@@ -19,54 +19,50 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 -->
 
-<?import java.net.URL?>
-<?import javafx.scene.Scene?>
+<?import javafx.scene.control.*?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.StackPane?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.TextArea?>
-<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.Scene?>
 <?import javafx.scene.text.Text?>
-
-<Scene xmlns:fx="http://javafx.com/fxml/1" width="750" height="350" fx:controller="com.dscalzi.aventibot.ui.TerminalController">
-	<HBox id="body">
-		<VBox id="leftpane" alignment="top_center">
-			<StackPane id="infoBox" alignment="top_center">
-				<VBox alignment="center">
-					<HBox alignment="bottom_center">
-						<Text id="title" text="AventiBot" textAlignment="center"/>
-					</HBox>
-					<Text styleClass="home_info" text="Created by Daniel Scalzi"  textAlignment="center"/>
-					<HBox alignment="center">
-						<Text styleClass="home_info" text="AGPL License" textAlignment="center"/>
-						<!-- <StackPane id="spacer" HBox.hgrow="ALWAYS"/> -->
-						<Text fx:id="version" text=" | Debug Mode" textAlignment="left"/>
-					</HBox>
-				</VBox>
-			</StackPane>
-			<HBox>
-				<Button id="settings_button" text="Settings" prefWidth="90" onAction="#handleSettingsButton"/>
-				<Button id="directory_button" prefWidth="20" onAction="#handleDirectoryButton">
-					<graphic>
-						<ImageView fitHeight="20" fitWidth="20" pickOnBounds="true" preserveRatio="true">
-							<Image url="@/assets/images/explorer.png" />
-						</ImageView>
-					</graphic>
-				</Button>
-			</HBox>
-			<StackPane id="spacer" VBox.vgrow="ALWAYS"/>
-			<VBox id="leftpaneButtom" alignment="bottom_center">
-				<Button fx:id="launch_button" text="Launch AventiBot" onAction="#handleLaunchButton"/>
-				<Button fx:id="terminate_button" text="End Process" onAction="#handleTerminateButton" visible="${!launch_button.visible}" managed="${!launch_button.managed}"/>
-			</VBox>
-		</VBox>
-		<VBox id="rightpane" HBox.hgrow="ALWAYS">
-			<TextArea fx:id="console_log" wrapText="true" editable="false" VBox.vgrow="ALWAYS" />
-			<TextField fx:id="commandline" />
-		</VBox>
-	</HBox>
+<Scene xmlns:fx="http://javafx.com/fxml/1" width="750" height="350"
+       fx:controller="com.dscalzi.aventibot.ui.TerminalController">
+    <HBox id="body">
+        <VBox id="leftpane" alignment="top_center">
+            <StackPane id="infoBox" alignment="top_center">
+                <VBox alignment="center">
+                    <HBox alignment="bottom_center">
+                        <Text id="title" text="AventiBot" textAlignment="center"/>
+                    </HBox>
+                    <Text styleClass="home_info" text="Created by Daniel Scalzi" textAlignment="center"/>
+                    <HBox alignment="center">
+                        <Text styleClass="home_info" text="AGPL License" textAlignment="center"/>
+                        <!-- <StackPane id="spacer" HBox.hgrow="ALWAYS"/> -->
+                        <Text fx:id="version" text=" | Debug Mode" textAlignment="left"/>
+                    </HBox>
+                </VBox>
+            </StackPane>
+            <HBox>
+                <Button id="settings_button" text="Settings" prefWidth="90" onAction="#handleSettingsButton"/>
+                <Button id="directory_button" prefWidth="20" onAction="#handleDirectoryButton">
+                    <graphic>
+                        <ImageView fitHeight="20" fitWidth="20" pickOnBounds="true" preserveRatio="true">
+                            <Image url="@/assets/images/explorer.png"/>
+                        </ImageView>
+                    </graphic>
+                </Button>
+            </HBox>
+            <StackPane id="spacer" VBox.vgrow="ALWAYS"/>
+            <VBox id="leftpaneButtom" alignment="bottom_center">
+                <Button fx:id="launch_button" text="Launch AventiBot" onAction="#handleLaunchButton"/>
+                <Button fx:id="terminate_button" text="End Process" onAction="#handleTerminateButton"
+                        visible="${!launch_button.visible}" managed="${!launch_button.managed}"/>
+            </VBox>
+        </VBox>
+        <VBox id="rightpane" HBox.hgrow="ALWAYS">
+            <TextArea fx:id="console_log" wrapText="true" editable="false" VBox.vgrow="ALWAYS"/>
+            <TextField fx:id="commandline"/>
+        </VBox>
+    </HBox>
 </Scene>
 

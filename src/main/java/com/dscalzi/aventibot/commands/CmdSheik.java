@@ -1,6 +1,6 @@
 /*
  * This file is part of AventiBot.
- * Copyright (C) 2016-2022 Daniel D. Scalzi
+ * Copyright (C) 2016-2023 Daniel D. Scalzi
  *
  * https://github.com/dscalzi/AventiBot
  *
@@ -39,7 +39,7 @@ public class CmdSheik implements CommandExecutor {
 
     public final Set<PermissionNode> nodes;
 
-    public CmdSheik(){
+    public CmdSheik() {
         nodes = new HashSet<>(Collections.singletonList(
                 permSheik
         ));
@@ -48,16 +48,17 @@ public class CmdSheik implements CommandExecutor {
     // TODO This is a low-effort implementation. Music should be abstracted into a utility so we arent touching the other command executor.
     // One day this will be cleaned up.
     private final PermissionNode permSheik = PermissionNode.get(PermissionNode.NodeType.COMMAND, "sheik");
+
     @Override
     public CommandResult onCommand(MessageReceivedEvent e, String cmd, String[] args, String[] rawArgs) {
-        if(!PermissionUtil.hasPermission(e.getAuthor(), permSheik, e.getGuild())) return CommandResult.NO_PERMISSION;
+        if (!PermissionUtil.hasPermission(e.getAuthor(), permSheik, e.getGuild())) return CommandResult.NO_PERMISSION;
 
-        if(!e.isFromGuild()){
+        if (!e.isFromGuild()) {
             e.getChannel().sendMessage("You must use this command in a guild.").queue();
             return CommandResult.ERROR;
         }
 
-        if(CmdMusicControl.connectWithUser(e.getGuild().getMember(e.getAuthor()), e.getGuild()) == null) {
+        if (CmdMusicControl.connectWithUser(e.getGuild().getMember(e.getAuthor()), e.getGuild()) == null) {
             e.getChannel().sendMessage("You currently aren't in a channel, sorry!").queue();
             return CommandResult.ERROR;
         }
@@ -65,7 +66,7 @@ public class CmdSheik implements CommandExecutor {
         AudioPlayer player = LavaWrapper.getInstance().getAudioPlayer(e.getGuild());
         TrackScheduler scheduler = LavaWrapper.getInstance().getScheduler(e.getGuild());
 
-        if(player.getPlayingTrack() != null) {
+        if (player.getPlayingTrack() != null) {
             e.getChannel().sendMessage("You cannot use this command while music is playing!").queue();
             return CommandResult.ERROR;
         }
@@ -88,7 +89,7 @@ public class CmdSheik implements CommandExecutor {
                     @Override
                     public void noMatches() {
                         e.getChannel().sendMessage("No matches :(").queue();
-                        if(scheduler.getQueue().isEmpty())
+                        if (scheduler.getQueue().isEmpty())
                             e.getGuild().getAudioManager().closeAudioConnection();
                         CommandDispatcher.displayResult(CommandResult.ERROR, e.getMessage());
                     }
@@ -96,7 +97,7 @@ public class CmdSheik implements CommandExecutor {
                     @Override
                     public void loadFailed(FriendlyException exception) {
                         e.getChannel().sendMessage("Load failed :(").queue();
-                        if(scheduler.getQueue().isEmpty())
+                        if (scheduler.getQueue().isEmpty())
                             e.getGuild().getAudioManager().closeAudioConnection();
                         CommandDispatcher.displayResult(CommandResult.ERROR, e.getMessage());
                         throw exception;

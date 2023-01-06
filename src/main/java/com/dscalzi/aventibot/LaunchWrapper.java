@@ -1,6 +1,6 @@
 /*
  * This file is part of AventiBot.
- * Copyright (C) 2016-2022 Daniel D. Scalzi
+ * Copyright (C) 2016-2023 Daniel D. Scalzi
  *
  * https://github.com/dscalzi/AventiBot
  *
@@ -20,21 +20,21 @@
 
 package com.dscalzi.aventibot;
 
-import java.util.Arrays;
-import java.util.List;
-
 import com.dscalzi.aventibot.cmdline.CommandLineExecutor;
 import com.dscalzi.aventibot.ui.TerminalExecutor;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class LaunchWrapper {
 
-	public static void main(String[] args) {
-		List<String> lstArgs = Arrays.asList(args);
-		if(lstArgs.contains("--cmdline")){
-			CommandLineExecutor.main(args);
-		} else {
-			TerminalExecutor.main(args);
-		}
-	}
+    public static void main(String[] args) {
+        List<String> lstArgs = Arrays.asList(args);
+        if (lstArgs.contains("--cmdline")) {
+            CommandLineExecutor.main(args);
+        } else {
+            TerminalExecutor.main(args);
+        }
+    }
 
 }

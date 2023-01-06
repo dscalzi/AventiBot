@@ -1,6 +1,6 @@
 /*
  * This file is part of AventiBot.
- * Copyright (C) 2016-2022 Daniel D. Scalzi
+ * Copyright (C) 2016-2023 Daniel D. Scalzi
  *
  * https://github.com/dscalzi/AventiBot
  *
@@ -20,44 +20,44 @@
 
 package com.dscalzi.aventibot.commands;
 
+import com.dscalzi.aventibot.cmdutil.CommandExecutor;
+import com.dscalzi.aventibot.cmdutil.CommandResult;
+import com.dscalzi.aventibot.cmdutil.PermissionNode;
+import com.dscalzi.aventibot.cmdutil.PermissionNode.NodeType;
+import com.dscalzi.aventibot.cmdutil.PermissionUtil;
+import com.dscalzi.aventibot.util.JDAUtils;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.dscalzi.aventibot.cmdutil.CommandExecutor;
-import com.dscalzi.aventibot.cmdutil.CommandResult;
-import com.dscalzi.aventibot.cmdutil.PermissionNode;
-import com.dscalzi.aventibot.cmdutil.PermissionUtil;
-import com.dscalzi.aventibot.cmdutil.PermissionNode.NodeType;
-import com.dscalzi.aventibot.util.JDAUtils;
+public class CmdHelloWorld implements CommandExecutor {
 
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+    private final PermissionNode permHelloWorld = PermissionNode.get(NodeType.COMMAND, "helloworld");
 
-public class CmdHelloWorld implements CommandExecutor{
+    public final Set<PermissionNode> nodes;
 
-	private final PermissionNode permHelloWorld = PermissionNode.get(NodeType.COMMAND, "helloworld");
-	
-	public final Set<PermissionNode> nodes;
-	
-	public CmdHelloWorld(){
-		nodes = new HashSet<>(Collections.singletonList(
-				permHelloWorld
-		));
-	}
-	
-	@Override
-	public CommandResult onCommand(MessageReceivedEvent e, String cmd, String[] args, String[] rawArgs) {
-		
-		if(!PermissionUtil.hasPermission(e.getAuthor(), permHelloWorld, JDAUtils.getGuildFromCombinedEvent(e), true)) return CommandResult.NO_PERMISSION;
-		
-		e.getChannel().sendMessage("Hello, " + e.getAuthor().getAsMention() + "! Fine day, isn't it?").queue();
-		
-		return CommandResult.SUCCESS;
-	}
+    public CmdHelloWorld() {
+        nodes = new HashSet<>(Collections.singletonList(
+                permHelloWorld
+        ));
+    }
 
-	@Override
-	public Set<PermissionNode> provideNodes() {
-		return nodes;
-	}
+    @Override
+    public CommandResult onCommand(MessageReceivedEvent e, String cmd, String[] args, String[] rawArgs) {
+
+        if (!PermissionUtil.hasPermission(e.getAuthor(), permHelloWorld, JDAUtils.getGuildFromCombinedEvent(e), true))
+            return CommandResult.NO_PERMISSION;
+
+        e.getChannel().sendMessage("Hello, " + e.getAuthor().getAsMention() + "! Fine day, isn't it?").queue();
+
+        return CommandResult.SUCCESS;
+    }
+
+    @Override
+    public Set<PermissionNode> provideNodes() {
+        return nodes;
+    }
 
 }

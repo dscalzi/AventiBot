@@ -1,6 +1,6 @@
 /*
  * This file is part of AventiBot.
- * Copyright (C) 2016-2022 Daniel D. Scalzi
+ * Copyright (C) 2016-2023 Daniel D. Scalzi
  *
  * https://github.com/dscalzi/AventiBot
  *
@@ -20,81 +20,76 @@
 
 package com.dscalzi.aventibot.commands;
 
+import com.dscalzi.aventibot.AventiBot;
+import com.dscalzi.aventibot.BotStatus;
+import com.dscalzi.aventibot.cmdline.CommandLineExecutor;
+import com.dscalzi.aventibot.cmdutil.*;
+import com.dscalzi.aventibot.cmdutil.PermissionNode.NodeType;
+import com.dscalzi.aventibot.util.JDAUtils;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.dscalzi.aventibot.AventiBot;
-import com.dscalzi.aventibot.BotStatus;
-import com.dscalzi.aventibot.cmdline.CommandLineExecutor;
-import com.dscalzi.aventibot.cmdutil.CommandDispatcher;
-import com.dscalzi.aventibot.cmdutil.CommandExecutor;
-import com.dscalzi.aventibot.cmdutil.CommandResult;
-import com.dscalzi.aventibot.cmdutil.PermissionNode;
-import com.dscalzi.aventibot.cmdutil.PermissionNode.NodeType;
-import com.dscalzi.aventibot.util.JDAUtils;
-import com.dscalzi.aventibot.cmdutil.PermissionUtil;
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+public class CmdHardRestart implements CommandExecutor {
 
-public class CmdHardRestart implements CommandExecutor{
+    private final PermissionNode permHardRestart = PermissionNode.get(NodeType.COMMAND, "hardrestart");
 
-	private final PermissionNode permHardRestart = PermissionNode.get(NodeType.COMMAND, "hardrestart");
-	
-	public final Set<PermissionNode> nodes;
-	
-	public CmdHardRestart(){
-		nodes = new HashSet<>(Collections.singletonList(
-				permHardRestart
-		));
-	}
-	
-	@Override
-	public CommandResult onCommand(MessageReceivedEvent e, String cmd, String[] args, String[] rawArgs) {
-		if(!PermissionUtil.hasPermission(e.getAuthor(), permHardRestart, JDAUtils.getGuildFromCombinedEvent(e), false)){
-			return CommandResult.NO_PERMISSION;
-		}
-		
-		try {
-			ProcessBuilder builder = null;
-			if(CommandLineExecutor.usingCmdLine()){
-				if(!CommandLineExecutor.headless()){
-					e.getChannel().sendMessage("Restarting is not supported for terminal based command line startup.").queue();
-					return CommandResult.ERROR;
-				} else {
-					builder = new ProcessBuilder("java", "-jar", AventiBot.getDataPathFull(), "--cmdline", "--headless");
-				}
-			} else {
-				builder = new ProcessBuilder("java", "-jar", AventiBot.getDataPathFull(), "--abNow");
-			}
-			e.getChannel().sendMessage("Restarting..").queue();
-			builder.start();
-			CommandDispatcher.displayResult(CommandResult.SUCCESS, e.getMessage(), v -> {
-				try {
-					if(AventiBot.getStatus() == BotStatus.CONNECTED){
-						AventiBot.getInstance().shutdown();
-					}
-				} catch (Exception ex){
-					//Shutdown
-					Runtime.getRuntime().exit(0);
-				}
-				Runtime.getRuntime().exit(0);
-			});
-		} catch (IOException e1) {
-			e.getChannel().sendMessage("Failed to restart..").queue();
-			e1.printStackTrace();
-			return CommandResult.ERROR;
-		}
-		
-		
-		return CommandResult.IGNORE;
-	}
+    public final Set<PermissionNode> nodes;
 
-	@Override
-	public Set<PermissionNode> provideNodes() {
-		return nodes;
-	}
+    public CmdHardRestart() {
+        nodes = new HashSet<>(Collections.singletonList(
+                permHardRestart
+        ));
+    }
 
-	
-	
+    @Override
+    public CommandResult onCommand(MessageReceivedEvent e, String cmd, String[] args, String[] rawArgs) {
+        if (!PermissionUtil.hasPermission(e.getAuthor(), permHardRestart, JDAUtils.getGuildFromCombinedEvent(e), false)) {
+            return CommandResult.NO_PERMISSION;
+        }
+
+        try {
+            ProcessBuilder builder = null;
+            if (CommandLineExecutor.usingCmdLine()) {
+                if (!CommandLineExecutor.headless()) {
+                    e.getChannel().sendMessage("Restarting is not supported for terminal based command line startup.").queue();
+                    return CommandResult.ERROR;
+                } else {
+                    builder = new ProcessBuilder("java", "-jar", AventiBot.getDataPathFull(), "--cmdline", "--headless");
+                }
+            } else {
+                builder = new ProcessBuilder("java", "-jar", AventiBot.getDataPathFull(), "--abNow");
+            }
+            e.getChannel().sendMessage("Restarting..").queue();
+            builder.start();
+            CommandDispatcher.displayResult(CommandResult.SUCCESS, e.getMessage(), v -> {
+                try {
+                    if (AventiBot.getStatus() == BotStatus.CONNECTED) {
+                        AventiBot.getInstance().shutdown();
+                    }
+                } catch (Exception ex) {
+                    //Shutdown
+                    Runtime.getRuntime().exit(0);
+                }
+                Runtime.getRuntime().exit(0);
+            });
+        } catch (IOException e1) {
+            e.getChannel().sendMessage("Failed to restart..").queue();
+            e1.printStackTrace();
+            return CommandResult.ERROR;
+        }
+
+
+        return CommandResult.IGNORE;
+    }
+
+    @Override
+    public Set<PermissionNode> provideNodes() {
+        return nodes;
+    }
+
+
 }

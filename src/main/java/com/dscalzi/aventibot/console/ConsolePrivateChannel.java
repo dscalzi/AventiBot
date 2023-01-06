@@ -1,6 +1,6 @@
 /*
  * This file is part of AventiBot.
- * Copyright (C) 2016-2022 Daniel D. Scalzi
+ * Copyright (C) 2016-2023 Daniel D. Scalzi
  *
  * https://github.com/dscalzi/AventiBot
  *
@@ -20,6 +20,9 @@
 
 package com.dscalzi.aventibot.console;
 
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel;
 import net.dv8tion.jda.api.requests.RestAction;
@@ -29,15 +32,11 @@ import net.dv8tion.jda.internal.requests.CompletedRestAction;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.LoggerFactory;
 
-import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.entities.User;
-
 import javax.annotation.Nonnull;
 import java.util.Collection;
 
 public class ConsolePrivateChannel implements PrivateChannel {
-	
+
     private final long id;
     private final User user;
     private final JDA api;
@@ -48,101 +47,101 @@ public class ConsolePrivateChannel implements PrivateChannel {
         this.id = user.getIdLong();
     }
 
-	@Nonnull
+    @Nonnull
     @Override
-	public MessageCreateAction sendMessage(CharSequence text) {
-    	LoggerFactory.getLogger("??? -> Me").info(text.toString());
-    	ConsoleMessage msg = new ConsoleMessage(this, text.toString(), user);
-    	return new ConsoleMessageCreateAction(this, msg);
-	}
+    public MessageCreateAction sendMessage(CharSequence text) {
+        LoggerFactory.getLogger("??? -> Me").info(text.toString());
+        ConsoleMessage msg = new ConsoleMessage(this, text.toString(), user);
+        return new ConsoleMessageCreateAction(this, msg);
+    }
 
-	@Nonnull
-	@Override
-	public MessageCreateAction sendMessage(@Nonnull MessageCreateData msg) {
-		LoggerFactory.getLogger("??? -> Me").info(msg.getContent());
-		ConsoleMessage x = new ConsoleMessage(this, msg.getContent(), user);
-		return new ConsoleMessageCreateAction(this, x);
-	}
+    @Nonnull
+    @Override
+    public MessageCreateAction sendMessage(@Nonnull MessageCreateData msg) {
+        LoggerFactory.getLogger("??? -> Me").info(msg.getContent());
+        ConsoleMessage x = new ConsoleMessage(this, msg.getContent(), user);
+        return new ConsoleMessageCreateAction(this, x);
+    }
 
-	@Nonnull
-	@Override
-	public MessageCreateAction sendMessageEmbeds(@Nonnull MessageEmbed embed, @Nonnull MessageEmbed... other) {
-		LoggerFactory.getLogger("Embeded Message").info("Unable to display embed on terminal.");
-		ConsoleMessage msg = new ConsoleMessage(this, null, user);
-		return new ConsoleMessageCreateAction(this, msg);
-	}
+    @Nonnull
+    @Override
+    public MessageCreateAction sendMessageEmbeds(@Nonnull MessageEmbed embed, @Nonnull MessageEmbed... other) {
+        LoggerFactory.getLogger("Embeded Message").info("Unable to display embed on terminal.");
+        ConsoleMessage msg = new ConsoleMessage(this, null, user);
+        return new ConsoleMessageCreateAction(this, msg);
+    }
 
-	@Nonnull
-	@Override
-	public MessageCreateAction sendMessageEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds) {
-		LoggerFactory.getLogger("Embeded Message").info("Unable to display embed on terminal.");
-		ConsoleMessage msg = new ConsoleMessage(this, null, user);
-		return new ConsoleMessageCreateAction(this, msg);
-	}
+    @Nonnull
+    @Override
+    public MessageCreateAction sendMessageEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds) {
+        LoggerFactory.getLogger("Embeded Message").info("Unable to display embed on terminal.");
+        ConsoleMessage msg = new ConsoleMessage(this, null, user);
+        return new ConsoleMessageCreateAction(this, msg);
+    }
 
-	@Nonnull
-	@Override
-	public String getId() {
-		return user.getId();
-	}
+    @Nonnull
+    @Override
+    public String getId() {
+        return user.getId();
+    }
 
-	@Nonnull
-	@Override
-	public User getUser() {
-		return this.user;
-	}
+    @Nonnull
+    @Override
+    public User getUser() {
+        return this.user;
+    }
 
-	@NotNull
-	@Override
-	public RestAction<User> retrieveUser() {
-		return new CompletedRestAction<>(getJDA(), this.user);
-	}
+    @NotNull
+    @Override
+    public RestAction<User> retrieveUser() {
+        return new CompletedRestAction<>(getJDA(), this.user);
+    }
 
-	@Nonnull
-	@Override
-	public JDA getJDA() {
-		return this.api;
-	}
+    @Nonnull
+    @Override
+    public JDA getJDA() {
+        return this.api;
+    }
 
-	@NotNull
-	@Override
-	public RestAction<Void> delete() {
-		return new CompletedRestAction<>(getJDA(), null);
-	}
+    @NotNull
+    @Override
+    public RestAction<Void> delete() {
+        return new CompletedRestAction<>(getJDA(), null);
+    }
 
-	@Nonnull
-	@Override
-	public String getName() {
-		return getUser().getName();
-	}
+    @Nonnull
+    @Override
+    public String getName() {
+        return getUser().getName();
+    }
 
-	@Nonnull
-	@Override
-	public ChannelType getType() {
-		return ChannelType.PRIVATE;
-	}
+    @Nonnull
+    @Override
+    public ChannelType getType() {
+        return ChannelType.PRIVATE;
+    }
 
-	@Nonnull
-	@Override
-	public String getLatestMessageId() {
-		// Not supported
-		return "-1";
-	}
+    @Nonnull
+    @Override
+    public String getLatestMessageId() {
+        // Not supported
+        return "-1";
+    }
 
-	@Override
-	public long getLatestMessageIdLong() {
-		// Not supported
-		return 0L;
-	}
+    @Override
+    public long getLatestMessageIdLong() {
+        // Not supported
+        return 0L;
+    }
 
-	@Override
-	public boolean canTalk() {
-		return true;
-	}
+    @Override
+    public boolean canTalk() {
+        return true;
+    }
 
-	@Override
-	public long getIdLong() {
-		return id;
-	}
+    @Override
+    public long getIdLong() {
+        return id;
+    }
 
 }

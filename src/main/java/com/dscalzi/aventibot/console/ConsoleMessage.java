@@ -1,6 +1,6 @@
 /*
  * This file is part of AventiBot.
- * Copyright (C) 2016-2022 Daniel D. Scalzi
+ * Copyright (C) 2016-2023 Daniel D. Scalzi
  *
  * https://github.com/dscalzi/AventiBot
  *
@@ -20,10 +20,6 @@
 
 package com.dscalzi.aventibot.console;
 
-import java.time.OffsetDateTime;
-import java.util.ArrayList;
-import java.util.Collection;
-
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.MessageType;
 import net.dv8tion.jda.api.entities.User;
@@ -39,115 +35,118 @@ import net.dv8tion.jda.internal.entities.ReceivedMessage;
 import net.dv8tion.jda.internal.requests.CompletedRestAction;
 
 import javax.annotation.Nonnull;
+import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.Collection;
 
 public class ConsoleMessage extends ReceivedMessage {
-	
-	public ConsoleMessage(MessageChannel channel, String content, User author) {
-		super(-1L,
-				channel,
-				MessageType.DEFAULT,
-				null,
-				false,
-				0,
-				false,
-				false,
-				content,
-				"-1",
-				author,
-				null,
-				null,
-				OffsetDateTime.now(),
-				null,
-				new ArrayList<>(),
-				new ArrayList<>(),
-				new ArrayList<>(),
-				new ArrayList<>(),
-				new ArrayList<>(),
-				0,
-				null,
-				null);
-	}
 
-	@Nonnull
-	@Override
-	public RestAction<Void> pin() {
-		// Unsupported
-		return new CompletedRestAction<>(getJDA(), null);
-	}
-
-	@Nonnull
-	@Override
-	public RestAction<Void> unpin() {
-		// Unsupported
-	    return new CompletedRestAction<>(getJDA(), null);
-	}
-
-	@Nonnull
-	@Override
-	public RestAction<Void> addReaction(@Nonnull Emoji emote) {
-		// Unsupported
-	    return new CompletedRestAction<>(getJDA(), null);
-	}
-
-	@Nonnull
-	@Override
-	public RestAction<Void> clearReactions() {
-		// Unsupported
-	    return new CompletedRestAction<>(getJDA(), null);
-	}
-
-	@Nonnull
-	@Override
-    public MessageEditAction editMessage(@Nonnull CharSequence newContent) {
-		// Unsupported
-		return new ConsoleMessageEditAction(channel, null);
+    public ConsoleMessage(MessageChannel channel, String content, User author) {
+        super(-1L,
+                channel,
+                MessageType.DEFAULT,
+                null,
+                false,
+                0,
+                false,
+                false,
+                content,
+                "-1",
+                author,
+                null,
+                null,
+                OffsetDateTime.now(),
+                null,
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>(),
+                0,
+                null,
+                null);
     }
 
-	@Nonnull
+    @Nonnull
     @Override
-    public MessageEditAction editMessageEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds) {
-    	// Unsupported
-		return new ConsoleMessageEditAction(channel, null);
-    }
-
-	@Nonnull
-	@Override
-	public MessageEditAction editMessageComponents(@Nonnull Collection<? extends LayoutComponent> components) {
-		// Unsupported
-		return new ConsoleMessageEditAction(channel, null);
-	}
-
-	@Nonnull
-    @Override
-    public MessageEditAction editMessageFormat(@Nonnull String format, @Nonnull Object... args) {
-    	// Unsupported
-    	return new ConsoleMessageEditAction(channel, null);
-    }
-
-	@Nonnull
-	@Override
-	public MessageEditAction editMessageAttachments(@Nonnull Collection<? extends AttachedFile> attachments) {
-		// Unsupported
-		return new ConsoleMessageEditAction(channel, null);
-	}
-
-	@Nonnull
-    @Override
-    public MessageEditAction editMessage(@Nonnull MessageEditData newContent) {
-    	// Unsupported
-		return new ConsoleMessageEditAction(channel, null);
-    }
-
-	@Nonnull
-    @Override
-    public AuditableRestAction<Void> delete() {
-    	// Unsupported
+    public RestAction<Void> pin() {
+        // Unsupported
         return new CompletedRestAction<>(getJDA(), null);
     }
 
-	@Override
-	protected void unsupported() {
-		throw new UnsupportedOperationException("Operation is unsupported on console messages.");
-	}
+    @Nonnull
+    @Override
+    public RestAction<Void> unpin() {
+        // Unsupported
+        return new CompletedRestAction<>(getJDA(), null);
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<Void> addReaction(@Nonnull Emoji emote) {
+        // Unsupported
+        return new CompletedRestAction<>(getJDA(), null);
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<Void> clearReactions() {
+        // Unsupported
+        return new CompletedRestAction<>(getJDA(), null);
+    }
+
+    @Nonnull
+    @Override
+    public MessageEditAction editMessage(@Nonnull CharSequence newContent) {
+        // Unsupported
+        return new ConsoleMessageEditAction(channel, null);
+    }
+
+    @Nonnull
+    @Override
+    public MessageEditAction editMessageEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds) {
+        // Unsupported
+        return new ConsoleMessageEditAction(channel, null);
+    }
+
+    @Nonnull
+    @Override
+    public MessageEditAction editMessageComponents(@Nonnull Collection<? extends LayoutComponent> components) {
+        // Unsupported
+        return new ConsoleMessageEditAction(channel, null);
+    }
+
+    @Nonnull
+    @Override
+    public MessageEditAction editMessageFormat(@Nonnull String format, @Nonnull Object... args) {
+        // Unsupported
+        return new ConsoleMessageEditAction(channel, null);
+    }
+
+    @Nonnull
+    @Override
+    public MessageEditAction editMessageAttachments(@Nonnull Collection<? extends AttachedFile> attachments) {
+        // Unsupported
+        return new ConsoleMessageEditAction(channel, null);
+    }
+
+    @Nonnull
+    @Override
+    public MessageEditAction editMessage(@Nonnull MessageEditData newContent) {
+        // Unsupported
+        return new ConsoleMessageEditAction(channel, null);
+    }
+
+    @Nonnull
+    @Override
+    public AuditableRestAction<Void> delete() {
+        // Unsupported
+        return new CompletedRestAction<>(getJDA(), null);
+    }
+
+    @Override
+    protected void unsupported() {
+        throw new UnsupportedOperationException("Operation is unsupported on console messages.");
+    }
 
 }

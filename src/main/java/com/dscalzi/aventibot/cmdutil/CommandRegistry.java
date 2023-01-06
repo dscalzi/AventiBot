@@ -1,6 +1,6 @@
 /*
  * This file is part of AventiBot.
- * Copyright (C) 2016-2022 Daniel D. Scalzi
+ * Copyright (C) 2016-2023 Daniel D. Scalzi
  *
  * https://github.com/dscalzi/AventiBot
  *
@@ -20,48 +20,43 @@
 
 package com.dscalzi.aventibot.cmdutil;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 public class CommandRegistry {
 
-	private Map<String, CommandExecutor> registry;
-	
-	public CommandRegistry(){
-		this.registry = new HashMap<>();
-	}
-	
-	public boolean register(String cmd, CommandExecutor executor){
-		cmd = cmd.toLowerCase();
-		if(registry.containsKey(cmd)) return false;
-		
-		registry.put(cmd, executor);
-		return true;
-	}
-	
-	public Optional<CommandExecutor> getExecutor(String cmd){
-		cmd = cmd.toLowerCase();
-		return registry.containsKey(cmd) ? Optional.of(registry.get(cmd)) : Optional.empty();
-	}
-	
-	public Set<PermissionNode> getAllRegisteredNodes(){
-		Set<PermissionNode> a = new HashSet<>();
-		for(CommandExecutor e : registry.values()){
-			a.addAll(e.provideNodes());
-		}
-		return a;
-	}
-	
-	public boolean isCommandRegistered(String cmd){
-		cmd = cmd.toLowerCase();
-		return registry.containsKey(cmd);
-	}
-	
-	public Set<String> getRegisteredCommands(){
-		return Collections.unmodifiableSet(registry.keySet());
-	}
+    private Map<String, CommandExecutor> registry;
+
+    public CommandRegistry() {
+        this.registry = new HashMap<>();
+    }
+
+    public boolean register(String cmd, CommandExecutor executor) {
+        cmd = cmd.toLowerCase();
+        if (registry.containsKey(cmd)) return false;
+
+        registry.put(cmd, executor);
+        return true;
+    }
+
+    public Optional<CommandExecutor> getExecutor(String cmd) {
+        cmd = cmd.toLowerCase();
+        return registry.containsKey(cmd) ? Optional.of(registry.get(cmd)) : Optional.empty();
+    }
+
+    public Set<PermissionNode> getAllRegisteredNodes() {
+        Set<PermissionNode> a = new HashSet<>();
+        for (CommandExecutor e : registry.values()) {
+            a.addAll(e.provideNodes());
+        }
+        return a;
+    }
+
+    public boolean isCommandRegistered(String cmd) {
+        cmd = cmd.toLowerCase();
+        return registry.containsKey(cmd);
+    }
+
+    public Set<String> getRegisteredCommands() {
+        return Collections.unmodifiableSet(registry.keySet());
+    }
 }

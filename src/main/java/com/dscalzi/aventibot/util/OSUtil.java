@@ -1,6 +1,6 @@
 /*
  * This file is part of AventiBot.
- * Copyright (C) 2016-2022 Daniel D. Scalzi
+ * Copyright (C) 2016-2023 Daniel D. Scalzi
  *
  * https://github.com/dscalzi/AventiBot
  *
@@ -22,17 +22,17 @@ package com.dscalzi.aventibot.util;
 
 public class OSUtil {
 
-	private static String OS = System.getProperty("os.name").toLowerCase();
+    private static String OS = System.getProperty("os.name").toLowerCase();
 
-	public static boolean isWindows() {
-		return (OS.contains("win"));
-	}
+    public static boolean isWindows() {
+        return (OS.contains("win"));
+    }
 
-	public static boolean isMac() {
-		return (OS.contains("mac"));
-	}
+    public static boolean isMac() {
+        return (OS.contains("mac"));
+    }
 
-	public static boolean isUnix() {
-		return (OS.contains("nix") || OS.contains("nux") || OS.indexOf("aix") > 0 );
-	}
+    public static boolean isUnix() {
+        return (OS.contains("nix") || OS.contains("nux") || OS.indexOf("aix") > 0);
+    }
 }

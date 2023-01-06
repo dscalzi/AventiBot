@@ -1,6 +1,6 @@
 /*
  * This file is part of AventiBot.
- * Copyright (C) 2016-2022 Daniel D. Scalzi
+ * Copyright (C) 2016-2023 Daniel D. Scalzi
  *
  * https://github.com/dscalzi/AventiBot
  *
@@ -22,22 +22,22 @@ package com.dscalzi.aventibot.util;
 
 public enum IconUtil {
 
-	INFO("http://i.imgur.com/ccX8Pvi.png"),
-	CLOCK("http://i.imgur.com/Y3rbhFt.png"),
-	PLAY("http://i.imgur.com/nEw5Gsk.png"),
-	ADD("http://i.imgur.com/7OfFSFx.png"),
-	REMOVE("http://i.imgur.com/voGutMQ.png"),
-	VOTE("http://i.imgur.com/saXkgYz.png"),
-	URBAN_DICTIONARY("https://i.imgur.com/quPH023.png");
-	
-	private final String URL;
-	
-	IconUtil(String URL){
-		this.URL = URL;
-	}
-	
-	public String getURL(){
-		return this.URL;
-	}
-	
+    INFO("http://i.imgur.com/ccX8Pvi.png"),
+    CLOCK("http://i.imgur.com/Y3rbhFt.png"),
+    PLAY("http://i.imgur.com/nEw5Gsk.png"),
+    ADD("http://i.imgur.com/7OfFSFx.png"),
+    REMOVE("http://i.imgur.com/voGutMQ.png"),
+    VOTE("http://i.imgur.com/saXkgYz.png"),
+    URBAN_DICTIONARY("https://i.imgur.com/quPH023.png");
+
+    private final String URL;
+
+    IconUtil(String URL) {
+        this.URL = URL;
+    }
+
+    public String getURL() {
+        return this.URL;
+    }
+
 }
