@@ -55,12 +55,12 @@ public class LavaWrapper {
         cache = new HashMap<>();
         listenerCache = new HashMap<>();
         playerManager.registerSourceManager(new YoutubeAudioSourceManager());
-        if (g.getSpotifyClientId() != null) {
+        if (g.getSpotifyConfig().getClientId() != null) {
             log.info("Registering spotify.");
             playerManager.registerSourceManager(new SpotifySourceManager(
-                    g.getSpotifyClientId(),
-                    g.getSpotifyClientSecret(),
-                    g.getSpotifyCountryCode(),
+                    g.getSpotifyConfig().getClientId(),
+                    g.getSpotifyConfig().getClientSecret(),
+                    g.getSpotifyConfig().getCountryCode(),
                     playerManager,
                     new TrackResolver()
             ));

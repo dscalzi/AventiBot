@@ -84,7 +84,7 @@ public class GuildConfig {
         }
     }
 
-    public String getCommandPrefix(Guild g) {
+    public String getSendableCommandPrefix(Guild g) {
 
         if (commandPrefix.equalsIgnoreCase("@MENTION") && AventiBot.getStatus() == BotStatus.CONNECTED)
             return g.getMember(AventiBot.getInstance().getJDA().getSelfUser()).getAsMention() + " ";
@@ -96,7 +96,7 @@ public class GuildConfig {
      * Returns raw command prefix specified in the configuration
      * without any modifications.
      */
-    public String getRawCommandPrefix() {
+    public String getCommandPrefix() {
         return this.commandPrefix;
     }
 

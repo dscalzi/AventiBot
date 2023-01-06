@@ -22,33 +22,16 @@ package com.dscalzi.aventibot.settings;
 
 import com.dscalzi.aventibot.AventiBot;
 import com.dscalzi.aventibot.BotStatus;
-import com.dscalzi.aventibot.util.Pair;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.awt.*;
-import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Map;
 
+@Getter
+@Setter
 public class GlobalConfig {
-
-    public static final Map<Pair<String, Object>, Method> keyMap;
-
-    static {
-        keyMap = new HashMap<>();
-        try {
-            keyMap.put(new Pair<>("token", null), GlobalConfig.class.getMethod("setToken", String.class));
-            keyMap.put(new Pair<>("currentGame", "Developed by Dan"), GlobalConfig.class.getMethod("setCurrentGame", String.class));
-            keyMap.put(new Pair<>("defaultColorHex", "#0f579d"), GlobalConfig.class.getMethod("setDefaultColor", String.class));
-            keyMap.put(new Pair<>("defaultCommandPrefix", "--"), GlobalConfig.class.getMethod("setDefaultCommandPrefix", String.class));
-            // TODO This needs to be rewritten to use a POJO, etc. Implementing this using the current setup.
-            keyMap.put(new Pair<>("spotifyClientId", null), GlobalConfig.class.getMethod("setSpotifyClientId", String.class));
-            keyMap.put(new Pair<>("spotifyClientSecret", null), GlobalConfig.class.getMethod("setSpotifyClientSecret", String.class));
-            keyMap.put(new Pair<>("spotifyCountryCode", null), GlobalConfig.class.getMethod("setSpotifyCountryCode", String.class));
-        } catch (NoSuchMethodException | SecurityException e) {
-            //Shouldn't happen since this is hard coded.
-            e.printStackTrace();
-        }
-    }
 
     private String token;
     private String currentGame;
@@ -57,102 +40,64 @@ public class GlobalConfig {
     private transient javafx.scene.paint.Color defaultColorJFX;
     private String defaultCommandPrefix;
 
-    private String spotifyClientId;
-    private String spotifyClientSecret;
-    private String spotifyCountryCode;
+    private SpotifyConfig spotifyConfig;
 
-    public GlobalConfig() { /* For deserialization. */ }
+    public GlobalConfig() {
+        this(
+                null,
+                "Developed by Dan",
+                "#0f579d",
+                "--",
+                new SpotifyConfig()
+        );
+    }
 
-    public GlobalConfig(String token, String currentGame, String defaultColorHex, String defaultCommandPrefix) {
+    public GlobalConfig(String token, String currentGame, String defaultColorHex, String defaultCommandPrefix, SpotifyConfig spotifyConfig) {
         this.token = token;
         this.currentGame = currentGame;
-        setDefaultColor(defaultColorHex);
+        setDefaultColorHex(defaultColorHex);
         this.defaultCommandPrefix = defaultCommandPrefix;
+        this.spotifyConfig = spotifyConfig;
     }
 
-    public String getToken() {
-        return token;
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class SpotifyConfig {
+        private String clientId;
+        private String clientSecret;
+        private String countryCode;
     }
 
-    public void setToken(String token) {
-        this.token = token;
-    }
-
-    public String getCurrentGame() {
-        return currentGame;
-    }
-
-    public void setCurrentGame(String currentGame) {
-        this.currentGame = currentGame;
-    }
-
-    public Color getDefaultColorAWT() {
-        if (defaultColorAWT == null) setDefaultColor(getDefaultColorHex());
-        return defaultColorAWT;
-    }
-
-    public javafx.scene.paint.Color getDefaultColorJFX() {
-        if (defaultColorJFX == null) setDefaultColor(getDefaultColorHex());
-        return defaultColorJFX;
-    }
-
-    public String getDefaultColorHex() {
-        return defaultColorHex;
-    }
-
-    public void setDefaultColor(String defaultColor) {
+    public void setDefaultColorHex(String defaultColor) {
         try {
-            defaultColorHex = defaultColor;
+            this.defaultColorHex = defaultColor;
             this.defaultColorAWT = Color.decode(defaultColorHex);
             this.defaultColorJFX = javafx.scene.paint.Color.web(defaultColor);
         } catch (IllegalArgumentException | NullPointerException e) {
             //Assign default
-            defaultColorHex = "#0f579d";
+            e.printStackTrace();
+            this.defaultColorHex = "#0f579d";
             this.defaultColorAWT = Color.decode(defaultColorHex);
         }
     }
 
-    public String getCommandPrefix() {
+    public Color getDefaultColorAWT() {
+        if (defaultColorAWT == null) setDefaultColorHex(getDefaultColorHex());
+        return defaultColorAWT;
+    }
+
+    public javafx.scene.paint.Color getDefaultColorJFX() {
+        if (defaultColorJFX == null) setDefaultColorHex(getDefaultColorHex());
+        return defaultColorJFX;
+    }
+
+    public String getSendableCommandPrefix() {
         if (defaultCommandPrefix.equalsIgnoreCase("@MENTION") && AventiBot.getStatus() == BotStatus.CONNECTED)
             return AventiBot.getInstance().getJDA().getSelfUser().getAsMention();
 
         return this.defaultCommandPrefix;
-    }
-
-    /**
-     * Returns raw command prefix specified in the configuration
-     * without any modifications.
-     */
-    public String getRawCommandPrefix() {
-        return this.defaultCommandPrefix;
-    }
-
-    public void setDefaultCommandPrefix(String defaultCommandPrefix) {
-        this.defaultCommandPrefix = defaultCommandPrefix;
-    }
-
-    public String getSpotifyClientId() {
-        return spotifyClientId;
-    }
-
-    public void setSpotifyClientId(String spotifyClientId) {
-        this.spotifyClientId = spotifyClientId;
-    }
-
-    public String getSpotifyClientSecret() {
-        return spotifyClientSecret;
-    }
-
-    public void setSpotifyClientSecret(String spotifyClientSecret) {
-        this.spotifyClientSecret = spotifyClientSecret;
-    }
-
-    public String getSpotifyCountryCode() {
-        return spotifyCountryCode;
-    }
-
-    public void setSpotifyCountryCode(String spotifyCountryCode) {
-        this.spotifyCountryCode = spotifyCountryCode;
     }
 
 }

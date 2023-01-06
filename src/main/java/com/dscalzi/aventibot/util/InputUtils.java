@@ -24,10 +24,12 @@ import com.dscalzi.aventibot.AventiBot;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 
+import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class InputUtils {
 
@@ -290,6 +292,12 @@ public class InputUtils {
             }
         }
         return new Pair<>(fRoles, failedTerms);
+    }
+
+    public static String join(String[] args, int startAt) {
+        return Arrays.stream(args)
+                .skip(startAt)
+                .collect(Collectors.joining(" "));
     }
 
 }

@@ -94,7 +94,7 @@ public class SettingsController implements Initializable, ChangeListener<String>
         currentgame_settings_field.setText(current.getCurrentGame());
         //Bind command prefix
         commandprefix_settings_field.textProperty().addListener(this);
-        commandprefix_settings_field.setText(current.getRawCommandPrefix());
+        commandprefix_settings_field.setText(current.getDefaultCommandPrefix());
         //Bind color
         //color_settings_picker.setValue(Color.web("#0f579d"));
         color_settings_picker.setValue(Color.web(current.getDefaultColorHex()));
@@ -110,8 +110,9 @@ public class SettingsController implements Initializable, ChangeListener<String>
     private void handleSaveButton(ActionEvent e) {
         GlobalConfig g = new GlobalConfig(apikey_settings_field.getText(),
                 currentgame_settings_field.getText(),
-                "#" + Integer.toHexString(color_settings_picker.getValue().hashCode()),
-                commandprefix_settings_field.getText());
+                toRGBCode(color_settings_picker.getValue()),
+                commandprefix_settings_field.getText(),
+                current.getSpotifyConfig());
         try {
             AventiBot.setCurrentGame(currentgame_settings_field.getText());
             SettingsManager.saveGlobalConfig(g);
@@ -173,6 +174,13 @@ public class SettingsController implements Initializable, ChangeListener<String>
         SAVED(),
         NOT_SAVED()
 
+    }
+
+    public static String toRGBCode(Color color) {
+        return String.format("#%02x%02x%02x",
+                (int) Math.round(color.getRed() * 255),
+                (int) Math.round(color.getGreen() * 255),
+                (int) Math.round(color.getBlue() * 255));
     }
 
 }

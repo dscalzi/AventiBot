@@ -21,11 +21,12 @@
 package com.dscalzi.aventibot;
 
 import info.debatty.java.stringsimilarity.JaroWinkler;
+import javafx.scene.paint.Color;
 import org.junit.jupiter.api.Test;
 
 import java.util.regex.Pattern;
 
-public class StringSimilarityTest {
+public class DevTests {
 
     @Test
     public void testStringSimilarity() {
@@ -39,6 +40,19 @@ public class StringSimilarityTest {
         Pattern x = Pattern.compile("[^a-zA-Z0-9 ]");
         Pattern spaces = Pattern.compile(" +");
         return spaces.matcher(x.matcher(s).replaceAll("")).replaceAll(" ");
+    }
+
+    @Test
+    public void colorTest() {
+        System.out.println(toRGBCode(Color.BLACK));
+        System.out.println(toRGBCode(Color.BLUE));
+    }
+
+    public static String toRGBCode(Color color) {
+        return String.format("#%02x%02x%02x",
+                (int) Math.round(color.getRed() * 255),
+                (int) Math.round(color.getGreen() * 255),
+                (int) Math.round(color.getBlue() * 255));
     }
 
 }

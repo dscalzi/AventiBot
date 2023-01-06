@@ -29,15 +29,12 @@ import com.dscalzi.aventibot.settings.GlobalConfig;
 import com.dscalzi.aventibot.settings.SettingsManager;
 import com.dscalzi.aventibot.util.InputUtils;
 import com.dscalzi.aventibot.util.JDAUtils;
-import com.dscalzi.aventibot.util.Pair;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 public class CmdGSettings implements CommandExecutor {
@@ -63,15 +60,37 @@ public class CmdGSettings implements CommandExecutor {
         if (args.length > 0) {
 
             if (args[0].equalsIgnoreCase("update")) {
-                if (args.length > 1) {
-                    String prop = args[1].toLowerCase();
-                    for (Map.Entry<Pair<String, Object>, Method> entry : GlobalConfig.keyMap.entrySet()) {
-                        if (entry.getKey().getKey().toLowerCase().equals(prop)) {
-                            return genericStringUpdate(e, entry.getKey().getKey(), entry.getValue(), args);
+                if (args.length >= 3) {
+                    String prop = args[1];
+                    GlobalConfig current = Objects.requireNonNull(SettingsManager.getGlobalConfig());
+                    boolean save = true;
+                    CommandResult result = CommandResult.SUCCESS;
+                    switch (prop) {
+                        case "currentGame" -> {
+                            String newVal = InputUtils.join(args, 2);
+                            current.setCurrentGame(newVal);
+                            AventiBot.setCurrentGame(newVal);
+                        }
+                        case "defaultColorHex" -> current.setDefaultColorHex(args[2]);
+                        case "defaultCommandPrefix" -> current.setDefaultCommandPrefix(args[2]);
+                        default -> {
+                            e.getChannel().sendMessage("Unknown settings key: `" + prop + "`.").queue();
+                            result = CommandResult.ERROR;
+                            save = false;
                         }
                     }
-                    e.getChannel().sendMessage("Unknown settings key: `" + prop + "`.").queue();
-                    return CommandResult.ERROR;
+
+                    if(save) {
+                        try {
+                            SettingsManager.saveGlobalConfig(current);
+                        } catch(IOException exception) {
+                            result = CommandResult.ERROR;
+                            e.getChannel().sendMessage("IOException while saving the config.").queue();
+                            exception.printStackTrace();
+                        }
+                    }
+
+                    return result;
                 }
                 e.getChannel().sendMessage("Proper usage is `" + SettingsManager.getCommandPrefix(JDAUtils.getGuildFromCombinedEvent(e)) + "gsettings update <key> <value>`").queue();
                 return CommandResult.IGNORE;
@@ -79,38 +98,6 @@ public class CmdGSettings implements CommandExecutor {
 
         }
         return null;
-    }
-
-    private CommandResult genericStringUpdate(MessageReceivedEvent e, String key, Method setter, String[] args) {
-        GlobalConfig current = SettingsManager.getGlobalConfig();
-
-        if (args.length < 3) {
-            e.getChannel().sendMessage("Proper usage is " + SettingsManager.getCommandPrefix(JDAUtils.getGuildFromCombinedEvent(e)) + "gsettings update " + key.toLowerCase() + " <value>").queue();
-            return CommandResult.ERROR;
-        }
-        try {
-            String newVal = InputUtils.parseFullTerm(args, 2).getValue();
-            setter.invoke(current, newVal);
-            if (key.equals("currentGame")) {
-                AventiBot.setCurrentGame(newVal);
-            }
-            SettingsManager.saveGlobalConfig(current);
-        } catch (IllegalArgumentException e1) {
-            e.getChannel().sendMessage("You have provided an improper value.").queue();
-            e1.printStackTrace();
-            return CommandResult.ERROR;
-        } catch (InvocationTargetException | IllegalAccessException e1) {
-            e.getChannel().sendMessage("Error occured while updating the value.").queue();
-            e1.printStackTrace();
-            return CommandResult.ERROR;
-        } catch (IOException e1) {
-            e.getChannel().sendMessage("Error occured while saving the new configuration.").queue();
-            e1.printStackTrace();
-            return CommandResult.ERROR;
-        }
-
-        return CommandResult.SUCCESS;
-
     }
 
     @Override

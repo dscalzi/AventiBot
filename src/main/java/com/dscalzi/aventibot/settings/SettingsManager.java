@@ -208,7 +208,7 @@ public class SettingsManager {
         File target = SettingsManager.getGlobalConfigurationFile();
         if (target == null) throw new IOException();
 
-        Gson gson = new GsonBuilder().serializeNulls().serializeNulls().setPrettyPrinting().create();
+        Gson gson = new GsonBuilder().serializeNulls().setPrettyPrinting().create();
         try (FileWriter w = new FileWriter(target)) {
             gson.toJson(g, w);
         }
@@ -226,59 +226,14 @@ public class SettingsManager {
         File target = SettingsManager.getGlobalConfigurationFile();
         if (target == null) throw new IOException();
 
-        GlobalConfig g = new GlobalConfig();
-        boolean requiresSave = false;
-
-        try (JsonReader file = new JsonReader(new FileReader(target))) {
-            JsonObject result;
-            JsonElement parsed = JsonParser.parseReader(file);
-            if (parsed.isJsonNull()) return generateDefaultGlobal();
-            if (parsed.isJsonObject()) {
-                result = parsed.getAsJsonObject();
-                Gson gson = new Gson();
-                for (Map.Entry<Pair<String, Object>, Method> e : GlobalConfig.keyMap.entrySet()) {
-                    JsonElement v = result.get(e.getKey().getKey());
-                    Method m = e.getValue();
-                    Class<?> required = m.getParameterTypes()[0];
-                    try {
-                        if (v == null || v.isJsonNull()) {
-                            requiresSave = true;
-                            m.invoke(g, e.getKey().getValue());
-                        } else
-                            m.invoke(g, gson.fromJson(v, required));
-                    } catch (JsonSyntaxException | IllegalAccessException | IllegalArgumentException |
-                             InvocationTargetException e1) {
-                        log.error(MarkerFactory.getMarker("FATAL"), "Exception while parsing global config on value '" + e.getKey() + "'.");
-                        e1.printStackTrace();
-                    }
-                }
-            }
+        GlobalConfig g;
+        try (FileReader reader = new FileReader(target)) {
+            Gson gson = new Gson();
+            g = gson.fromJson(reader, GlobalConfig.class);
         }
-
-        if (requiresSave) saveGlobalConfig(g);
-        else configCache = g;
+        saveGlobalConfig(g);
 
         return g;
-    }
-
-    /**
-     * Generates a default configuration file and serializes it to JSON.
-     *
-     * @return The GlobalConfig object with default assigned values which was serialized.
-     * @throws IOException If the target file was not found/could not be created.
-     */
-    private static GlobalConfig generateDefaultGlobal() throws IOException {
-        GlobalConfig def = new GlobalConfig();
-        for (Map.Entry<Pair<String, Object>, Method> e : GlobalConfig.keyMap.entrySet()) {
-            try {
-                e.getValue().invoke(def, e.getKey().getValue());
-            } catch (Throwable t) {
-                log.error(MarkerFactory.getMarker("FATAL"), "Error while creating default configuration:");
-                t.printStackTrace();
-            }
-        }
-        saveGlobalConfig(def);
-        return def;
     }
 
     /* * * * *
@@ -404,8 +359,8 @@ public class SettingsManager {
     }
 
     public static String getCommandPrefix(Guild g) {
-        if (g == null) return getGlobalConfig().getCommandPrefix();
-        else return getGuildConfig(g).getCommandPrefix(g);
+        if (g == null) return getGlobalConfig().getSendableCommandPrefix();
+        else return getGuildConfig(g).getSendableCommandPrefix(g);
     }
 
     public static Color getColorAWT() {
