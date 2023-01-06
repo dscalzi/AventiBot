@@ -25,16 +25,14 @@ import com.dscalzi.aventibot.BotStatus;
 import com.dscalzi.aventibot.cmdutil.CommandDispatcher;
 import com.dscalzi.aventibot.console.ConsoleMessage;
 import com.dscalzi.aventibot.console.ConsoleUser;
+import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Scanner;
 
+@Slf4j
 public class CommandLineConsole {
-
-    private static final Logger log = LoggerFactory.getLogger(CommandLineConsole.class);
 
     private final Scanner input;
     private volatile boolean control;

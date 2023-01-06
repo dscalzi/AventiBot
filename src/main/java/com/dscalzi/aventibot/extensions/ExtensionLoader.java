@@ -20,17 +20,15 @@
 
 package com.dscalzi.aventibot.extensions;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MarkerFactory;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 public class ExtensionLoader {
-
-    private static final Logger log = LoggerFactory.getLogger(ExtensionLoader.class);
 
     public static File getBaseExtensionsDirectory() {
         File f = new File("extensions");

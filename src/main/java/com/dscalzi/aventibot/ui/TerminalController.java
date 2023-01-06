@@ -39,10 +39,9 @@ import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.events.session.ShutdownEvent;
 import net.dv8tion.jda.api.hooks.EventListener;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.slf4j.MarkerFactory;
 
 import java.io.IOException;
@@ -54,9 +53,8 @@ import java.net.URL;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
+@Slf4j
 public class TerminalController implements Initializable {
-
-    private static final Logger log = LoggerFactory.getLogger(TerminalController.class);
 
     protected static boolean markSoftShutdown;
 

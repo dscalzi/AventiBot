@@ -24,10 +24,9 @@ import com.dscalzi.aventibot.AventiBot;
 import com.dscalzi.aventibot.BotStatus;
 import com.dscalzi.aventibot.settings.GlobalConfig;
 import com.dscalzi.aventibot.settings.SettingsManager;
+import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.events.session.ShutdownEvent;
 import net.dv8tion.jda.api.hooks.EventListener;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.slf4j.MarkerFactory;
 
 import java.io.IOException;
@@ -35,9 +34,8 @@ import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.List;
 
+@Slf4j
 public class CommandLineExecutor {
-
-    private static final Logger log = LoggerFactory.getLogger(CommandLineExecutor.class);
 
     private static boolean usingCmdLine = false;
     private static boolean headless = false;

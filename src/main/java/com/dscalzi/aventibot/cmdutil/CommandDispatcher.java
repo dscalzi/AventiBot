@@ -21,16 +21,14 @@
 package com.dscalzi.aventibot.cmdutil;
 
 import com.dscalzi.aventibot.AventiBot;
-import com.dscalzi.aventibot.console.CommandLine;
 import com.dscalzi.aventibot.settings.SettingsManager;
 import com.dscalzi.aventibot.util.JDAUtils;
+import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -38,9 +36,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
+@Slf4j
 public class CommandDispatcher {
-
-    private static final Logger log = LoggerFactory.getLogger(CommandLine.class);
 
     public static void dispatchCommand(MessageReceivedEvent e, String cmd) {
 

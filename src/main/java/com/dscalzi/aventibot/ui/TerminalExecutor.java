@@ -27,15 +27,13 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.InputStream;
 import java.util.List;
 
+@Slf4j
 public class TerminalExecutor extends Application {
-
-    private static final Logger log = LoggerFactory.getLogger(TerminalExecutor.class);
 
     protected static List<String> parameters;
 

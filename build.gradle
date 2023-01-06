@@ -4,6 +4,7 @@ plugins {
     id 'org.cadixdev.licenser' version '0.6.1'
     id 'com.github.johnrengelman.shadow' version '7.1.2'
     id 'org.openjfx.javafxplugin' version '0.0.13'
+    id 'io.freefair.lombok' version '6.6.1'
 }
 
 mainClassName = 'com.dscalzi.aventibot.LaunchWrapper'
@@ -38,6 +39,7 @@ dependencies {
     compileOnly("org.jetbrains:annotations:23.0.0")
 
     implementation "com.google.code.gson:gson:${gsonVersion}"
+    implementation "info.debatty:java-string-similarity:2.0.0"
 
     implementation "net.dv8tion:JDA:${jdaVersion}"
     implementation "com.sedmelluq:lavaplayer:${lavaplayerVersion}"
@@ -70,6 +72,10 @@ license {
         year = '2016-2023'
         url = 'https://github.com/dscalzi/AventiBot'
     }
+}
+
+test {
+    useJUnitPlatform()
 }
 
 tasks.withType(JavaExec).configureEach {

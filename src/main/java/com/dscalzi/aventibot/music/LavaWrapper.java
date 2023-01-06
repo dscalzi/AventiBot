@@ -34,20 +34,14 @@ import com.sedmelluq.discord.lavaplayer.source.soundcloud.SoundCloudAudioSourceM
 import com.sedmelluq.discord.lavaplayer.source.twitch.TwitchStreamAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.vimeo.VimeoAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager;
-import com.sedmelluq.discord.lavaplayer.track.AudioItem;
-import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
-import com.sedmelluq.discord.lavaplayer.track.AudioReference;
-import com.sedmelluq.discord.lavaplayer.track.InternalAudioTrack;
+import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Guild;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 public class LavaWrapper {
-
-    private static final Logger log = LoggerFactory.getLogger(LavaWrapper.class);
 
     private static LavaWrapper instance;
     private static boolean initialized;
@@ -68,39 +62,7 @@ public class LavaWrapper {
                     g.getSpotifyClientSecret(),
                     g.getSpotifyCountryCode(),
                     playerManager,
-                    mirroringAudioTrack -> {
-                        final String ytsearch = "ytsearch:";
-
-                        // Try by isrc
-                        AudioItem item = AudioReference.NO_TRACK;
-                        if (mirroringAudioTrack.getISRC() != null) {
-                            item = mirroringAudioTrack.loadItem(
-                                    ytsearch + mirroringAudioTrack.getISRC());
-                            String title = null;
-                            if (item instanceof InternalAudioTrack casted) {
-                                title = casted.getInfo().title;
-                            } else if (item instanceof AudioPlaylist casted) {
-                                title = casted.getTracks().get(0).getInfo().title;
-                            }
-                            if (title != null) {
-                                if (!title.toLowerCase().contains(mirroringAudioTrack.getInfo().title.toLowerCase())) {
-                                    log.info("Title Mismatch, Expected: {}. Actual: {}.", mirroringAudioTrack.getInfo().title, title);
-                                    item = AudioReference.NO_TRACK;
-                                }
-                            }
-                        }
-                        // Try name + isrc
-                        if (item == AudioReference.NO_TRACK) {
-                            item = mirroringAudioTrack.loadItem(
-                                    ytsearch + mirroringAudioTrack.getInfo().title + " " + mirroringAudioTrack.getISRC());
-                        }
-
-                        if (item == AudioReference.NO_TRACK) {
-                            log.error("Failed to find track");
-                        }
-
-                        return item;
-                    }
+                    new TrackResolver()
             ));
         }
         playerManager.registerSourceManager(SoundCloudAudioSourceManager.createDefault());

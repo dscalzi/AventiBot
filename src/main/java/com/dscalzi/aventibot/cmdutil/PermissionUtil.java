@@ -27,11 +27,10 @@ import com.dscalzi.aventibot.util.Pair;
 import com.google.gson.*;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.User;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileReader;
@@ -39,9 +38,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
 
+@Slf4j
 public final class PermissionUtil {
-
-    private static final Logger log = LoggerFactory.getLogger(PermissionUtil.class);
 
     private static final String ALLOWEDKEY = "allowedRoles";
     private static final String BLACKLISTKEY = "blacklistedUsers";

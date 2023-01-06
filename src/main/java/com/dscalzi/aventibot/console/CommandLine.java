@@ -25,14 +25,12 @@ import com.dscalzi.aventibot.BotStatus;
 import com.dscalzi.aventibot.cmdutil.CommandDispatcher;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
+import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+@Slf4j
 public class CommandLine {
-
-    private static final Logger log = LoggerFactory.getLogger(CommandLine.class);
 
     private TextField node;
 

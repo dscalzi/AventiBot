@@ -23,16 +23,14 @@ package com.dscalzi.aventibot.cmdutil;
 import com.dscalzi.aventibot.AventiBot;
 import com.dscalzi.aventibot.settings.SettingsManager;
 import com.dscalzi.aventibot.util.JDAUtils;
+import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.slf4j.MarkerFactory;
 
+@Slf4j
 public class CommandListener extends ListenerAdapter {
-
-    private static final Logger log = LoggerFactory.getLogger(CommandListener.class);
 
     @Override
     public void onMessageReceived(MessageReceivedEvent e) {

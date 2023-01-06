@@ -23,9 +23,8 @@ package com.dscalzi.aventibot.settings;
 import com.dscalzi.aventibot.util.Pair;
 import com.google.gson.*;
 import com.google.gson.stream.JsonReader;
+import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Guild;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.slf4j.MarkerFactory;
 
 import java.awt.*;
@@ -43,9 +42,8 @@ import java.util.Map;
  *
  * @author Daniel D. Scalzi
  */
+@Slf4j
 public class SettingsManager {
-
-    private static final Logger log = LoggerFactory.getLogger(SettingsManager.class);
 
     private static GlobalConfig configCache = null;
     private static Map<String, GuildConfig> gConfigCache = new HashMap<>();

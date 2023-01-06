@@ -36,17 +36,16 @@ import javafx.scene.control.ColorPicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.paint.Color;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MarkerFactory;
 
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+@Slf4j
 public class SettingsController implements Initializable, ChangeListener<String> {
 
-    private static final Logger log = LoggerFactory.getLogger(SettingsController.class);
     private GlobalConfig current;
     private SettingsState state;
 

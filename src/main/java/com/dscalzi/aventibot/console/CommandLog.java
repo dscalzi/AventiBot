@@ -22,8 +22,7 @@ package com.dscalzi.aventibot.console;
 
 import javafx.application.Platform;
 import javafx.scene.control.TextArea;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MarkerFactory;
 
 import java.io.*;
@@ -32,9 +31,9 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
+@Slf4j
 public class CommandLog extends OutputStream {
 
-    private static final Logger log = LoggerFactory.getLogger(CommandLog.class);
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd.HH.mm.ss").withLocale(Locale.US).withZone(ZoneId.systemDefault());
 
     private volatile boolean fileStreamClosed;
