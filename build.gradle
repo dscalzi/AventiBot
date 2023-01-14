@@ -42,7 +42,8 @@ dependencies {
     implementation "info.debatty:java-string-similarity:2.0.0"
 
     implementation "net.dv8tion:JDA:${jdaVersion}"
-    implementation "com.sedmelluq:lavaplayer:${lavaplayerVersion}"
+//    implementation "com.sedmelluq:lavaplayer:${lavaplayerVersion}"
+    implementation "com.github.walkyst:lavaplayer-fork:${lavaplayerVersion}"
     implementation "com.github.TopiSenpai.LavaSrc:lavasrc:${lavasrcVersion}"
 
     implementation "org.slf4j:slf4j-api:${slf4jVersion}"

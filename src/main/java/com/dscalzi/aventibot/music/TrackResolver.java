@@ -55,7 +55,7 @@ public class TrackResolver implements MirroringAudioTrackResolver {
         // Try name + isrc
         if (item == AudioReference.NO_TRACK) {
             item = mirroringAudioTrack.loadItem(
-                    ytsearch + mirroringAudioTrack.getInfo().title + " " + mirroringAudioTrack.getISRC());
+                    ytsearch + mirroringAudioTrack.getInfo().title + " " + mirroringAudioTrack.getInfo().author + " " + mirroringAudioTrack.getISRC());
         }
 
         if (item == AudioReference.NO_TRACK) {
