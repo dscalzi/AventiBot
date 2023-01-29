@@ -113,7 +113,7 @@ String getDependencyVersion(name) {
     return res
 }
 
-task updateReadme {
+tasks.register('updateReadme') {
     def readMe = new File(project.rootDir.toString() + '/README.md')
 
     def txt = readMe.text.replaceFirst(/JDA-(.+?)-9/, "JDA-${getDependencyVersion('JDA').replaceAll('_', '__').replaceAll('-', '--')}-9")
