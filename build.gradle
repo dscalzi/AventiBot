@@ -2,9 +2,9 @@ plugins {
     id 'java'
     id 'application'
     id 'org.cadixdev.licenser' version '0.6.1'
-    id 'com.github.johnrengelman.shadow' version '7.1.2'
+    id 'com.github.johnrengelman.shadow' version '8.1.0'
     id 'org.openjfx.javafxplugin' version '0.0.13'
-    id 'io.freefair.lombok' version '6.6.1'
+    id 'io.freefair.lombok' version '6.6.3'
 }
 
 mainClassName = 'com.dscalzi.aventibot.LaunchWrapper'
@@ -15,7 +15,7 @@ group = 'com.dscalzi'
 archivesBaseName = 'AventiBot'
 
 wrapper {
-    gradleVersion = '7.6'
+    gradleVersion = '8.0.2'
     distributionType = Wrapper.DistributionType.BIN
 }
 
@@ -27,8 +27,6 @@ java {
 
 repositories {
     mavenCentral()
-    maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
-    maven { url 'https://m2.dv8tion.net/releases' }
     maven { url 'https://jitpack.io' }
 }
 
@@ -42,7 +40,6 @@ dependencies {
     implementation "info.debatty:java-string-similarity:2.0.0"
 
     implementation "net.dv8tion:JDA:${jdaVersion}"
-//    implementation "com.sedmelluq:lavaplayer:${lavaplayerVersion}"
     implementation "com.github.walkyst:lavaplayer-fork:${lavaplayerVersion}"
     implementation "com.github.TopiSenpai.LavaSrc:lavasrc:${lavasrcVersion}"
 

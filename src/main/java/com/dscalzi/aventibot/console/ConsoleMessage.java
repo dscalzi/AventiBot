@@ -64,7 +64,8 @@ public class ConsoleMessage extends ReceivedMessage {
                 new ArrayList<>(),
                 0,
                 null,
-                null);
+                null,
+                -1);
     }
 
     @Nonnull
