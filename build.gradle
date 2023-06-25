@@ -2,9 +2,9 @@ plugins {
     id 'java'
     id 'application'
     id 'org.cadixdev.licenser' version '0.6.1'
-    id 'com.github.johnrengelman.shadow' version '8.1.0'
-    id 'org.openjfx.javafxplugin' version '0.0.13'
-    id 'io.freefair.lombok' version '6.6.3'
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
+    id 'org.openjfx.javafxplugin' version '0.0.14'
+    id 'io.freefair.lombok' version '8.0.1'
 }
 
 mainClassName = 'com.dscalzi.aventibot.LaunchWrapper'
@@ -15,7 +15,7 @@ group = 'com.dscalzi'
 archivesBaseName = 'AventiBot'
 
 wrapper {
-    gradleVersion = '8.0.2'
+    gradleVersion = '8.1.1'
     distributionType = Wrapper.DistributionType.BIN
 }
 

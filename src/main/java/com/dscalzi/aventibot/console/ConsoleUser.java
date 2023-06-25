@@ -28,7 +28,7 @@ public class ConsoleUser extends UserImpl {
 
     private static final long _id;
     private static final String _username;
-    private static final String _discriminator;
+    private static final short _discriminator;
     private static final String _avatarId;
     private static final boolean _isBot;
 
@@ -37,7 +37,7 @@ public class ConsoleUser extends UserImpl {
     static {
         _id = -1L;
         _username = "AventiBot_Console";
-        _discriminator = "-1";
+        _discriminator = -1;
         _avatarId = null;
         _isBot = false;
 
@@ -49,6 +49,7 @@ public class ConsoleUser extends UserImpl {
     private ConsoleUser(JDA api) {
         super(_id, (JDAImpl) api);
         this.setName(ConsoleUser._username);
+        this.setGlobalName(ConsoleUser._username);
         this.setDiscriminator(ConsoleUser._discriminator);
         this.setAvatarId(ConsoleUser._avatarId);
         this.privateChannel = new ConsolePrivateChannel(this, api);

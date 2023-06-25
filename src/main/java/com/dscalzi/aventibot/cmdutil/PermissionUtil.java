@@ -287,7 +287,7 @@ public final class PermissionUtil {
             for (User u : users) {
                 String id = u.getId();
                 if ((add && rP.contains(id)) || (!add && !rP.contains(id))) {
-                    result.logResult("'ERR \"" + n + "\" " + (add ? "already blacklists" : "does not blacklist") + " \"" + u.getName() + "#" + u.getDiscriminator() + "\"(" + id + ").");
+                    result.logResult("'ERR \"" + n + "\" " + (add ? "already blacklists" : "does not blacklist") + " \"" + u.getGlobalName()  + "\"(" + id + ").");
                     continue;
                 }
                 if (add) rP.add(id);
