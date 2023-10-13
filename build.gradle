@@ -3,8 +3,8 @@ plugins {
     id 'application'
     id 'org.cadixdev.licenser' version '0.6.1'
     id 'com.github.johnrengelman.shadow' version '8.1.1'
-    id 'org.openjfx.javafxplugin' version '0.0.14'
-    id 'io.freefair.lombok' version '8.0.1'
+    id 'org.openjfx.javafxplugin' version '0.1.0'
+    id 'io.freefair.lombok' version '8.4'
 }
 
 mainClassName = 'com.dscalzi.aventibot.LaunchWrapper'
@@ -15,7 +15,7 @@ group = 'com.dscalzi'
 archivesBaseName = 'AventiBot'
 
 wrapper {
-    gradleVersion = '8.3'
+    gradleVersion = '8.4'
     distributionType = Wrapper.DistributionType.BIN
 }
 
@@ -40,7 +40,7 @@ dependencies {
     implementation "info.debatty:java-string-similarity:2.0.0"
 
     implementation "net.dv8tion:JDA:${jdaVersion}"
-    implementation "com.github.walkyst:lavaplayer-fork:${lavaplayerVersion}"
+    implementation "dev.arbjerg:lavaplayer:${lavaplayerVersion}"
     implementation "com.github.TopiSenpai.LavaSrc:lavasrc:${lavasrcVersion}"
 
     implementation "org.slf4j:slf4j-api:${slf4jVersion}"

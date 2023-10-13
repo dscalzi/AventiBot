@@ -87,14 +87,14 @@ public class SettingsController implements Initializable, ChangeListener<String>
             apikey_settings_field.setDisable(true);
         }
         //Bind token
-        apikey_settings_field.textProperty().addListener(this);
         apikey_settings_field.setText(current.getToken());
+        apikey_settings_field.textProperty().addListener(this);
         //Bind current game
-        currentgame_settings_field.textProperty().addListener(this);
         currentgame_settings_field.setText(current.getCurrentGame());
+        currentgame_settings_field.textProperty().addListener(this);
         //Bind command prefix
-        commandprefix_settings_field.textProperty().addListener(this);
         commandprefix_settings_field.setText(current.getDefaultCommandPrefix());
+        commandprefix_settings_field.textProperty().addListener(this);
         //Bind color
         //color_settings_picker.setValue(Color.web("#0f579d"));
         color_settings_picker.setValue(Color.web(current.getDefaultColorHex()));
