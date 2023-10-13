@@ -13,6 +13,7 @@ description = 'Highly customizable Discord Bot'
 
 group = 'com.dscalzi'
 archivesBaseName = 'AventiBot'
+def classifier = 'dist'
 
 wrapper {
     gradleVersion = '8.4'
@@ -92,7 +93,7 @@ jar {
 }
 
 shadowJar {
-    archiveClassifier.set('dist')
+    archiveClassifier.set(classifier)
 }
 assemble.dependsOn('shadowJar')
 
@@ -115,4 +116,9 @@ tasks.register('updateReadme') {
 
     def txt = readMe.text.replaceFirst(/JDA-(.+?)-9/, "JDA-${getDependencyVersion('JDA').replaceAll('_', '__').replaceAll('-', '--')}-9")
     readMe.text = txt.replaceFirst(/lavaplayer-(.*?)-/, "lavaplayer-${getDependencyVersion('lavaplayer')}-")
+}
+
+tasks.register('copyDeployment', Copy) {
+    from layout.buildDirectory.file("libs/${archivesBaseName}-${version}-${classifier}.jar")
+    into layout.projectDirectory.dir('deploy')
 }
