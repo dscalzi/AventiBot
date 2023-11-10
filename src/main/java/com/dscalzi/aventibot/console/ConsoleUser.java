@@ -21,6 +21,7 @@
 package com.dscalzi.aventibot.console;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.UserImpl;
 
@@ -53,6 +54,7 @@ public class ConsoleUser extends UserImpl {
         this.setDiscriminator(ConsoleUser._discriminator);
         this.setAvatarId(ConsoleUser._avatarId);
         this.privateChannel = new ConsolePrivateChannel(this, api);
+        this.privateChannelId = this.privateChannel.getIdLong();
         this.setBot(ConsoleUser._isBot);
     }
 
@@ -69,4 +71,8 @@ public class ConsoleUser extends UserImpl {
         throw new IllegalStateException("Cannot build more than one ConsoleUser!");
     }
 
+    @Override
+    public PrivateChannel getPrivateChannel() {
+        return this.privateChannel;
+    }
 }

@@ -24,18 +24,22 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
-import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel;
+import net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer;
+import net.dv8tion.jda.api.entities.channel.concrete.*;
+import net.dv8tion.jda.api.entities.channel.middleman.*;
+import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 import net.dv8tion.jda.internal.requests.CompletedRestAction;
+import net.dv8tion.jda.internal.utils.ChannelUtil;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import java.util.Collection;
 
-public class ConsolePrivateChannel implements PrivateChannel {
+public class ConsolePrivateChannel implements PrivateChannel, MessageChannelUnion {
 
     private final long id;
     private final User user;
@@ -142,6 +146,60 @@ public class ConsolePrivateChannel implements PrivateChannel {
     @Override
     public long getIdLong() {
         return id;
+    }
+
+    @Nonnull
+    @Override
+    public PrivateChannel asPrivateChannel() {
+        return ChannelUtil.safeChannelCast(this, PrivateChannel.class);
+    }
+
+    @Nonnull
+    @Override
+    public TextChannel asTextChannel() {
+        return ChannelUtil.safeChannelCast(this, TextChannel.class);
+    }
+
+    @Nonnull
+    @Override
+    public NewsChannel asNewsChannel() {
+        return ChannelUtil.safeChannelCast(this, NewsChannel.class);
+    }
+
+    @Nonnull
+    @Override
+    public VoiceChannel asVoiceChannel() {
+        return ChannelUtil.safeChannelCast(this, VoiceChannel.class);
+    }
+
+    @Nonnull
+    @Override
+    public StageChannel asStageChannel() {
+        return ChannelUtil.safeChannelCast(this, StageChannel.class);
+    }
+
+    @Nonnull
+    @Override
+    public ThreadChannel asThreadChannel() {
+        return ChannelUtil.safeChannelCast(this, ThreadChannel.class);
+    }
+
+    @Nonnull
+    @Override
+    public AudioChannel asAudioChannel() {
+        return ChannelUtil.safeChannelCast(this, AudioChannel.class);
+    }
+
+    @Nonnull
+    @Override
+    public IThreadContainer asThreadContainer() {
+        return ChannelUtil.safeChannelCast(this, IThreadContainer.class);
+    }
+
+    @Nonnull
+    @Override
+    public GuildMessageChannel asGuildMessageChannel() {
+        return ChannelUtil.safeChannelCast(this, GuildMessageChannel.class);
     }
 
 }

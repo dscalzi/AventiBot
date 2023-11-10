@@ -30,7 +30,10 @@ import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageEditAction;
 import net.dv8tion.jda.api.utils.AttachedFile;
+import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.messages.MessageEditData;
+import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.internal.entities.MessageMentionsImpl;
 import net.dv8tion.jda.internal.entities.ReceivedMessage;
 import net.dv8tion.jda.internal.requests.CompletedRestAction;
 
@@ -60,7 +63,13 @@ public class ConsoleMessage extends ReceivedMessage {
                 null,
                 null,
                 OffsetDateTime.now(),
-                null,
+                new MessageMentionsImpl(
+                        (JDAImpl) channel.getJDA(),
+                        null,
+                        content,
+                        false,
+                        DataArray.empty(),
+                        DataArray.empty()),
                 new ArrayList<>(),
                 new ArrayList<>(),
                 new ArrayList<>(),
