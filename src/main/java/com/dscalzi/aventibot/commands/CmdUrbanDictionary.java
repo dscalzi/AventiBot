@@ -74,7 +74,7 @@ public class CmdUrbanDictionary implements CommandExecutor {
         String term = String.join(" ", args);
         URL url;
         try {
-            String strURL = "http://api.urbandictionary.com/v0/define?term=" + URLEncoder.encode(term, StandardCharsets.UTF_8);
+            String strURL = "https://api.urbandictionary.com/v0/define?term=" + URLEncoder.encode(term, StandardCharsets.UTF_8);
             url = new URL(strURL);
         } catch (MalformedURLException ex) {
             e.getChannel().sendMessage("Sorry, I couldn't look that up! There was an error while encoding it.").queue();

@@ -43,6 +43,10 @@ public class ConsoleMessage extends ReceivedMessage {
 
     public ConsoleMessage(MessageChannel channel, String content, User author) {
         super(-1L,
+                -1L,
+                -1L,
+                channel.getJDA(),
+                null,
                 channel,
                 MessageType.DEFAULT,
                 null,
@@ -143,11 +147,6 @@ public class ConsoleMessage extends ReceivedMessage {
     public AuditableRestAction<Void> delete() {
         // Unsupported
         return new CompletedRestAction<>(getJDA(), null);
-    }
-
-    @Override
-    protected void unsupported() {
-        throw new UnsupportedOperationException("Operation is unsupported on console messages.");
     }
 
 }
