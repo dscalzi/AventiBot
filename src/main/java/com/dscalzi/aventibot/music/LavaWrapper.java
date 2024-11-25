@@ -21,7 +21,7 @@
 package com.dscalzi.aventibot.music;
 
 import com.dscalzi.aventibot.settings.GlobalConfig;
-import com.github.topisenpai.lavasrc.spotify.SpotifySourceManager;
+import com.github.topi314.lavasrc.spotify.SpotifySourceManager;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
@@ -33,7 +33,8 @@ import com.sedmelluq.discord.lavaplayer.source.local.LocalAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.soundcloud.SoundCloudAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.twitch.TwitchStreamAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.vimeo.VimeoAudioSourceManager;
-import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager;
+import dev.lavalink.youtube.YoutubeAudioSourceManager;
+import dev.lavalink.youtube.clients.Web;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Guild;
 
@@ -54,7 +55,12 @@ public class LavaWrapper {
         playerManager = new DefaultAudioPlayerManager();
         cache = new HashMap<>();
         listenerCache = new HashMap<>();
-        playerManager.registerSourceManager(new YoutubeAudioSourceManager());
+        Web.setPoTokenAndVisitorData(
+                g.getYoutubeConfig().getPoToken(),
+                g.getYoutubeConfig().getVisitorData()
+        );
+        YoutubeAudioSourceManager youtubeAudioSourceManager = new YoutubeAudioSourceManager();
+        playerManager.registerSourceManager(youtubeAudioSourceManager);
         if (g.getSpotifyConfig().getClientId() != null) {
             log.info("Registering spotify.");
             playerManager.registerSourceManager(new SpotifySourceManager(

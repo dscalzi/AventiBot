@@ -62,6 +62,7 @@ public class ConsoleMessage extends ReceivedMessage {
                 author,
                 null,
                 null,
+                null,
                 OffsetDateTime.now(),
                 new MessageMentionsImpl(
                         (JDAImpl) channel.getJDA(),
@@ -70,6 +71,7 @@ public class ConsoleMessage extends ReceivedMessage {
                         false,
                         DataArray.empty(),
                         DataArray.empty()),
+                new ArrayList<>(),
                 new ArrayList<>(),
                 new ArrayList<>(),
                 new ArrayList<>(),

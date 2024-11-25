@@ -29,25 +29,28 @@ java {
 repositories {
     mavenCentral()
     maven { url 'https://jitpack.io' }
+    maven { url "https://maven.lavalink.dev/releases" }
+    maven { url "https://maven.topi.wtf/releases" }
 }
 
 dependencies {
 
     // From JDA - Code safety
     compileOnly("com.google.code.findbugs:jsr305:3.0.2")
-    compileOnly("org.jetbrains:annotations:23.0.0")
+    compileOnly("org.jetbrains:annotations:24.1.0")
 
     implementation "com.google.code.gson:gson:${gsonVersion}"
     implementation "info.debatty:java-string-similarity:2.0.0"
 
     implementation "net.dv8tion:JDA:${jdaVersion}"
     implementation "dev.arbjerg:lavaplayer:${lavaplayerVersion}"
-    implementation "com.github.TopiSenpai.LavaSrc:lavasrc:${lavasrcVersion}"
+    implementation "dev.lavalink.youtube:common:${lavaplayerYtSrcVersion}"
+    implementation "com.github.topi314.lavasrc:lavasrc:${lavasrcVersion}"
 
     implementation "org.slf4j:slf4j-api:${slf4jVersion}"
     implementation "ch.qos.logback:logback-classic:${logbackVersion}"
 
-    implementation("net.sf.trove4j:trove4j:3.0.3") {
+    implementation("net.sf.trove4j:core:3.1.0") {
         because 'JDA implementation dependency is used in creating console messages.'
     }
     implementation("org.apache.commons:commons-collections4:4.4") {

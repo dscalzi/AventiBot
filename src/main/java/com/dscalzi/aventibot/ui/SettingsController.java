@@ -112,7 +112,8 @@ public class SettingsController implements Initializable, ChangeListener<String>
                 currentgame_settings_field.getText(),
                 toRGBCode(color_settings_picker.getValue()),
                 commandprefix_settings_field.getText(),
-                current.getSpotifyConfig());
+                current.getSpotifyConfig(),
+                current.getYoutubeConfig());
         try {
             AventiBot.setCurrentGame(currentgame_settings_field.getText());
             SettingsManager.saveGlobalConfig(g);

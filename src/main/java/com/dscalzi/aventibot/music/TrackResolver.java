@@ -20,8 +20,8 @@
 
 package com.dscalzi.aventibot.music;
 
-import com.github.topisenpai.lavasrc.mirror.MirroringAudioTrack;
-import com.github.topisenpai.lavasrc.mirror.MirroringAudioTrackResolver;
+import com.github.topi314.lavasrc.mirror.MirroringAudioTrack;
+import com.github.topi314.lavasrc.mirror.MirroringAudioTrackResolver;
 import com.sedmelluq.discord.lavaplayer.track.*;
 import lombok.extern.slf4j.Slf4j;
 
@@ -39,9 +39,9 @@ public class TrackResolver implements MirroringAudioTrackResolver {
 
         // Try by isrc
         AudioItem item = AudioReference.NO_TRACK;
-        if (mirroringAudioTrack.getISRC() != null) {
+        if (mirroringAudioTrack.getInfo().isrc != null) {
             item = mirroringAudioTrack.loadItem(
-                    ytsearch + mirroringAudioTrack.getISRC());
+                    ytsearch + mirroringAudioTrack.getInfo().isrc);
             AudioTrack track = null;
             if (item instanceof InternalAudioTrack casted) {
                 track = casted;
@@ -55,7 +55,7 @@ public class TrackResolver implements MirroringAudioTrackResolver {
         // Try name + isrc
         if (item == AudioReference.NO_TRACK) {
             item = mirroringAudioTrack.loadItem(
-                    ytsearch + mirroringAudioTrack.getInfo().title + " " + mirroringAudioTrack.getInfo().author + " " + mirroringAudioTrack.getISRC());
+                    ytsearch + mirroringAudioTrack.getInfo().title + " " + mirroringAudioTrack.getInfo().author + " " + mirroringAudioTrack.getInfo().isrc);
         }
 
         if (item == AudioReference.NO_TRACK) {

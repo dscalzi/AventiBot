@@ -31,10 +31,9 @@ import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
-import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel;
+import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.requests.GatewayIntent;
-import net.dv8tion.jda.internal.utils.UnlockHook;
-import net.dv8tion.jda.internal.utils.cache.SnowflakeCacheViewImpl;
+import net.dv8tion.jda.internal.utils.cache.ChannelCacheViewImpl;
 import org.slf4j.MarkerFactory;
 
 import java.io.File;
@@ -79,10 +78,10 @@ public class AventiBot {
         registerListeners();
         LavaWrapper.initialize(g);
         this.console = ConsoleUser.build(jda);
-        SnowflakeCacheViewImpl<PrivateChannel> pcCache = ((SnowflakeCacheViewImpl<PrivateChannel>) jda.getPrivateChannelCache());
-        try (UnlockHook ignored = pcCache.writeLock()) {
-            pcCache.getMap().put(console.getIdLong(), console.getPrivateChannel());
-        }
+        ChannelCacheViewImpl<Channel> channelCache =
+                (ChannelCacheViewImpl<Channel>) jda.getChannelCache();
+        channelCache.put(console.getPrivateChannel());
+
         log.info("Connected to {} servers.", jda.getGuilds().size());
         launchTime = System.currentTimeMillis();
     }

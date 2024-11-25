@@ -40,6 +40,7 @@ public class GlobalConfig {
     private String defaultCommandPrefix;
 
     private SpotifyConfig spotifyConfig;
+    private YoutubeConfig youtubeConfig;
 
     public GlobalConfig() {
         this(
@@ -47,16 +48,18 @@ public class GlobalConfig {
                 "Developed by Dan",
                 "#0f579d",
                 "--",
-                new SpotifyConfig()
+                new SpotifyConfig(),
+                new YoutubeConfig()
         );
     }
 
-    public GlobalConfig(String token, String currentGame, String defaultColorHex, String defaultCommandPrefix, SpotifyConfig spotifyConfig) {
+    public GlobalConfig(String token, String currentGame, String defaultColorHex, String defaultCommandPrefix, SpotifyConfig spotifyConfig, YoutubeConfig youtubeConfig) {
         this.token = token;
         this.currentGame = currentGame;
         setDefaultColorHex(defaultColorHex);
         this.defaultCommandPrefix = defaultCommandPrefix;
         this.spotifyConfig = spotifyConfig;
+        this.youtubeConfig = getYoutubeConfig();
     }
 
     @Getter
@@ -67,6 +70,15 @@ public class GlobalConfig {
         private String clientId;
         private String clientSecret;
         private String countryCode;
+    }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class YoutubeConfig {
+        private String poToken;
+        private String visitorData;
     }
 
     public void setDefaultColorHex(String defaultColorHex) {
