@@ -59,7 +59,7 @@ public class GlobalConfig {
         setDefaultColorHex(defaultColorHex);
         this.defaultCommandPrefix = defaultCommandPrefix;
         this.spotifyConfig = spotifyConfig;
-        this.youtubeConfig = getYoutubeConfig();
+        this.youtubeConfig = youtubeConfig;
     }
 
     @Getter
