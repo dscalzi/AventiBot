@@ -80,6 +80,7 @@ public class ConsoleMessage extends ReceivedMessage {
                 0,
                 null,
                 null,
+                null,
                 -1);
     }
 

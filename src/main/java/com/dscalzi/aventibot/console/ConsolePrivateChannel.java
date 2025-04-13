@@ -154,6 +154,11 @@ public class ConsolePrivateChannel implements PrivateChannel, MessageChannelUnio
         return ChannelUtil.safeChannelCast(this, PrivateChannel.class);
     }
 
+    @Override
+    public @NotNull GroupChannel asGroupChannel() {
+        return ChannelUtil.safeChannelCast(this, GroupChannel.class);
+    }
+
     @Nonnull
     @Override
     public TextChannel asTextChannel() {
@@ -200,6 +205,11 @@ public class ConsolePrivateChannel implements PrivateChannel, MessageChannelUnio
     @Override
     public GuildMessageChannel asGuildMessageChannel() {
         return ChannelUtil.safeChannelCast(this, GuildMessageChannel.class);
+    }
+
+    @Override
+    public boolean isDetached() {
+        return false;
     }
 
 }
