@@ -20,12 +20,12 @@
 
 package com.dscalzi.aventibot.console;
 
+import net.dv8tion.jda.api.components.MessageTopLevelComponent;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.MessageType;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
-import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageEditAction;
@@ -86,14 +86,14 @@ public class ConsoleMessage extends ReceivedMessage {
 
     @Nonnull
     @Override
-    public RestAction<Void> pin() {
+    public AuditableRestAction<Void> pin() {
         // Unsupported
         return new CompletedRestAction<>(getJDA(), null);
     }
 
     @Nonnull
     @Override
-    public RestAction<Void> unpin() {
+    public AuditableRestAction<Void> unpin() {
         // Unsupported
         return new CompletedRestAction<>(getJDA(), null);
     }
@@ -128,7 +128,7 @@ public class ConsoleMessage extends ReceivedMessage {
 
     @Nonnull
     @Override
-    public MessageEditAction editMessageComponents(@Nonnull Collection<? extends LayoutComponent> components) {
+    public MessageEditAction editMessageComponents(@Nonnull Collection<? extends MessageTopLevelComponent> components) {
         // Unsupported
         return new ConsoleMessageEditAction(channel, null);
     }
