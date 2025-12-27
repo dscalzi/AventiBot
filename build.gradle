@@ -1,22 +1,19 @@
 plugins {
     id 'java'
     id 'application'
-    id 'org.cadixdev.licenser' version '0.6.1'
-    id 'com.github.johnrengelman.shadow' version '8.1.1'
+    id 'com.gradleup.shadow' version '9.3.0'
     id 'org.openjfx.javafxplugin' version '0.1.0'
-    id 'io.freefair.lombok' version '8.4'
+    id 'io.freefair.lombok' version '9.1.0'
 }
-
-mainClassName = 'com.dscalzi.aventibot.LaunchWrapper'
 
 description = 'Highly customizable Discord Bot'
 
 group = 'com.dscalzi'
-archivesBaseName = 'AventiBot'
+base.archivesName = 'AventiBot'
 def classifier = 'dist'
 
 wrapper {
-    gradleVersion = '8.11.1'
+    gradleVersion = '9.2.1'
     distributionType = Wrapper.DistributionType.BIN
 }
 
@@ -58,8 +55,11 @@ dependencies {
         because 'JDA implementation dependency is used in RestFuture constructor.'
     }
 
-    testImplementation "org.junit.jupiter:junit-jupiter-api:${junitVersion}"
-    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${junitVersion}"
+    testImplementation(platform("org.junit:junit-bom:${junitVersion}"))
+
+    testImplementation 'org.junit.jupiter:junit-jupiter-api'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
 compileJava.options.encoding = 'UTF-8'
@@ -68,17 +68,12 @@ processResources {
     from 'LICENSE.txt'
 }
 
-license {
-    header = rootProject.file('HEADER.txt')
-    properties {
-        name = 'Daniel D. Scalzi'
-        year = '2016-2023'
-        url = 'https://github.com/dscalzi/AventiBot'
-    }
-}
-
 test {
     useJUnitPlatform()
+}
+
+application {
+    mainClass = 'com.dscalzi.aventibot.LaunchWrapper'
 }
 
 tasks.withType(JavaExec).configureEach {
@@ -86,7 +81,7 @@ tasks.withType(JavaExec).configureEach {
 }
 
 javafx {
-    version = "17"
+    version = '17'
     modules = ['javafx.controls', 'javafx.fxml']
 }
 
@@ -123,6 +118,6 @@ tasks.register('updateReadme') {
 }
 
 tasks.register('copyDeployment', Copy) {
-    from layout.buildDirectory.file("libs/${archivesBaseName}-${version}-${classifier}.jar")
+    from layout.buildDirectory.file("libs/${base.archivesName.get()}-${version}-${classifier}.jar")
     into layout.projectDirectory.dir('deploy')
 }
