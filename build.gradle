@@ -19,7 +19,7 @@ wrapper {
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(17)
+        languageVersion = JavaLanguageVersion.of(21)
     }
 }
 
@@ -81,7 +81,7 @@ tasks.withType(JavaExec).configureEach {
 }
 
 javafx {
-    version = '17'
+    version = '21'
     modules = ['javafx.controls', 'javafx.fxml']
 }
 
@@ -118,6 +118,7 @@ tasks.register('updateReadme') {
 }
 
 tasks.register('copyDeployment', Copy) {
+    mustRunAfter tasks.named('shadowJar')
     from layout.buildDirectory.file("libs/${base.archivesName.get()}-${version}-${classifier}.jar")
     into layout.projectDirectory.dir('deploy')
 }
