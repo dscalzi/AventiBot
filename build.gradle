@@ -1,9 +1,9 @@
 plugins {
     id 'java'
     id 'application'
-    id 'com.gradleup.shadow' version '9.3.0'
+    id 'com.gradleup.shadow' version '9.3.1'
     id 'org.openjfx.javafxplugin' version '0.1.0'
-    id 'io.freefair.lombok' version '9.1.0'
+    id 'io.freefair.lombok' version '9.2.0'
 }
 
 description = 'Highly customizable Discord Bot'
@@ -13,13 +13,13 @@ base.archivesName = 'AventiBot'
 def classifier = 'dist'
 
 wrapper {
-    gradleVersion = '9.2.1'
+    gradleVersion = '9.3.1'
     distributionType = Wrapper.DistributionType.BIN
 }
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
+        languageVersion = JavaLanguageVersion.of(25)
     }
 }
 
@@ -44,6 +44,13 @@ dependencies {
     implementation "dev.arbjerg:lavaplayer:${lavaplayerVersion}"
     implementation "dev.lavalink.youtube:common:${lavaplayerYtSrcVersion}"
     implementation "com.github.topi314.lavasrc:lavasrc:${lavasrcVersion}"
+
+    implementation("club.minnced:jdave-api:${jdaveVersion}")
+
+    implementation("club.minnced:jdave-native-linux-x86-64:${jdaveVersion}")
+    implementation("club.minnced:jdave-native-linux-aarch64:${jdaveVersion}")
+    implementation("club.minnced:jdave-native-win-x86-64:${jdaveVersion}")
+    implementation("club.minnced:jdave-native-darwin:${jdaveVersion}")
 
     implementation "org.slf4j:slf4j-api:${slf4jVersion}"
     implementation "ch.qos.logback:logback-classic:${logbackVersion}"
@@ -81,13 +88,17 @@ tasks.withType(JavaExec).configureEach {
 }
 
 javafx {
-    version = '21'
+    version = '25'
     modules = ['javafx.controls', 'javafx.fxml']
 }
 
 jar {
     manifest {
-        attributes 'Implementation-Version': archiveVersion.get(), 'Specification-Version': archiveVersion.get()
+        attributes(
+                'Implementation-Version': archiveVersion.get(),
+                'Specification-Version': archiveVersion.get(),
+                'Enable-Native-Access': 'ALL-UNNAMED'
+        )
     }
 }
 

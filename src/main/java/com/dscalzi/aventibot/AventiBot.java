@@ -20,6 +20,7 @@
 
 package com.dscalzi.aventibot;
 
+import club.minnced.discord.jdave.interop.JDaveSessionFactory;
 import com.dscalzi.aventibot.cmdutil.CommandListener;
 import com.dscalzi.aventibot.cmdutil.CommandRegistry;
 import com.dscalzi.aventibot.commands.*;
@@ -30,6 +31,7 @@ import com.dscalzi.aventibot.settings.SettingsManager;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.audio.AudioModuleConfig;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.requests.GatewayIntent;
@@ -127,6 +129,8 @@ public class AventiBot {
             JDABuilder jdaBuilder = JDABuilder.createDefault(g.getToken())
                     .setAutoReconnect(true)
                     .enableIntents(GatewayIntent.MESSAGE_CONTENT)
+                    .setAudioModuleConfig(new AudioModuleConfig()
+                            .withDaveSessionFactory(new JDaveSessionFactory()))
                     .setToken(g.getToken());
             if (!g.getCurrentGame().isEmpty())
                 jdaBuilder.setActivity(Activity.playing(g.getCurrentGame()));
