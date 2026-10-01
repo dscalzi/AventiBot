@@ -34,7 +34,8 @@ import com.sedmelluq.discord.lavaplayer.source.soundcloud.SoundCloudAudioSourceM
 import com.sedmelluq.discord.lavaplayer.source.twitch.TwitchStreamAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.vimeo.VimeoAudioSourceManager;
 import dev.lavalink.youtube.YoutubeAudioSourceManager;
-import dev.lavalink.youtube.clients.Web;
+import dev.lavalink.youtube.YoutubeSourceOptions;
+import dev.lavalink.youtube.clients.*;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Guild;
 
@@ -59,7 +60,19 @@ public class LavaWrapper {
                 g.getYoutubeConfig().getPoToken(),
                 g.getYoutubeConfig().getVisitorData()
         );
-        YoutubeAudioSourceManager youtubeAudioSourceManager = new YoutubeAudioSourceManager();
+        YoutubeSourceOptions options = new YoutubeSourceOptions()
+                .setAllowSearch(true)
+                .setRemoteCipher("http://localhost:8001", "test", "aventi_bot");
+        YoutubeAudioSourceManager youtubeAudioSourceManager = new YoutubeAudioSourceManager(
+                options,
+                new Tv(),
+                new Music(),
+                new AndroidVr(),
+                new MWeb(),
+                new Web(),
+                new WebEmbedded());
+        log.info("Cipher manager: {}", youtubeAudioSourceManager.getCipherManager().getClass().getName());
+        log.info("Remote cipher manager: {}", youtubeAudioSourceManager.getRemoteCipherManager());
         playerManager.registerSourceManager(youtubeAudioSourceManager);
         if (g.getSpotifyConfig().getClientId() != null) {
             log.info("Registering spotify.");
@@ -78,7 +91,9 @@ public class LavaWrapper {
         playerManager.registerSourceManager(new TwitchStreamAudioSourceManager());
         playerManager.registerSourceManager(new HttpAudioSourceManager());
         playerManager.registerSourceManager(new LocalAudioSourceManager());
-        AudioSourceManagers.registerRemoteSources(playerManager);
+        AudioSourceManagers.registerRemoteSources(
+                playerManager,
+                com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager.class);
     }
 
     public static boolean initialize(GlobalConfig g) {
